@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VayNhanh — Tuần 20-26/02/2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; color: #1d1d1f; }
+
+  header {
+    background: #ae2070;
+    color: white;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header span { font-size: 13px; opacity: 0.8; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+  /* KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .kpi-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #ae2070;
+  }
+  .kpi-card .label { font-size: 12px; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .kpi-card .value { font-size: 28px; font-weight: 700; color: #ae2070; }
+  .kpi-card .sub { font-size: 12px; color: #6e6e73; margin-top: 4px; }
+
+  /* Section */
+  .section { margin-bottom: 32px; }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #ae2070;
+  }
+
+  /* Chart cards */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+    gap: 20px;
+  }
+  .chart-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .chart-card h3 { font-size: 14px; font-weight: 600; color: #6e6e73; margin-bottom: 16px; }
+  .chart-card canvas { max-height: 280px; }
+
+  /* Table */
+  .table-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; padding: 10px 14px; background: #f5f5f7; color: #6e6e73; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 12px 14px; border-bottom: 1px solid #f0f0f0; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fdf0f5; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .highlight { color: #ae2070; font-weight: 700; }
+
+  /* Insight box */
+  .insight-box {
+    background: linear-gradient(135deg, #fdf0f5, #fff);
+    border: 1px solid #f0c0d8;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .insight-box h4 { color: #ae2070; font-size: 14px; margin-bottom: 10px; }
+  .insight-box ul { list-style: none; }
+  .insight-box li { font-size: 14px; color: #3d3d3f; padding: 4px 0; padding-left: 16px; position: relative; }
+  .insight-box li::before { content: "→"; position: absolute; left: 0; color: #ae2070; }
+
+  footer { text-align: center; padding: 24px; color: #6e6e73; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>VayNhanh — Tuần 20–26/02/2026</h1>
+    <span>Nguồn: momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO · Cập nhật: 28/02/2026</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">Tổng Giải Ngân</div>
+      <div class="value">453.3 tỷ</div>
+      <div class="sub">VND trong tuần</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Số Khoản Vay</div>
+      <div class="value">26,228</div>
+      <div class="sub">khoản được giải ngân</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Người Vay Unique</div>
+      <div class="value">24,591</div>
+      <div class="sub">borrowers trong tuần</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Avg Loan Size</div>
+      <div class="value">17.3 triệu</div>
+      <div class="sub">VND / khoản vay</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Giải Ngân / Ngày (avg)</div>
+      <div class="value">64.8 tỷ</div>
+      <div class="sub">~3,747 khoản/ngày</div>
+    </div>
+  </div>
+
+  <!-- Daily Trend -->
+  <div class="section">
+    <div class="section-title">Xu Hướng Theo Ngày</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Giải Ngân Hàng Ngày (tỷ VND)</h3>
+        <canvas id="dailyAmountChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Số Khoản Vay Hàng Ngày</h3>
+        <canvas id="dailyLoansChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- By Lender -->
+  <div class="section">
+    <div class="section-title">Phân Tích Theo Đối Tác Cho Vay</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Tỷ Trọng Giải Ngân Theo Lender (tỷ VND)</h3>
+        <canvas id="lenderPieChart"></canvas>
+      </div>
+      <div class="table-card" style="padding: 0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Lender</th>
+              <th class="num">Khoản Vay</th>
+              <th class="num">Unique Users</th>
+              <th class="num">Giải Ngân (tỷ)</th>
+              <th class="num">Avg (triệu)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>VIET_CREDIT</strong></td>
+              <td class="num">16,726</td>
+              <td class="num">15,833</td>
+              <td class="num highlight">306.4</td>
+              <td class="num">18.3</td>
+            </tr>
+            <tr>
+              <td><strong>MCREDIT</strong></td>
+              <td class="num">3,920</td>
+              <td class="num">3,840</td>
+              <td class="num">64.8</td>
+              <td class="num">16.5</td>
+            </tr>
+            <tr>
+              <td><strong>MBV</strong></td>
+              <td class="num">2,820</td>
+              <td class="num">2,790</td>
+              <td class="num">44.1</td>
+              <td class="num">15.6</td>
+            </tr>
+            <tr>
+              <td><strong>AMBER</strong></td>
+              <td class="num">2,762</td>
+              <td class="num">2,430</td>
+              <td class="num">38.0</td>
+              <td class="num">13.8</td>
+            </tr>
+            <tr style="background:#f5f5f7; font-weight:700;">
+              <td>TOTAL</td>
+              <td class="num">26,228</td>
+              <td class="num">24,591</td>
+              <td class="num highlight">453.3</td>
+              <td class="num">17.3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- By Segment -->
+  <div class="section">
+    <div class="section-title">Phân Tích Theo Phân Khúc Người Dùng</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Giải Ngân Theo Segment (tỷ VND)</h3>
+        <canvas id="segmentChart"></canvas>
+      </div>
+      <div class="table-card" style="padding: 0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Segment</th>
+              <th class="num">Khoản Vay</th>
+              <th class="num">Giải Ngân (tỷ)</th>
+              <th class="num">Avg (triệu)</th>
+              <th class="num">% Tổng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>RELOAN</strong> <span style="color:#6e6e73;font-size:11px">(vay lại)</span></td>
+              <td class="num">15,632</td>
+              <td class="num highlight">299.8</td>
+              <td class="num">19.2</td>
+              <td class="num">66.1%</td>
+            </tr>
+            <tr>
+              <td><strong>NEWLOAN</strong> <span style="color:#6e6e73;font-size:11px">(vay mới)</span></td>
+              <td class="num">8,126</td>
+              <td class="num">108.4</td>
+              <td class="num">13.3</td>
+              <td class="num">23.9%</td>
+            </tr>
+            <tr>
+              <td><strong>REPEATED</strong></td>
+              <td class="num">2,095</td>
+              <td class="num">33.9</td>
+              <td class="num">16.2</td>
+              <td class="num">7.5%</td>
+            </tr>
+            <tr>
+              <td><strong>FM_MERCHANT_NEW</strong></td>
+              <td class="num">281</td>
+              <td class="num">8.8</td>
+              <td class="num">31.5</td>
+              <td class="num">1.9%</td>
+            </tr>
+            <tr>
+              <td><strong>FM_MERCHANT_REPEATED</strong></td>
+              <td class="num">53</td>
+              <td class="num">1.7</td>
+              <td class="num">31.7</td>
+              <td class="num">0.4%</td>
+            </tr>
+            <tr>
+              <td><strong>FM_STUDENT_NEW</strong></td>
+              <td class="num">41</td>
+              <td class="num">0.7</td>
+              <td class="num">17.3</td>
+              <td class="num">0.2%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insights -->
+  <div class="insight-box">
+    <h4>Key Insights</h4>
+    <ul>
+      <li>Tổng giải ngân tuần 20-26/02: <strong>453.3 tỷ VND</strong> (~64.8 tỷ/ngày), 26,228 khoản từ 24,591 người vay</li>
+      <li>VIET_CREDIT chiếm <strong>67.6%</strong> tổng giải ngân (306.4 tỷ), dominant lender rõ ràng</li>
+      <li>RELOAN (vay lại) chiếm <strong>66.1%</strong> volume — base khách hàng trung thành mạnh</li>
+      <li>FM_MERCHANT có avg loan cao nhất (~31.7 triệu) nhưng volume nhỏ (334 khoản)</li>
+      <li>Xu hướng tăng dần trong tuần: từ 42.2 tỷ (T2) lên ~78.9 tỷ (T7) — cuối tuần mạnh hơn đầu tuần</li>
+      <li>Avg loan size 17.3 triệu/khoản — phù hợp với sản phẩm vay tiêu dùng cá nhân</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>VayNhanh Weekly Report · 28/02/2026 · Data: momovn-prod.BU_FI</footer>
+
+<script>
+const pink = '#ae2070';
+const pinkLight = 'rgba(174,32,112,0.15)';
+const colors = ['#ae2070','#e05a9a','#f0a0c8','#f8d0e8'];
+const lenderColors = ['#ae2070','#d44090','#e870b0','#f0a0c8'];
+
+// Daily Amount Chart
+new Chart(document.getElementById('dailyAmountChart'), {
+  type: 'bar',
+  data: {
+    labels: ['T2 20/2','T3 21/2','T4 22/2','T5 23/2','T6 24/2','T7 25/2','CN 26/2'],
+    datasets: [{
+      label: 'Giải ngân (tỷ VND)',
+      data: [42.23, 48.84, 54.49, 77.20, 75.80, 78.91, 75.82],
+      backgroundColor: lenderColors[0],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { callback: v => v + ' tỷ' } }
+    }
+  }
+});
+
+// Daily Loans Chart
+new Chart(document.getElementById('dailyLoansChart'), {
+  type: 'line',
+  data: {
+    labels: ['T2 20/2','T3 21/2','T4 22/2','T5 23/2','T6 24/2','T7 25/2','CN 26/2'],
+    datasets: [{
+      label: 'Số khoản vay',
+      data: [2682, 3023, 3229, 4303, 4258, 4457, 4276],
+      borderColor: pink,
+      backgroundColor: pinkLight,
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: pink,
+      pointRadius: 5,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: false } }
+  }
+});
+
+// Lender Pie
+new Chart(document.getElementById('lenderPieChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['VIET_CREDIT (306.4 tỷ)','MCREDIT (64.8 tỷ)','MBV (44.1 tỷ)','AMBER (38.0 tỷ)'],
+    datasets: [{
+      data: [306.447, 64.752, 44.09, 38.005],
+      backgroundColor: lenderColors,
+      borderWidth: 2,
+      borderColor: '#fff',
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 12 } } }
+    }
+  }
+});
+
+// Segment Bar
+new Chart(document.getElementById('segmentChart'), {
+  type: 'bar',
+  data: {
+    labels: ['RELOAN','NEWLOAN','REPEATED','FM_MERCHANT_NEW','FM_MERCHANT_REPEATED','FM_STUDENT_NEW'],
+    datasets: [{
+      label: 'Giải ngân (tỷ VND)',
+      data: [299.778, 108.387, 33.894, 8.845, 1.68, 0.71],
+      backgroundColor: [pink, '#d44090','#e870b0','#f0a0c8','#f8d0e8','#fce8f3'],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { beginAtZero: true, ticks: { callback: v => v + ' tỷ' } }
+    }
+  }
+});
+</script>
+</body>
+</html>

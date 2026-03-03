@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vay Nhanh — 2025 Review & 2026 Growth Plan</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --pink: #ae2070;
+    --pink-light: #d44a9a;
+    --pink-bg: #fdf0f5;
+    --dark: #1a1a2e;
+    --gray: #6b7280;
+    --green: #10b981;
+    --blue: #3b82f6;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: var(--dark); }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, var(--pink) 0%, #7c1652 100%); color: white; padding: 24px 32px; position: sticky; top: 0; z-index: 100; }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; background: white; border-bottom: 1px solid #e5e7eb; padding: 0 32px; position: sticky; top: 76px; z-index: 99; }
+  .tab { padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--gray); border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .tab:hover { color: var(--pink); }
+  .tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+
+  /* Content */
+  .content { max-width: 1200px; margin: 0 auto; padding: 24px 32px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* KPI Cards */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi { background: white; border-radius: 12px; padding: 20px; box-shadow: var(--card-shadow); }
+  .kpi-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); margin-bottom: 4px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: var(--dark); }
+  .kpi-sub { font-size: 12px; color: var(--gray); margin-top: 4px; }
+  .kpi-change { font-size: 13px; font-weight: 600; margin-top: 4px; }
+  .kpi-change.up { color: var(--green); }
+  .kpi-change.down { color: var(--red); }
+
+  /* Chart card */
+  .chart-card { background: white; border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); margin-bottom: 24px; }
+  .chart-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--dark); }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  @media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th { text-align: left; padding: 10px 12px; background: #f9fafb; color: var(--gray); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb; }
+  .data-table td { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; }
+  .data-table tr:hover td { background: var(--pink-bg); }
+  .text-right { text-align: right; }
+
+  /* Insight box */
+  .insight { background: var(--pink-bg); border-left: 4px solid var(--pink); padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 24px; }
+  .insight h4 { font-size: 14px; font-weight: 600; color: var(--pink); margin-bottom: 8px; }
+  .insight p, .insight li { font-size: 13px; color: #4a4a5a; line-height: 1.6; }
+  .insight ul { padding-left: 16px; }
+
+  /* Scenario cards */
+  .scenario-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .scenario { background: white; border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); border-top: 4px solid; }
+  .scenario.conservative { border-color: var(--blue); }
+  .scenario.base { border-color: var(--green); }
+  .scenario.aggressive { border-color: var(--orange); }
+  .scenario h4 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .scenario .target { font-size: 32px; font-weight: 800; margin: 8px 0; }
+  .scenario .detail { font-size: 12px; color: var(--gray); line-height: 1.8; }
+  .scenario .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-orange { background: #fef3c7; color: #92400e; }
+
+  /* Quarterly plan table */
+  .plan-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .plan-table th, .plan-table td { padding: 12px 16px; text-align: center; border: 1px solid #e5e7eb; font-size: 13px; }
+  .plan-table th { background: #f9fafb; font-weight: 600; color: var(--gray); }
+  .plan-table .highlight { background: #f0fdf4; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Vay Nhanh — 2025 Review & 2026 Growth Plan</h1>
+  <p>Data source: momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO | Generated 2026-02-28</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview')">Overview 2025</div>
+  <div class="tab" onclick="showTab('breakdown')">Breakdown</div>
+  <div class="tab" onclick="showTab('plan2026')">2026 Plan</div>
+  <div class="tab" onclick="showTab('quarterly')">Quarterly Roadmap</div>
+</div>
+
+<!-- =================== TAB 1: OVERVIEW =================== -->
+<div class="content">
+<div id="overview" class="section active">
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Total Disbursement 2025</div>
+      <div class="kpi-value">24.18T</div>
+      <div class="kpi-sub">VND (~ $960M USD)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total Loans</div>
+      <div class="kpi-value">1.56M</div>
+      <div class="kpi-sub">loans disbursed</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Unique Borrowers</div>
+      <div class="kpi-value">~605K</div>
+      <div class="kpi-sub">new + 392K reloan + 210K repeat</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Avg Loan Size</div>
+      <div class="kpi-value">15.5M</div>
+      <div class="kpi-sub">VND, up from 12M (Jan) → 18M (Nov)</div>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">H1 2025</div>
+      <div class="kpi-value">8.36T</div>
+      <div class="kpi-sub">avg 1.39T/month</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">H2 2025</div>
+      <div class="kpi-value">15.82T</div>
+      <div class="kpi-change up">+89% vs H1</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Peak Month</div>
+      <div class="kpi-value">Dec</div>
+      <div class="kpi-sub">3.13T VND · 174K loans</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Jan→Dec Growth</div>
+      <div class="kpi-value">+169%</div>
+      <div class="kpi-sub">1.16T → 3.13T monthly</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <h4>Key Insight</h4>
+    <ul>
+      <li><strong>Explosive H2 growth:</strong> June was the inflection point — disbursement nearly doubled from 1.46T (May) to 2.17T (June). This suggests a major product/lender expansion took effect.</li>
+      <li><strong>Sustained momentum:</strong> Jan 2026 held at 3.11T (flat vs Dec), confirming the new baseline is real, not a one-off Q4 push.</li>
+      <li><strong>Avg loan size increased 50%:</strong> from ~12M to ~18M through the year, meaning higher-value loans are being approved — likely credit limit expansion + better risk scoring.</li>
+    </ul>
+  </div>
+
+  <div class="chart-card">
+    <h3>Monthly Disbursement Trend (2025 + Early 2026)</h3>
+    <canvas id="chartMonthly" height="100"></canvas>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Loan Count vs Unique Borrowers</h3>
+      <canvas id="chartLoans" height="140"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Average Loan Size Trend</h3>
+      <canvas id="chartAvgLoan" height="140"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- =================== TAB 2: BREAKDOWN =================== -->
+<div id="breakdown" class="section">
+
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>By Lender (2025 Total)</h3>
+      <canvas id="chartLender" height="160"></canvas>
+      <table class="data-table" style="margin-top:16px">
+        <thead><tr><th>Lender</th><th class="text-right">Loans</th><th class="text-right">Disbursed (T)</th><th class="text-right">Avg Size (M)</th><th class="text-right">Share</th></tr></thead>
+        <tbody>
+          <tr><td>Viet Credit</td><td class="text-right">979,680</td><td class="text-right">15.66T</td><td class="text-right">16.0M</td><td class="text-right">64.8%</td></tr>
+          <tr><td>MCredit</td><td class="text-right">316,291</td><td class="text-right">5.10T</td><td class="text-right">16.1M</td><td class="text-right">21.1%</td></tr>
+          <tr><td>Amber</td><td class="text-right">264,464</td><td class="text-right">3.41T</td><td class="text-right">12.9M</td><td class="text-right">14.1%</td></tr>
+          <tr><td>MBV</td><td class="text-right">10</td><td class="text-right">0.04B</td><td class="text-right">3.9M</td><td class="text-right">~0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-card">
+      <h3>By User Segment (2025 Total)</h3>
+      <canvas id="chartSegment" height="160"></canvas>
+      <table class="data-table" style="margin-top:16px">
+        <thead><tr><th>Segment</th><th class="text-right">Loans</th><th class="text-right">Disbursed (T)</th><th class="text-right">Avg Size (M)</th><th class="text-right">Share</th></tr></thead>
+        <tbody>
+          <tr><td>Re-loan</td><td class="text-right">691,625</td><td class="text-right">13.06T</td><td class="text-right">18.9M</td><td class="text-right">54.0%</td></tr>
+          <tr><td>New Loan</td><td class="text-right">605,846</td><td class="text-right">7.22T</td><td class="text-right">11.9M</td><td class="text-right">29.9%</td></tr>
+          <tr><td>Repeated</td><td class="text-right">254,328</td><td class="text-right">3.64T</td><td class="text-right">14.3M</td><td class="text-right">15.1%</td></tr>
+          <tr><td>FM Merchant</td><td class="text-right">6,508</td><td class="text-right">0.22T</td><td class="text-right">34.0M</td><td class="text-right">0.9%</td></tr>
+          <tr><td>FM Student</td><td class="text-right">2,138</td><td class="text-right">0.04T</td><td class="text-right">17.2M</td><td class="text-right">0.1%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h3>By Loan Tenor (Top 7)</h3>
+    <canvas id="chartTenor" height="80"></canvas>
+  </div>
+
+  <div class="insight">
+    <h4>Breakdown Insights</h4>
+    <ul>
+      <li><strong>Viet Credit dominates</strong> at 65% share — concentration risk. MCredit + Amber provide diversification.</li>
+      <li><strong>Re-loan is the engine</strong> (54% of volume) — these are returning customers with proven repayment. Higher avg loan (18.9M vs 11.9M for new).</li>
+      <li><strong>6-month tenor is most popular</strong> (640K loans) but shortest term → fastest capital recycling. 12-18 month tenors drive higher disbursement per loan.</li>
+      <li><strong>FM Merchant segment</strong> has highest avg loan (34M) but tiny volume — growth opportunity if distribution channel scales.</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- =================== TAB 3: 2026 PLAN =================== -->
+<div id="plan2026" class="section">
+
+  <div class="insight">
+    <h4>Projection Methodology</h4>
+    <p>Based on: (1) 2025 actual monthly trajectory, (2) Jan-Feb 2026 actuals confirming momentum, (3) seasonal patterns (Tet dip in Feb, Q4 push). Three scenarios modeled below.</p>
+  </div>
+
+  <div class="scenario-row">
+    <div class="scenario conservative">
+      <span class="badge badge-blue">Conservative</span>
+      <h4>Maintain H2 Run Rate</h4>
+      <div class="target" style="color:#3b82f6">33.5T</div>
+      <div class="detail">
+        <strong>+39% YoY</strong><br>
+        Avg ~2.79T/month<br><br>
+        Assumes: H2 2025 run rate sustains, no major expansion. Slight seasonal dips.<br><br>
+        <strong>When to use:</strong> Budget floor, minimum acceptable outcome
+      </div>
+    </div>
+    <div class="scenario base">
+      <span class="badge badge-green">Base Case</span>
+      <h4>Moderate Growth</h4>
+      <div class="target" style="color:#10b981">40.0T</div>
+      <div class="detail">
+        <strong>+65% YoY</strong><br>
+        Avg ~3.33T/month<br><br>
+        Assumes: Continued avg loan size growth to ~20M, 1-2 new lenders, organic user growth 10-15%.<br><br>
+        <strong>When to use:</strong> Target for planning & resource allocation
+      </div>
+    </div>
+    <div class="scenario aggressive">
+      <span class="badge badge-orange">Aggressive</span>
+      <h4>Full Expansion</h4>
+      <div class="target" style="color:#f59e0b">48.0T</div>
+      <div class="detail">
+        <strong>+99% YoY (~2x)</strong><br>
+        Avg ~4.0T/month<br><br>
+        Assumes: New lender partnerships, credit limit expansion, FM Merchant scale-up, improved approval rate.<br><br>
+        <strong>When to use:</strong> Stretch goal, requires investment
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h3>2025 Actuals vs 2026 Projections (3 Scenarios)</h3>
+    <canvas id="chartProjection" height="110"></canvas>
+  </div>
+
+  <div class="insight">
+    <h4>Growth Levers for 2026</h4>
+    <ul>
+      <li><strong>1. Avg Loan Size Expansion:</strong> 2025 trend was 12M→18M. Pushing to 20-22M avg through credit limit increases adds ~15% disbursement without more users.</li>
+      <li><strong>2. New Lender Partners:</strong> MBV is nascent (10 loans in 2025). Onboarding 1-2 more lenders (e.g., FE Credit, Home Credit) diversifies and increases approval rate for rejected applicants.</li>
+      <li><strong>3. Re-loan Optimization:</strong> Re-loan is 54% of volume. Faster re-loan cycle (auto-approved top-up within 24h of liquidation) could boost frequency 20-30%.</li>
+      <li><strong>4. FM Merchant Scale:</strong> Currently 6.5K loans but avg 34M — highest value segment. Scaling merchant financing channel could add 0.5-1T/year.</li>
+      <li><strong>5. Cross-sell from Paylater:</strong> 55% of VN borrowers came from Paylater (past pattern). Increasing Paylater→VN conversion funnel from current rate adds volume.</li>
+      <li><strong>6. Seasonal Push Strategy:</strong> H2 2025 was 89% higher than H1. Plan heavier marketing/promotion spend in H1 2026 to flatten seasonality.</li>
+    </ul>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Key Risk Factors</h3>
+      <table class="data-table">
+        <thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Regulatory tightening on consumer lending</td><td>Could cap growth at 30%</td><td>Diversify tenor mix, ensure compliance</td></tr>
+          <tr><td>Viet Credit concentration (65%)</td><td>Single-partner dependency</td><td>Aggressively onboard new lenders</td></tr>
+          <tr><td>NPL increase with portfolio growth</td><td>Risk appetite pullback</td><td>Tighten scoring for new users, expand for reloans</td></tr>
+          <tr><td>Macro slowdown affecting borrowing demand</td><td>Volume miss by 10-20%</td><td>Focus on reloan (proven repayers)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-card">
+      <h3>Key Opportunities</h3>
+      <table class="data-table">
+        <thead><tr><th>Opportunity</th><th>Potential Impact</th><th>Timeline</th></tr></thead>
+        <tbody>
+          <tr><td>New lender integration</td><td>+3-5T/year</td><td>Q2 2026</td></tr>
+          <tr><td>Credit limit increase (existing users)</td><td>+2-3T/year</td><td>Q1 2026</td></tr>
+          <tr><td>FM Merchant expansion</td><td>+0.5-1T/year</td><td>Q3 2026</td></tr>
+          <tr><td>Auto reloan approval</td><td>+1.5-2T/year</td><td>Q2 2026</td></tr>
+          <tr><td>H1 marketing push</td><td>Flatter seasonality</td><td>Q1-Q2 2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- =================== TAB 4: QUARTERLY ROADMAP =================== -->
+<div id="quarterly" class="section">
+
+  <div class="insight">
+    <h4>2026 Quarterly Disbursement Plan (Base Case: 40T)</h4>
+    <p>Distributes the 40T target across quarters based on 2025 seasonal patterns, with H1 improvement strategy factored in.</p>
+  </div>
+
+  <div class="chart-card">
+    <h3>Quarterly Target vs 2025 Actual</h3>
+    <canvas id="chartQuarterly" height="100"></canvas>
+    <table class="plan-table" style="margin-top:20px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Q1</th>
+          <th>Q2</th>
+          <th>Q3</th>
+          <th>Q4</th>
+          <th>Full Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>2025 Actual</strong></td>
+          <td>3.40T</td>
+          <td>4.96T</td>
+          <td>6.83T</td>
+          <td>8.99T</td>
+          <td><strong>24.18T</strong></td>
+        </tr>
+        <tr class="highlight">
+          <td><strong>2026 Target (Base)</strong></td>
+          <td>8.3T</td>
+          <td>9.5T</td>
+          <td>10.5T</td>
+          <td>11.7T</td>
+          <td><strong>40.0T</strong></td>
+        </tr>
+        <tr>
+          <td><strong>YoY Growth</strong></td>
+          <td>+144%</td>
+          <td>+92%</td>
+          <td>+54%</td>
+          <td>+30%</td>
+          <td><strong>+65%</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Monthly Avg</strong></td>
+          <td>2.77T</td>
+          <td>3.17T</td>
+          <td>3.50T</td>
+          <td>3.90T</td>
+          <td><strong>3.33T</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Key Initiatives</strong></td>
+          <td>Credit limit raise, H1 push</td>
+          <td>New lender live, auto reloan</td>
+          <td>FM Merchant scale</td>
+          <td>Full acceleration</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-card">
+    <h3>Monthly Targets — Base Case</h3>
+    <canvas id="chartMonthlyPlan" height="100"></canvas>
+    <table class="data-table" style="margin-top:16px">
+      <thead>
+        <tr><th>Month</th><th class="text-right">2025 Actual (T)</th><th class="text-right">2026 Target (T)</th><th class="text-right">YoY</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Jan</td><td class="text-right">1.16</td><td class="text-right">3.11</td><td class="text-right">+168%</td><td>Actual: 3.11T (on track!)</td></tr>
+        <tr><td>Feb</td><td class="text-right">0.97</td><td class="text-right">2.44</td><td class="text-right">+152%</td><td>Actual: 2.44T (Tet effect, expected)</td></tr>
+        <tr><td>Mar</td><td class="text-right">1.27</td><td class="text-right">2.75</td><td class="text-right">+117%</td><td>Post-Tet recovery</td></tr>
+        <tr><td>Apr</td><td class="text-right">1.34</td><td class="text-right">3.00</td><td class="text-right">+124%</td><td></td></tr>
+        <tr><td>May</td><td class="text-right">1.46</td><td class="text-right">3.15</td><td class="text-right">+116%</td><td>New lender expected</td></tr>
+        <tr><td>Jun</td><td class="text-right">2.17</td><td class="text-right">3.35</td><td class="text-right">+54%</td><td>Auto reloan launch</td></tr>
+        <tr><td>Jul</td><td class="text-right">2.13</td><td class="text-right">3.40</td><td class="text-right">+60%</td><td></td></tr>
+        <tr><td>Aug</td><td class="text-right">2.24</td><td class="text-right">3.45</td><td class="text-right">+54%</td><td></td></tr>
+        <tr><td>Sep</td><td class="text-right">2.46</td><td class="text-right">3.65</td><td class="text-right">+48%</td><td>FM Merchant ramp</td></tr>
+        <tr><td>Oct</td><td class="text-right">2.95</td><td class="text-right">3.75</td><td class="text-right">+27%</td><td></td></tr>
+        <tr><td>Nov</td><td class="text-right">2.91</td><td class="text-right">3.85</td><td class="text-right">+32%</td><td></td></tr>
+        <tr><td>Dec</td><td class="text-right">3.13</td><td class="text-right">4.10</td><td class="text-right">+31%</td><td>Year-end push</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight">
+    <h4>Milestones to Track</h4>
+    <ul>
+      <li><strong>Q1 checkpoint:</strong> Jan+Feb actual = 5.55T ✅ (target ~5.5T). On track.</li>
+      <li><strong>H1 target:</strong> 17.8T — if achieved, signals full-year 40T is achievable.</li>
+      <li><strong>Monthly 4T mark:</strong> First month crossing 4T should happen by Oct-Dec 2026.</li>
+      <li><strong>New lender contribution:</strong> Should add measurable volume (>200B/month) by Q3.</li>
+    </ul>
+  </div>
+
+</div>
+</div>
+
+<script>
+const months2025 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const months2026 = ['Jan 26','Feb 26'];
+const allMonths = [...months2025, ...months2026];
+
+const disbursed2025 = [1.163,0.966,1.268,1.335,1.455,2.173,2.134,2.238,2.458,2.949,2.911,3.129];
+const disbursed2026actual = [3.108,2.437];
+const loans2025 = [97133,80321,106443,107022,114026,138044,134019,141213,143833,166452,157993,173946];
+const borrowers2025 = [90385,72865,95637,96004,101654,124233,120118,125579,127273,143645,134817,148389];
+const avgLoan2025 = [11.97,12.03,11.91,12.47,12.76,15.74,15.92,15.85,17.09,17.72,18.42,17.99];
+
+// Target 2026 monthly
+const target2026 = [3.11,2.44,2.75,3.00,3.15,3.35,3.40,3.45,3.65,3.75,3.85,4.10];
+const conservative2026 = target2026.map(v => v * 33.5/40.0);
+const aggressive2026 = target2026.map(v => v * 48.0/40.0);
+
+const pink = '#ae2070';
+const pinkLight = 'rgba(174,32,112,0.15)';
+const blue = '#3b82f6';
+const green = '#10b981';
+const orange = '#f59e0b';
+
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Chart 1: Monthly disbursement
+new Chart(document.getElementById('chartMonthly'), {
+  type: 'bar',
+  data: {
+    labels: allMonths,
+    datasets: [{
+      label: 'Disbursement (T VND)',
+      data: [...disbursed2025, ...disbursed2026actual],
+      backgroundColor: [...Array(12).fill(pink), ...Array(2).fill(blue)],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, title: { display: true, text: 'T VND' } }
+    }
+  }
+});
+
+// Chart 2: Loans vs Borrowers
+new Chart(document.getElementById('chartLoans'), {
+  type: 'line',
+  data: {
+    labels: months2025,
+    datasets: [
+      { label: 'Loans', data: loans2025, borderColor: pink, backgroundColor: pinkLight, fill: true, tension: 0.3 },
+      { label: 'Unique Borrowers', data: borrowers2025, borderColor: blue, borderDash: [5,5], fill: false, tension: 0.3 }
+    ]
+  },
+  options: { responsive: true, scales: { y: { beginAtZero: false } } }
+});
+
+// Chart 3: Avg Loan Size
+new Chart(document.getElementById('chartAvgLoan'), {
+  type: 'line',
+  data: {
+    labels: months2025,
+    datasets: [{
+      label: 'Avg Loan Size (M VND)',
+      data: avgLoan2025,
+      borderColor: green,
+      backgroundColor: 'rgba(16,185,129,0.1)',
+      fill: true,
+      tension: 0.3,
+      pointBackgroundColor: green
+    }]
+  },
+  options: { responsive: true, scales: { y: { beginAtZero: false } } }
+});
+
+// Chart 4: Lender pie
+new Chart(document.getElementById('chartLender'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Viet Credit (64.8%)', 'MCredit (21.1%)', 'Amber (14.1%)'],
+    datasets: [{ data: [15.66, 5.10, 3.41], backgroundColor: [pink, blue, orange] }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// Chart 5: Segment pie
+new Chart(document.getElementById('chartSegment'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Re-loan (54%)', 'New Loan (30%)', 'Repeated (15%)', 'FM (1%)'],
+    datasets: [{ data: [13.06, 7.22, 3.64, 0.26], backgroundColor: [pink, blue, green, orange] }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// Chart 6: Tenor
+new Chart(document.getElementById('chartTenor'), {
+  type: 'bar',
+  data: {
+    labels: ['6m','9m','12m','15m','18m','21m','24m'],
+    datasets: [
+      { label: 'Loan Count', data: [639689,259202,216738,120959,133333,53923,69025], backgroundColor: pink, yAxisID: 'y' },
+      { label: 'Total Disbursed (T)', data: [4.40,2.79,3.84,2.43,3.88,1.77,2.80], type: 'line', borderColor: blue, yAxisID: 'y1', pointBackgroundColor: blue }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Loans' } },
+      y1: { beginAtZero: true, position: 'right', title: { display: true, text: 'T VND' }, grid: { drawOnChartArea: false } }
+    }
+  }
+});
+
+// Chart 7: Projection
+new Chart(document.getElementById('chartProjection'), {
+  type: 'line',
+  data: {
+    labels: months2025.map(m => m + ' 25').concat(months2025.map(m => m + ' 26')),
+    datasets: [
+      { label: '2025 Actual', data: [...disbursed2025, ...Array(12).fill(null)], borderColor: pink, backgroundColor: pinkLight, fill: true, tension: 0.3, pointRadius: 3 },
+      { label: '2026 Conservative (33.5T)', data: [...Array(12).fill(null), ...conservative2026], borderColor: blue, borderDash: [5,5], tension: 0.3, pointRadius: 2 },
+      { label: '2026 Base (40T)', data: [...Array(12).fill(null), ...target2026], borderColor: green, tension: 0.3, pointRadius: 3, borderWidth: 3 },
+      { label: '2026 Aggressive (48T)', data: [...Array(12).fill(null), ...aggressive2026], borderColor: orange, borderDash: [5,5], tension: 0.3, pointRadius: 2 }
+    ]
+  },
+  options: { responsive: true, scales: { y: { beginAtZero: true, title: { display: true, text: 'T VND / month' } } } }
+});
+
+// Chart 8: Quarterly comparison
+new Chart(document.getElementById('chartQuarterly'), {
+  type: 'bar',
+  data: {
+    labels: ['Q1','Q2','Q3','Q4'],
+    datasets: [
+      { label: '2025 Actual', data: [3.40, 4.96, 6.83, 8.99], backgroundColor: 'rgba(174,32,112,0.3)', borderColor: pink, borderWidth: 2 },
+      { label: '2026 Target', data: [8.30, 9.50, 10.50, 11.70], backgroundColor: 'rgba(16,185,129,0.3)', borderColor: green, borderWidth: 2 }
+    ]
+  },
+  options: { responsive: true, scales: { y: { beginAtZero: true, title: { display: true, text: 'T VND' } } } }
+});
+
+// Chart 9: Monthly plan
+new Chart(document.getElementById('chartMonthlyPlan'), {
+  type: 'bar',
+  data: {
+    labels: months2025,
+    datasets: [
+      { label: '2025 Actual', data: disbursed2025, backgroundColor: 'rgba(174,32,112,0.25)', borderColor: pink, borderWidth: 1 },
+      { label: '2026 Target', data: target2026, backgroundColor: 'rgba(16,185,129,0.25)', borderColor: green, borderWidth: 1 }
+    ]
+  },
+  options: { responsive: true, scales: { y: { beginAtZero: true, title: { display: true, text: 'T VND' } } } }
+});
+</script>
+
+</body>
+</html>

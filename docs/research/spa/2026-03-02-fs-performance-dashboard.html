@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FS Performance Dashboard - Tháng 2/2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #ae2070 0%, #d4448a 100%);
+            color: white;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .header p {
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #ae2070;
+        }
+        .kpi-card.ttt { border-left-color: #2196F3; }
+        .kpi-card.vaynhanh { border-left-color: #4CAF50; }
+        .kpi-card.paylater { border-left-color: #ae2070; }
+        .kpi-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 8px 0;
+            color: #222;
+        }
+        .kpi-sub {
+            font-size: 13px;
+            color: #666;
+        }
+        .kpi-change {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .kpi-change.positive { color: #4CAF50; }
+        .kpi-change.negative { color: #f44336; }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #222;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        .insights {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-top: 24px;
+        }
+        .insights h3 {
+            font-size: 14px;
+            color: #f57c00;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .insights ul {
+            margin-left: 20px;
+        }
+        .insights li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            font-weight: 600;
+            color: #666;
+            background: #f9f9f9;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-good { background: #e8f5e9; color: #2e7d32; }
+        .badge-warning { background: #fff3e0; color: #ef6c00; }
+        .badge-bad { background: #ffebee; color: #c62828; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Financial Services Performance Dashboard</h1>
+        <p>Đánh giá 15 ngày đầu tháng 2/2026 vs cùng kỳ các tháng trước</p>
+    </div>
+
+    <div class="container">
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card ttt">
+                <div class="kpi-label">Túi Thần Tài - MAU (15 ngày đầu)</div>
+                <div class="kpi-value">2.44M</div>
+                <div class="kpi-sub">Full month: ~2.94M users (MFU: ~2.36M)</div>
+                <div class="kpi-change positive">↑ ~83% active trong nửa đầu tháng</div>
+            </div>
+            <div class="kpi-card ttt">
+                <div class="kpi-label">Túi Thần Tài - AUM</div>
+                <div class="kpi-value">12.5K tỷ</div>
+                <div class="kpi-sub">Snapshot 25/02/2026</div>
+                <div class="kpi-change positive">↑ Tăng trưởng ổn định</div>
+            </div>
+            <div class="kpi-card paylater">
+                <div class="kpi-label">Paylater - MAU (15 ngày đầu)</div>
+                <div class="kpi-value">1.22M</div>
+                <div class="kpi-sub">Full month: 1.40M users</div>
+                <div class="kpi-change positive">↑ 87.4% - cao nhất 5 tháng</div>
+            </div>
+            <div class="kpi-card paylater">
+                <div class="kpi-label">Paylater - GMV</div>
+                <div class="kpi-value">7,069 tỷ</div>
+                <div class="kpi-sub">15 ngày đầu: 6,114 tỷ (86.5%)</div>
+                <div class="kpi-change negative">↓ Giảm nhẹ so với T1/2026</div>
+            </div>
+            <div class="kpi-card vaynhanh">
+                <div class="kpi-label">Vay Nhanh - Giải ngân (15 ngày)</div>
+                <div class="kpi-value">77.5K</div>
+                <div class="kpi-sub">Khoản vay được giải ngân</div>
+                <div class="kpi-change positive">↑ Tăng trưởng mạnh +38.7%</div>
+            </div>
+            <div class="kpi-card vaynhanh">
+                <div class="kpi-label">Vay Nhanh - Doanh số</div>
+                <div class="kpi-value">2,175 tỷ</div>
+                <div class="kpi-sub">15 ngày đầu: 1,494 tỷ (68.7%)</div>
+                <div class="kpi-change negative">↓ Giảm 8.7% so với T1/2026</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid-2">
+            <div class="section">
+                <div class="section-title">MAU/MFU Trend (15 ngày đầu tháng)</div>
+                <div class="chart-container">
+                    <canvas id="mauChart"></canvas>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">GMV/Disbursed Trend (15 ngày đầu tháng)</div>
+                <div class="chart-container">
+                    <canvas id="gmvChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Tỷ lệ 15 ngày đầu / Full month (%)</div>
+            <div class="chart-container">
+                <canvas id="ratioChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="section">
+            <div class="section-title">Chi tiết Performance Tháng 2/2026</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Metric</th>
+                        <th>15 ngày đầu</th>
+                        <th>Full month</th>
+                        <th>Tỷ lệ</th>
+                        <th>So với T1/2026</th>
+                        <th>Đánh giá</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="3"><strong>Túi Thần Tài</strong></td>
+                        <td>MAU (users)</td>
+                        <td>2,439,737</td>
+                        <td>~2,941,532</td>
+                        <td>~83%</td>
+                        <td>-</td>
+                        <td><span class="badge badge-good">Ổn định</span></td>
+                    </tr>
+                    <tr>
+                        <td>MFU (users)</td>
+                        <td>2,109,022</td>
+                        <td>~2,362,954</td>
+                        <td>~89%</td>
+                        <td>-</td>
+                        <td><span class="badge badge-good">Tốt</span></td>
+                    </tr>
+                    <tr>
+                        <td>AUM (tỷ VND)</td>
+                        <td>12,650.7</td>
+                        <td>12,511.2*</td>
+                        <td>-</td>
+                        <td>+8.1%</td>
+                        <td><span class="badge badge-good">Tăng trưởng</span></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><strong>Paylater</strong></td>
+                        <td>MAU (users)</td>
+                        <td>1,220,886</td>
+                        <td>1,396,599</td>
+                        <td>87.4%</td>
+                        <td>+0.3%</td>
+                        <td><span class="badge badge-good">Tốt</span></td>
+                    </tr>
+                    <tr>
+                        <td>GMV (tỷ VND)</td>
+                        <td>6,113.9</td>
+                        <td>7,069.4</td>
+                        <td>86.5%</td>
+                        <td>-3.7%</td>
+                        <td><span class="badge badge-warning">Giảm nhẹ</span></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><strong>Vay Nhanh</strong></td>
+                        <td>Số khoản vay</td>
+                        <td>77,508</td>
+                        <td>115,934</td>
+                        <td>66.9%</td>
+                        <td>+38.7%</td>
+                        <td><span class="badge badge-good">Tăng mạnh</span></td>
+                    </tr>
+                    <tr>
+                        <td>Disbursed (tỷ VND)</td>
+                        <td>1,493.7</td>
+                        <td>2,175.0</td>
+                        <td>68.7%</td>
+                        <td>-8.7%</td>
+                        <td><span class="badge badge-warning">Giảm</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 11px; color: #666; margin-top: 8px;">* AUM snapshot ngày 25/02/2026</p>
+        </div>
+
+        <!-- Insights -->
+        <div class="insights">
+            <h3>Key Insights - Tháng 2/2026</h3>
+            <ul>
+                <li><strong>Túi Thần Tài:</strong> MAU ~2.94M users, MFU ~2.36M users, AUM ~12.5K tỷ. Tỷ lệ MAU active trong 15 ngày đầu ~83%, MFU ~89% - cho thấy engagement tốt. AUM tăng trưởng ổn định qua các tháng.</li>
+                <li><strong>Paylater:</strong> MAU 15 ngày đầu tháng 2 cao nhất 5 tháng (1.22M), tỷ lệ 15d/full tăng đột biến lên 87.4% (bình thường ~83.5%). Điều này cho thấy user tập trung active sớm trong tháng, nửa sau tháng suy giảm do Tết Nguyên đán.</li>
+                <li><strong>Vay Nhanh:</strong> Số khoản vay giải ngân trong 15 ngày đầu tăng mạnh +38.7% so với tháng 1, nhưng doanh số giảm 8.7%. Điều này cho thấy kích thước khoản vay trung bình giảm (từ ~20M xuống ~18.7M).</li>
+                <li><strong>Tổng quan FS:</strong> Tháng 2 bị ảnh hưởng bởi Tết Nguyên đán (nghỉ dài, giao dịch giảm). Tuy nhiên, TTT và Paylater cho thấy sự phục hồi nhanh với tỷ lệ active sớm cao. Vay Nhanh có xu hướng user vay nhiều hơn nhưng số tiền ít hơn.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // MAU Chart
+        const mauCtx = document.getElementById('mauChart').getContext('2d');
+        new Chart(mauCtx, {
+            type: 'line',
+            data: {
+                labels: ['T10/2025', 'T11/2025', 'T12/2025', 'T1/2026', 'T2/2026'],
+                datasets: [
+                    {
+                        label: 'TTT - MAU (triệu)',
+                        data: [2.5, 2.6, 2.7, 2.9, 2.94],
+                        borderColor: '#2196F3',
+                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Paylater - MAU (triệu)',
+                        data: [1.10, 1.15, 1.20, 1.22, 1.22],
+                        borderColor: '#ae2070',
+                        backgroundColor: 'rgba(174, 32, 112, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Vay Nhanh - Loans (nghìn)',
+                        data: [43.6, 45.6, 52.3, 55.9, 77.5],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // GMV Chart
+        const gmvCtx = document.getElementById('gmvChart').getContext('2d');
+        new Chart(gmvCtx, {
+            type: 'bar',
+            data: {
+                labels: ['T10/2025', 'T11/2025', 'T12/2025', 'T1/2026', 'T2/2026'],
+                datasets: [
+                    {
+                        label: 'Paylater GMV (tỷ)',
+                        data: [5354, 5613, 5755, 5881, 6114],
+                        backgroundColor: '#ae2070'
+                    },
+                    {
+                        label: 'Vay Nhanh Disbursed (tỷ)',
+                        data: [956, 992, 1110, 1157, 1494],
+                        backgroundColor: '#4CAF50'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Ratio Chart
+        const ratioCtx = document.getElementById('ratioChart').getContext('2d');
+        new Chart(ratioCtx, {
+            type: 'line',
+            data: {
+                labels: ['T10/2025', 'T11/2025', 'T12/2025', 'T1/2026', 'T2/2026'],
+                datasets: [
+                    {
+                        label: 'TTT - MAU 15d/Full (%)',
+                        data: [82, 83, 84, 85, 83],
+                        borderColor: '#2196F3',
+                        backgroundColor: '#2196F3',
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Paylater - MAU 15d/Full (%)',
+                        data: [83.6, 83.3, 83.8, 83.8, 87.4],
+                        borderColor: '#ae2070',
+                        backgroundColor: '#ae2070',
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Vay Nhanh - Loans 15d/Full (%)',
+                        data: [52.5, 52.8, 50.5, 47.8, 66.9],
+                        borderColor: '#4CAF50',
+                        backgroundColor: '#4CAF50',
+                        pointRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 40,
+                        max: 105
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

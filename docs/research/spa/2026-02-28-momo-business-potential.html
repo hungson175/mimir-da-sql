@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoMo Business Potential Assessment 2023-2025</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<style>
+  :root {
+    --pink: #ae2070;
+    --pink-light: #d44a9a;
+    --pink-bg: #fdf0f6;
+    --green: #10b981;
+    --green-bg: #ecfdf5;
+    --blue: #3b82f6;
+    --blue-bg: #eff6ff;
+    --orange: #f59e0b;
+    --orange-bg: #fffbeb;
+    --red: #ef4444;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.6;
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--pink), #7c2d8e);
+    color: white;
+    padding: 2rem 2rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(174, 32, 112, 0.3);
+  }
+
+  .header h1 { font-size: 1.5rem; font-weight: 700; }
+  .header p { opacity: 0.85; font-size: 0.875rem; margin-top: 0.25rem; }
+
+  .nav {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+
+  .nav button {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .nav button:hover, .nav button.active {
+    background: white;
+    color: var(--pink);
+    font-weight: 600;
+  }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 1.5rem; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .kpi-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--pink);
+  }
+
+  .kpi-card.green { border-left-color: var(--green); }
+  .kpi-card.blue { border-left-color: var(--blue); }
+  .kpi-card.orange { border-left-color: var(--orange); }
+
+  .kpi-label { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; }
+  .kpi-value { font-size: 1.75rem; font-weight: 800; margin: 0.25rem 0; }
+  .kpi-change { font-size: 0.8rem; }
+  .kpi-change.up { color: var(--green); }
+  .kpi-change.down { color: var(--red); }
+
+  /* Chart containers */
+  .chart-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .chart-card h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--gray-700);
+  }
+
+  .chart-card canvas { max-height: 300px; }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  .data-table th {
+    background: var(--gray-100);
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--gray-700);
+    border-bottom: 2px solid var(--gray-200);
+  }
+
+  .data-table td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .data-table tr:hover { background: var(--gray-50); }
+
+  /* Ranking */
+  .rank-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+
+  .rank-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .rank-1 { background: linear-gradient(135deg, #f59e0b, #f97316); }
+  .rank-2 { background: linear-gradient(135deg, var(--pink), #d44a9a); }
+  .rank-3 { background: linear-gradient(135deg, var(--blue), #6366f1); }
+  .rank-4 { background: linear-gradient(135deg, var(--green), #34d399); }
+  .rank-5 { background: linear-gradient(135deg, var(--gray-500), #9ca3af); }
+
+  .rank-content h3 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+  .rank-content .subtitle { color: var(--gray-500); font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .rank-content .stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .rank-content .stat { font-size: 0.8rem; }
+  .rank-content .stat strong { display: block; font-size: 1.1rem; color: var(--gray-900); }
+
+  /* Recommendations */
+  .rec-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--pink);
+  }
+
+  .rec-card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+  .rec-card .tag {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .tag-high { background: #fef2f2; color: #dc2626; }
+  .tag-medium { background: #fffbeb; color: #d97706; }
+  .tag-now { background: #ecfdf5; color: #059669; }
+
+  .rec-card ul { padding-left: 1.25rem; margin-top: 0.5rem; }
+  .rec-card li { margin-bottom: 0.3rem; font-size: 0.9rem; }
+
+  /* Market */
+  .insight-box {
+    background: var(--pink-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .insight-box.blue { background: var(--blue-bg); }
+  .insight-box.green { background: var(--green-bg); }
+  .insight-box.orange { background: var(--orange-bg); }
+
+  .insight-box h4 { font-size: 0.9rem; margin-bottom: 0.5rem; }
+  .insight-box p { font-size: 0.85rem; color: var(--gray-700); }
+
+  .flywheel {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-top: 1.5rem;
+  }
+
+  .flywheel h3 { margin-bottom: 1.5rem; }
+
+  .flywheel-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .fw-step {
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .fw-arrow { font-size: 1.2rem; color: var(--gray-300); }
+
+  @media (max-width: 768px) {
+    .chart-row { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .rank-card { flex-direction: column; }
+    .flywheel-steps { flex-direction: column; }
+    .fw-arrow { transform: rotate(90deg); }
+  }
+
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--gray-500);
+    font-size: 0.75rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>MoMo Business Potential Assessment</h1>
+  <p>2023-2025 Data Analysis & 2026-2027 Strategic Recommendations | Feb 28, 2026</p>
+  <div class="nav">
+    <button class="active" onclick="showSection('overview')">Overview</button>
+    <button onclick="showSection('vaynhanh')">Vay Nhanh</button>
+    <button onclick="showSection('paylater')">Paylater</button>
+    <button onclick="showSection('p2p')">P2P Revenue</button>
+    <button onclick="showSection('ttt')">Tui Than Tai</button>
+    <button onclick="showSection('ranking')">Potential Ranking</button>
+    <button onclick="showSection('market')">Market Research</button>
+    <button onclick="showSection('recommendations')">2026-27 Strategy</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OVERVIEW -->
+  <div id="overview" class="section active">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Vay Nhanh Disbursed 2025</div>
+        <div class="kpi-value">24.2T</div>
+        <div class="kpi-change up">+307% vs 2024 (5.95T)</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Paylater MAU (Dec 2025)</div>
+        <div class="kpi-value">1.44M</div>
+        <div class="kpi-change up">+44% vs Dec 2024 (996K)</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">TTT Users (Q4 2025)</div>
+        <div class="kpi-value">11.3M</div>
+        <div class="kpi-change up">+14.5% in-year</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">P2P Revenue 2025</div>
+        <div class="kpi-value">529B</div>
+        <div class="kpi-change down">-25% vs 2024 (705B)</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Revenue Engine Shift: Lending vs Payments (2023-2025)</h3>
+        <canvas id="overviewChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>User Growth Across Products (Yearly Unique Users)</h3>
+        <canvas id="userGrowthChart"></canvas>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h4>Key Insight</h4>
+      <p>MoMo's profit engine has decisively shifted from payments to lending. Vay Nhanh disbursed 24.2T VND in 2025 (7.6x vs 2023), while P2P revenue declined 25%. The strategic imperative is clear: scale lending, build insurance, and treat payments as an infrastructure/data layer.</p>
+    </div>
+  </div>
+
+  <!-- VAY NHANH -->
+  <div id="vaynhanh" class="section">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">2025 Total Disbursed</div>
+        <div class="kpi-value">24.2T</div>
+        <div class="kpi-change up">7.6x vs 2023</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Unique Borrowers 2025</div>
+        <div class="kpi-value">909K</div>
+        <div class="kpi-change up">+108% vs 2024</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">Avg Loan Size 2025</div>
+        <div class="kpi-value">15.5M</div>
+        <div class="kpi-change up">+65% vs 2023 (9.4M)</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">Re-Loan Share 2025</div>
+        <div class="kpi-value">70%</div>
+        <div class="kpi-change up">Strong repeat usage</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Monthly Disbursement Trend (VND)</h3>
+        <canvas id="vnMonthlyChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Lender Breakdown 2025 (Disbursed VND)</h3>
+        <canvas id="vnLenderChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>New vs Re-Loan Borrowers by Year</h3>
+        <canvas id="vnNewReloanChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Key Metrics by Year</h3>
+        <table class="data-table">
+          <thead><tr><th>Metric</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+          <tbody>
+            <tr><td>Total Disbursed</td><td>3.2T</td><td>5.95T</td><td><strong>24.2T</strong></td></tr>
+            <tr><td>Borrowers</td><td>281K</td><td>436K</td><td><strong>909K</strong></td></tr>
+            <tr><td>Loans</td><td>341K</td><td>563K</td><td><strong>1.56M</strong></td></tr>
+            <tr><td>Avg Loan</td><td>9.4M</td><td>10.6M</td><td><strong>15.5M</strong></td></tr>
+            <tr><td>Avg Credit Score</td><td>762</td><td>705</td><td><strong>670</strong></td></tr>
+            <tr><td>User Penetration</td><td>~1%</td><td>~1.4%</td><td><strong>~3%</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h4>Risk Signal: Credit Score Declining</h4>
+      <p>Avg credit score dropped from 762 (2023) to 670 (2025) as MoMo expands into underbanked segments. While this opens a massive TAM, NPL monitoring and AI-powered risk scoring are critical before further expansion.</p>
+    </div>
+  </div>
+
+  <!-- PAYLATER -->
+  <div id="paylater" class="section">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Dec 2025 MAU</div>
+        <div class="kpi-value">1.44M</div>
+        <div class="kpi-change up">+44% vs Dec 2024</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">2025 Unique Users</div>
+        <div class="kpi-value">2.49M</div>
+        <div class="kpi-change up">+41% vs 2024</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">New Users 2025</div>
+        <div class="kpi-value">1.15M</div>
+        <div class="kpi-change up">+51% vs 2024</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">Cross-sell to VN</div>
+        <div class="kpi-value">55.5%</div>
+        <div class="kpi-change up">of Vay Nhanh borrowers came from PL</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Monthly MAU Trend (2023-2025)</h3>
+        <canvas id="plMauChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Top Usecases by Users (2025)</h3>
+        <canvas id="plUsecaseChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Usecase Growth 2023 vs 2025</h3>
+        <canvas id="plUsecaseGrowthChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Quarterly Average MAU</h3>
+        <canvas id="plQuarterlyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- P2P REVENUE -->
+  <div id="p2p" class="section">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">2025 Revenue</div>
+        <div class="kpi-value">529B</div>
+        <div class="kpi-change down">-25% vs 2024 (705B)</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">2025 Txn Volume</div>
+        <div class="kpi-value">1.29B</div>
+        <div class="kpi-change up">+14% vs 2024</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">2025 Txn Value</div>
+        <div class="kpi-value">501T</div>
+        <div class="kpi-change up">+14% vs 2024</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">Paid Users 2025</div>
+        <div class="kpi-value">2.1M</div>
+        <div class="kpi-change down">-16% vs 2024 (2.5M)</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Monthly Revenue Trend (VND Billions)</h3>
+        <canvas id="p2pRevenueChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Revenue vs Volume Divergence</h3>
+        <canvas id="p2pDivergenceChart"></canvas>
+      </div>
+    </div>
+
+    <div class="insight-box orange">
+      <h4>Revenue-Volume Divergence</h4>
+      <p>P2P transaction volume grew 44% (2023-2025) but revenue declined 25%. This is fee compression from free VietQR transfers via banking apps. P2P is now an infrastructure/retention layer, not a profit center. Monetize through data and cross-sell instead.</p>
+    </div>
+  </div>
+
+  <!-- TTT -->
+  <div id="ttt" class="section">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Q4 2025 Users</div>
+        <div class="kpi-value">11.3M</div>
+        <div class="kpi-change up">+14.5% in-year</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Q4 2025 AUM</div>
+        <div class="kpi-value">9.8T</div>
+        <div class="kpi-change up">+8.9% in-year</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">AUM per User</div>
+        <div class="kpi-value">866K</div>
+        <div class="kpi-change">VND avg balance</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">Interest Paid Q4</div>
+        <div class="kpi-value">1.03B</div>
+        <div class="kpi-change up">+10.5% vs Q1</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Quarterly Metrics 2025</h3>
+        <canvas id="tttChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>AUM Growth (Quarterly)</h3>
+        <canvas id="tttAumChart"></canvas>
+      </div>
+    </div>
+
+    <div class="insight-box green">
+      <h4>Strategic Value: Ecosystem Glue</h4>
+      <p>11.3M users make TTT MoMo's largest financial product. AUM per user is small (866K VND) but the habit of daily saving keeps users in the ecosystem. This is the source-of-funds layer: TTT savings → Paylater spending → Vay Nhanh borrowing. Upgrading to wealth management (mutual funds, robo-advisory) is the next step.</p>
+    </div>
+  </div>
+
+  <!-- RANKING -->
+  <div id="ranking" class="section">
+    <h2 style="margin-bottom:1rem;font-size:1.25rem;">Business Potential Ranking (2026-2027)</h2>
+
+    <div class="rank-card">
+      <div class="rank-badge rank-1">#1</div>
+      <div class="rank-content">
+        <h3>Vay Nhanh (Digital Lending)</h3>
+        <div class="subtitle">Highest growth + highest revenue potential</div>
+        <div class="stats">
+          <div class="stat"><strong>24.2T VND</strong>2025 disbursed</div>
+          <div class="stat"><strong>7.6x</strong>growth in 2 years</div>
+          <div class="stat"><strong>3%</strong>user penetration (huge runway)</div>
+          <div class="stat"><strong>70%</strong>re-loan rate (PMF proven)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rank-card">
+      <div class="rank-badge rank-2">#2</div>
+      <div class="rank-content">
+        <h3>Paylater (BNPL)</h3>
+        <div class="subtitle">Gateway to financial services, feeds Vay Nhanh</div>
+        <div class="stats">
+          <div class="stat"><strong>2.49M</strong>unique users 2025</div>
+          <div class="stat"><strong>55.5%</strong>Vay Nhanh users came from PL</div>
+          <div class="stat"><strong>36.5%</strong>Vietnam BNPL market growth</div>
+          <div class="stat"><strong>+141%</strong>Logistics usecase growth</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rank-card">
+      <div class="rank-badge rank-3">#3</div>
+      <div class="rank-content">
+        <h3>InsurTech</h3>
+        <div class="subtitle">Blue ocean, fastest CAGR in Vietnam fintech</div>
+        <div class="stats">
+          <div class="stat"><strong>27.24%</strong>CAGR (fastest vertical)</div>
+          <div class="stat"><strong>~3%</strong>insurance penetration (vs 5% SEA)</div>
+          <div class="stat"><strong>+250%</strong>PL Insurance usecase growth</div>
+          <div class="stat"><strong>97%</strong>uninsured population</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rank-card">
+      <div class="rank-badge rank-4">#4</div>
+      <div class="rank-content">
+        <h3>Tui Than Tai (Wealth Management)</h3>
+        <div class="subtitle">Long-term stickiness, ecosystem glue</div>
+        <div class="stats">
+          <div class="stat"><strong>11.3M</strong>users (largest by count)</div>
+          <div class="stat"><strong>9.8T</strong>VND AUM</div>
+          <div class="stat"><strong>3%</strong>mutual fund penetration (upside)</div>
+          <div class="stat"><strong>866K</strong>VND/user (room to grow)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rank-card">
+      <div class="rank-badge rank-5">#5</div>
+      <div class="rank-content">
+        <h3>P2P Payments</h3>
+        <div class="subtitle">Mature infrastructure, not growth driver</div>
+        <div class="stats">
+          <div class="stat"><strong>1.29B</strong>txns (growing)</div>
+          <div class="stat"><strong>529B</strong>revenue (declining)</div>
+          <div class="stat"><strong>501T</strong>VND volume</div>
+          <div class="stat"><strong>-25%</strong>revenue drop (fee compression)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKET -->
+  <div id="market" class="section">
+    <h2 style="margin-bottom:1rem;font-size:1.25rem;">Vietnamese Market Context</h2>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Digital Economy 2025</div>
+        <div class="kpi-value">$39B</div>
+        <div class="kpi-change up">+17% YoY, 18.3% of GDP</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">BNPL Market 2025</div>
+        <div class="kpi-value">$2.61B</div>
+        <div class="kpi-change up">+36.5% YoY</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">QR Payment Growth</div>
+        <div class="kpi-value">+107%</div>
+        <div class="kpi-change up">Volume YoY 2024</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">AI Daily Users</div>
+        <div class="kpi-value">81%</div>
+        <div class="kpi-change up">#1 in Southeast Asia</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Competitive Landscape</h3>
+        <canvas id="marketShareChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Fintech Vertical Growth Rates</h3>
+        <canvas id="verticalGrowthChart"></canvas>
+      </div>
+    </div>
+
+    <h3 style="margin:1.5rem 0 1rem;font-size:1.05rem;">Regulatory Highlights</h3>
+
+    <div class="insight-box blue">
+      <h4>Circular 41/2025 — E-Wallet Rules</h4>
+      <p>VND 100M/month transaction cap per wallet. Biometric KYC mandatory. Single brand per provider from Jan 2026. Consolidates market around licensed players.</p>
+    </div>
+
+    <div class="insight-box green">
+      <h4>BNPL Regulation — Coming 2025-2026</h4>
+      <p>Mandatory disclosures, late-fee caps, eligibility checks expected. Will legitimize market and eliminate undisciplined competitors. Favors MoMo.</p>
+    </div>
+
+    <div class="insight-box orange">
+      <h4>Cross-Border QR — Expanding</h4>
+      <p>Vietnam-China QR live Dec 2025. Korea, Japan in pipeline. NAPAS interoperability opens tourist payment revenue. 30,000+ merchants expected by end 2025.</p>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div id="recommendations" class="section">
+    <h2 style="margin-bottom:1rem;font-size:1.25rem;">Strategic Recommendations for 2026-2027</h2>
+
+    <div class="rec-card" style="border-left-color:#f59e0b;">
+      <h3>1. Scale Vay Nhanh Aggressively (with Risk Management)</h3>
+      <span class="tag tag-high">HIGH PRIORITY</span>
+      <span class="tag tag-now">ACT NOW</span>
+      <p style="margin:0.5rem 0;font-size:0.9rem;color:var(--gray-700);">Target: 3% &rarr; 8-10% user penetration = 2.5-3M borrowers</p>
+      <ul>
+        <li>Add more lender partners beyond Viet Credit/Amber/MCredit</li>
+        <li>Build proprietary credit scoring using Paylater + TTT + P2P data</li>
+        <li>Graduated products: Paylater &rarr; Vay Nhanh &rarr; Bank partner loans</li>
+        <li><strong>Critical:</strong> Build AI NPL prediction before expanding (credit score at 670)</li>
+      </ul>
+    </div>
+
+    <div class="rec-card" style="border-left-color:var(--blue);">
+      <h3>2. Build InsurTech as Next Revenue Pillar</h3>
+      <span class="tag tag-high">HIGH PRIORITY</span>
+      <span class="tag tag-medium">BUILD 2026</span>
+      <p style="margin:0.5rem 0;font-size:0.9rem;color:var(--gray-700);">Target: 500K+ policies by end 2027</p>
+      <ul>
+        <li>Embed micro-insurance into flows: travel at OTA, phone at App Store, health at BNPL</li>
+        <li>Target 2.49M Paylater users (already comfortable with MoMo financial products)</li>
+        <li>Partner 3-4 carriers for white-label, risk-sharing models</li>
+        <li>AI-personalized offers based on transaction patterns</li>
+      </ul>
+    </div>
+
+    <div class="rec-card" style="border-left-color:var(--green);">
+      <h3>3. Accept P2P Revenue Decline, Monetize Data</h3>
+      <span class="tag tag-medium">STRATEGIC SHIFT</span>
+      <ul>
+        <li>Stop fee extraction from P2P (market moved to free VietQR)</li>
+        <li>Use P2P data for: credit scoring, merchant patterns, product triggers</li>
+        <li>Focus QR on merchant acquisition (Tier-2/3 SMEs)</li>
+        <li>Invest in cross-border QR (Vietnam-China tourist corridor)</li>
+      </ul>
+    </div>
+
+    <div class="rec-card" style="border-left-color:#8b5cf6;">
+      <h3>4. Upgrade TTT to Wealth Management Platform</h3>
+      <span class="tag tag-medium">MEDIUM PRIORITY</span>
+      <p style="margin:0.5rem 0;font-size:0.9rem;color:var(--gray-700);">Target: AUM/user from 866K &rarr; 2-3M VND</p>
+      <ul>
+        <li>Add mutual fund distribution + structured deposits</li>
+        <li>AI robo-advisory for personalized savings goals</li>
+        <li>Tui+ upsell for higher AUM + cross-product engagement</li>
+      </ul>
+    </div>
+
+    <div class="rec-card" style="border-left-color:var(--pink);">
+      <h3>5. AI as the Strategic Moat</h3>
+      <span class="tag tag-high">FOUNDATIONAL</span>
+      <span class="tag tag-now">ACT NOW</span>
+      <ul>
+        <li><strong>Credit AI:</strong> Proprietary scoring on ecosystem data (PL + TTT + P2P + merchants)</li>
+        <li><strong>Product AI:</strong> Right product, right moment (flight search &rarr; travel insurance)</li>
+        <li><strong>Moni AI:</strong> Financial advisor chatbot (290K MAU, 479K conversations/mo)</li>
+        <li><strong>Fraud AI:</strong> 375M txns/month — detection at scale</li>
+      </ul>
+    </div>
+
+    <div class="flywheel">
+      <h3>The MoMo Flywheel</h3>
+      <div class="flywheel-steps">
+        <div class="fw-step" style="background:var(--gray-500);">P2P Payments<br><small>retention + data</small></div>
+        <div class="fw-arrow">&rarr;</div>
+        <div class="fw-step" style="background:var(--pink);">Paylater<br><small>2.49M users</small></div>
+        <div class="fw-arrow">&rarr;</div>
+        <div class="fw-step" style="background:#f59e0b;">Vay Nhanh<br><small>24.2T VND/yr</small></div>
+        <div class="fw-arrow">&rarr;</div>
+        <div class="fw-step" style="background:var(--blue);">Insurance<br><small>CAGR 27%</small></div>
+        <div class="fw-arrow">&rarr;</div>
+        <div class="fw-step" style="background:var(--green);">TTT/Wealth<br><small>11.3M users</small></div>
+        <div class="fw-arrow">&rarr;</div>
+        <div class="fw-step" style="background:#8b5cf6;">AI Moat<br><small>31M users data</small></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  MoMo Business Potential Assessment | Data: BigQuery (BU_FI, MBI_DA) + Market Research | Feb 28, 2026
+</div>
+
+<script>
+// Navigation
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+const pink = '#ae2070';
+const pinkLight = '#d44a9a';
+const green = '#10b981';
+const blue = '#3b82f6';
+const orange = '#f59e0b';
+const gray = '#9ca3af';
+
+// OVERVIEW CHARTS
+new Chart(document.getElementById('overviewChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2023', '2024', '2025'],
+    datasets: [
+      { label: 'Vay Nhanh Disbursed (T VND)', data: [3.2, 5.95, 24.2], backgroundColor: orange },
+      { label: 'P2P Revenue (B VND)', data: [0.518, 0.705, 0.529], backgroundColor: gray },
+    ]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+});
+
+new Chart(document.getElementById('userGrowthChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2023', '2024', '2025'],
+    datasets: [
+      { label: 'Paylater Users (M)', data: [1.4, 1.76, 2.49], backgroundColor: pink },
+      { label: 'Vay Nhanh Borrowers (M)', data: [0.281, 0.436, 0.909], backgroundColor: orange },
+      { label: 'P2P Users (M)', data: [12.1, 12.1, 11.9], backgroundColor: blue },
+    ]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// VAY NHANH CHARTS
+new Chart(document.getElementById('vnMonthlyChart'), {
+  type: 'line',
+  data: {
+    labels: ['J23','F','M','A','M','J','J','A','S','O','N','D','J24','F','M','A','M','','J','A','S','O','N','D','J25','F','M','A','M','J','J','A','S','O','N','D'],
+    datasets: [{
+      label: 'Monthly Disbursement (B VND)',
+      data: [135,214,143,215,129,320,268,255,357,406,346,418,454,345,463,342,35,null,513,577,620,770,853,978,1163,966,1268,1335,1456,2173,2134,2238,2458,2949,2911,3129],
+      borderColor: orange,
+      backgroundColor: 'rgba(245,158,11,0.1)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 2,
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+});
+
+new Chart(document.getElementById('vnLenderChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Viet Credit (15.7T)', 'MCredit (5.1T)', 'Amber (3.4T)'],
+    datasets: [{ data: [15.7, 5.1, 3.4], backgroundColor: [orange, pink, blue] }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+new Chart(document.getElementById('vnNewReloanChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2023', '2024', '2025'],
+    datasets: [
+      { label: 'First Loan (T VND)', data: [2.03, 2.9, 7.35], backgroundColor: blue },
+      { label: 'Re-Loan (T VND)', data: [1.18, 3.05, 16.83], backgroundColor: orange },
+    ]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true } } }
+});
+
+// PAYLATER CHARTS
+new Chart(document.getElementById('plMauChart'), {
+  type: 'line',
+  data: {
+    labels: ['J23','F','M','A','M','J','J','A','S','O','N','D','J24','F','M','A','M','J','J','A','S','O','N','D','J25','F','M','A','M','J','J','A','S','O','N','D'],
+    datasets: [{
+      label: 'Monthly MAU',
+      data: [507,502,530,534,562,597,612,631,634,651,667,682,693,659,729,733,761,782,797,826,851,886,921,996,989,971,1043,1072,1108,1166,1211,1257,1276,1314,1378,1437],
+      borderColor: pink,
+      backgroundColor: 'rgba(174,32,112,0.1)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 2,
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, ticks: { callback: v => (v/1000).toFixed(0)+'K' } } } }
+});
+
+new Chart(document.getElementById('plUsecaseChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Airtime','Utilities','App Store','Logistics','Marketplace','Data','Retail','SME Offline','Cinema','Insurance'],
+    datasets: [{ data: [1116,881,674,594,644,482,401,397,201,47], backgroundColor: pink }]
+  },
+  options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { callback: v => (v/1000).toFixed(0)+'K' } } } }
+});
+
+new Chart(document.getElementById('plUsecaseGrowthChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Insurance','Data','Logistics','Cinema','Utilities','App Store','Airtime','Marketplace','Retail'],
+    datasets: [{ label: 'Growth % (2023→2025)', data: [250,184,141,117,106,109,69,69,17], backgroundColor: [pink,pink,pink,blue,blue,blue,gray,gray,gray] }]
+  },
+  options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('plQuarterlyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Q1-23','Q2','Q3','Q4','Q1-24','Q2','Q3','Q4','Q1-25','Q2','Q3','Q4'],
+    datasets: [{ label: 'Avg Monthly MAU', data: [513,564,626,667,694,759,825,934,1001,1115,1248,1376], backgroundColor: pink }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => (v/1000).toFixed(0)+'K' } } } }
+});
+
+// P2P CHARTS
+new Chart(document.getElementById('p2pRevenueChart'), {
+  type: 'line',
+  data: {
+    labels: ['J23','F','M','A','M','J','J','A','S','O','N','D','J24','F','M','A','M','J','J','A','S','O','N','D','J25','F','M','A','M','J','J','A','S','O','N','D'],
+    datasets: [{
+      label: 'Monthly Revenue (B VND)',
+      data: [41,33,41,40,40,40,39,41,41,55,53,55,54,54,56,54,57,62,68,67,58,60,57,57,53,45,50,36,33,35,40,45,48,47,46,50],
+      borderColor: blue,
+      backgroundColor: 'rgba(59,130,246,0.1)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 2,
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('p2pDivergenceChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2023', '2024', '2025'],
+    datasets: [
+      { label: 'Txn Volume (B)', data: [0.897, 1.135, 1.293], backgroundColor: green, yAxisID: 'y' },
+      { label: 'Revenue (B VND)', data: [518, 705, 529], backgroundColor: 'rgba(239,68,68,0.7)', yAxisID: 'y1' },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: {
+      y: { position: 'left', title: { display: true, text: 'Txn Volume (B)' } },
+      y1: { position: 'right', title: { display: true, text: 'Revenue (B VND)' }, grid: { drawOnChartArea: false } }
+    }
+  }
+});
+
+// TTT CHARTS
+new Chart(document.getElementById('tttChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'],
+    datasets: [
+      { label: 'Users (M)', data: [9.9, 10.3, 10.8, 11.3], backgroundColor: green, yAxisID: 'y' },
+      { label: 'Interest (B VND)', data: [0.93, 0.98, 1.02, 1.03], backgroundColor: orange, yAxisID: 'y1' },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: {
+      y: { position: 'left', title: { display: true, text: 'Users (M)' } },
+      y1: { position: 'right', title: { display: true, text: 'Interest (B)' }, grid: { drawOnChartArea: false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('tttAumChart'), {
+  type: 'line',
+  data: {
+    labels: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'],
+    datasets: [{
+      label: 'AUM (T VND)',
+      data: [8.97, 9.48, 9.61, 9.80],
+      borderColor: green,
+      backgroundColor: 'rgba(16,185,129,0.1)',
+      fill: true,
+      tension: 0.3,
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+// MARKET CHARTS
+new Chart(document.getElementById('marketShareChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['MoMo (56%)', 'ZaloPay (23%)', 'VNPay (15%)', 'Others (6%)'],
+    datasets: [{ data: [56, 23, 15, 6], backgroundColor: [pink, blue, green, gray] }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+new Chart(document.getElementById('verticalGrowthChart'), {
+  type: 'bar',
+  data: {
+    labels: ['InsurTech', 'BNPL', 'Digital Economy', 'Alt Lending', 'E-Wallet', 'QR Payments*'],
+    datasets: [{ label: 'CAGR / Annual Growth %', data: [27.2, 26.7, 17, 13.8, 13.9, 107], backgroundColor: [blue, pink, green, orange, gray, '#8b5cf6'] }]
+  },
+  options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+# ── Credentials & Secrets ──
+.env
+.env.*
+**/application_default_credentials.json
+**/service-account*.json
+
+# ── OS / Editor ──
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# ── Playwright MCP (logs, screenshots) ──
+.playwright-mcp/
+
+# ── Node.js (experiments/caro-game) ──
+node_modules/
+.next/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# ── Sensitive / internal data ──
+data/ai-do-not-read-DONT-EVER/
+
+# ── Build artifacts ──
+dist/
+build/
+*.log
