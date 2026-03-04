@@ -1,0 +1,9 @@
+SELECT TYPEID, COUNT(*) AS orders, MIN(TRANS_DATE) AS first_order
+FROM `momovn-prod.BU_FI.att_fi_ins_nl_ver2`
+WHERE CC_STATUS='SUCCESS'
+  AND TRANS_DATE BETWEEN '2026-02-01' AND '2026-02-28'
+  AND TYPEID IS NOT NULL
+  AND TYPEID != ''
+GROUP BY 1
+ORDER BY first_order, orders DESC
+LIMIT 15
