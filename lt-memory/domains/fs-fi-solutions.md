@@ -1,122 +1,15 @@
-# Domain: BU FS: FI Solutions
+# BU FS: FI Solutions
 
-## Identity
-- **Domain ID:** `5cd09ae2-90b8-4102-a717-0ae6f649ff69`
-- **Description:** Data về traffic và giải ngân của sản phẩm CLO và giao dịch thanh toán khoản vay, thanh toán thẻ tín dụng
-- **Tables:** 3
-- **Metadata fetched:** 2026-02-25
+**Domain ID:** `5cd09ae2-90b8-4102-a717-0ae6f649ff69`
+**Last refreshed:** 2026-03-03
 
-## Tables & Columns
+## Description
+Data về traffic và giải ngân của sản phẩm CLO và giao dịch thanh toán khoản vay, thanh toán thẻ tín dụng
 
-### momovn-prod.BU_FI.FIS_CLO_TRAFFIC_FLOW
-> <p>Bảng lưu thông tin user truy cập vào sản phẩm CLO theo từng nguồn</p>
-
-| Column | Description | Examples |
-|--------|-------------|----------|
-| SOURCE | <p>nguồn dẫn user tới truy cập sản phẩm</p> | — |
-| VALUE | <p>đối tác của sản phẩm:</p><ul class="om-list-disc"><li class="om-leading-normal"><p>'clo_fecredit' : FE CREDIT</p></li><li class="om-leading-normal"... | — |
-| ETL_DATE | <p>ngày người dùng truy cập</p> | — |
-| MOMO_SESSION_ID_V2 | <p>định danh cho lượt truy cập của người dùng</p> | — |
-| AGENT_ID | <p>định danh mã người dùng</p> | — |
-
-### momovn-prod.BU_FI.FI_TRANS
-> <p>Bảng chứa thông tin các giao dịch liên quan tới dịch vụ tài chính: thu chi hộ, thanh toán khoản vay, thanh toán thẻ tín dụng....</p>
-
-| Column | Description | Examples |
-|--------|-------------|----------|
-| ID | <p>tid / mã định danh của giao dịch</p> | — |
-| DATE_PARTITION | <p>Thời điểm update cuối cùng của giao dịch.</p><p>Lưu ý, luôn chuyển về múi giờ UTC +7 khi sử dụng cột này</p> | — |
-| _DATE_PARTITION | <p>Thời điểm update cuối cùng của giao dịch.</p><p>Lưu ý, luôn chuyển về múi giờ UTC +7 khi sử dụng cột này</p> | — |
-| FUNDID | <p>Nguồn tiền của giao dịch:</p><p>1      Nguồn tiền momo</p><p>2	Nguồn tiền ngân hàng liên kết</p><p>3	Nguồn tiền napas</p><p>4	Nguồn tiền visa debit... | — |
-| SERVICE_CODE | <p>Dịch vụ của giao dịch<br></p> | — |
-| USER_PAYMENT | <p>Agent_id thực hiện giao dịch	</p> | — |
-| DEBITOR | <p>bỏ qua cột này</p> | — |
-| CREDITOR | <p>bỏ qua cột này</p> | — |
-| INITIATOR | <p>bỏ qua cột này</p> | — |
-| TRANS_TYPE | <p>Loại giao dịch</p> | — |
-| EWALLET_TYPEID | <p>bỏ qua cột này</p> | — |
-| STATUSID | <p>Trạng thái giao dịch (2 là thành công, 6 là thất bại)	</p><p>nếu user không đề cập gì tới trạng thái giao dịch thì luôn mặc định hiểu là giao dịch ... | — |
-| AMOUNT | <p>Số tiền của giao dịch</p> | — |
-| PARENTID | <p>bỏ qua cột này</p> | — |
-| AGENT_CREDIT | <p>Agentid của tài khoản được cộng tiền	</p> | — |
-| AGENT_DEBIT | <p>Agentid của tài khoản bị trừ tiền	</p> | — |
-| RESULT | <p>Mã lỗi của core	</p> | — |
-| TOTAL_AMOUNT | <p>Tổng giá trị bill (không tính chiết khấu)	</p> | — |
-| MM_AMOUNT | <p>Số tiền thực trả của user</p> | — |
-| VC_AMOUNT | <p>Số tiền được giảm trừ từ voucher	</p> | — |
-| FEE | <p>Số tiền thu phí dịch vụ	</p> | — |
-| SERVICE_GROUP | <p>ID của nhóm dịch vụ của giao dịch:</p><p>1 : dịch vụ thanh toán</p><p>2: dịch vụ chuyển tiền</p><p>3: nộp tiền từ bank vào ví momo</p><p>4: rút tiề... | — |
-| USER_TYPE_NAME | <p>bỏ qua cột này</p> | — |
-| DATE_TRANS | <p>ngày thực hiện giao dịch</p> | — |
-| BU_GROUP_CODE_L1 | <p>nhóm dịch vụ l1</p><p>luôn where cột này = 'PAYMENT'</p> | — |
-| BU_GROUP_CODE_L2 | <p>nhóm dịch vụ level 2:</p><p>hãy where cột này = 'LOAN COLLECTION' với giao dịch thanh toán khoản vay.</p><p>hãy where cột này = 'CREDIT CARD COLLEC... | — |
-| BU_GROUP_CODE_L3 | <p>nhóm dịch vụ level 3:</p><ul class="om-list-disc"><li class="om-leading-normal"><p>FM: giao dịch liên quan tới sản phẩm vay nhanh</p></li><li class... | — |
-| BU_GROUP_CODE_L4 | <p>nhóm dịch vụ level 4:</p><ul class="om-list-disc"><li class="om-leading-normal"><p>'COLLECTION' : nhóm dịch vụ thu hộ</p></li><li class="om-leading... | — |
-| BU_NAME | <p>bỏ qua cột này</p> | — |
-| MERCHANT | <p>tên đối tác</p> | — |
-| SERVICE_DESCRIPTION | <p>mô tả cụ thể cho dịch vụ</p> | — |
-| BILLID | <p>mã hợp đồng liên quan tới dịch vụ thanh toán </p> | — |
-| TYPEID |  | — |
-| ERROR_NAME | <p>bỏ qua cột này</p> | — |
-| ERROR_NAME_DETAIL | <p>bỏ qua cột này</p> | — |
-| SERVICEID |  | — |
-| TIME_TRANS |  | — |
-| MONEY_SOURCE |  | — |
-| TYPE |  | — |
-| HOUR_TRANS |  | — |
-| PAYMENT_CHANNEL |  | — |
-| CB_AMOUNT |  | — |
-| BILL_AMOUNT |  | — |
-| BILL_DUE |  | — |
-| D_DIFF |  | — |
-| REPAY_TYPE |  | — |
-
-### momovn-prod.BU_FI.FIS_TCST
-> <p>Đây là bảng chứa dữ liệu của sản phẩm CLO. Trong bảng này chứa thông tin về trạng thái của ticket, số tiền giải ngân và doanh thu.</p>
-
-| Column | Description | Examples |
-|--------|-------------|----------|
-| TICKET_ID | Desc: Mã định danh cho mỗi yêu cầu hoặc giao dịch. Sample value: ['116472', '116487', '116520'] | — |
-| USER | Desc: Người dùng thực hiện yêu cầu hoặc giao dịch. Sample value: ['25136673', '36677566', '36940788'] | — |
-| PARTNER_ID | <p>Desc: Mã định danh của đối tác liên quan đến yêu cầu hoặc giao dịch.<br>Sample value: ['lending_mp_homecredit']</p><p>định nghĩa :<br>lending_mp_ho... | — |
-| FAILED_TIMES | Desc: Số lần yêu cầu hoặc giao dịch thất bại. Sample value: ['nan'] | — |
-| STATUS_CODE | Desc: Mã trạng thái của yêu cầu hoặc giao dịch. Sample value: ['PRE_CHECK'] | — |
-| DATE_REQUESTED | Desc: Ngày yêu cầu được thực hiện. Sample value: ['2022-11-24'] | — |
-| DATETIME_REQUESTED | Desc: Thời điểm yêu cầu được thực hiện. Sample value: ['2022-11-24 00:30:11', '2022-11-24 00:47:15', '2022-11-24 01:39:53'] | — |
-| DATE_MODIFIED | Ngày cập nhật trạng thái mới nhất của ticket. Nếu lấy theo trạng thái giải ngân thì dùng cột này | — |
-| DATETIME_MODIFIED | Ngày giờ trạng thái mới nhất của ticket | — |
-| DATETIME_EXPIRED | **Desc**: Thời điểm yêu cầu hoặc giao dịch được đẩy đi. | — |
-| DATETIME_PUSHED | Desc: Thời điểm yêu cầu hoặc giao dịch được đẩy đi. | — |
-| SCORING_CODE | Desc: Mã điểm số liên quan đến yêu cầu hoặc giao dịch. | — |
-| CORE_ID | Desc: Mã định danh của giao dịch, tương ứng với mã định danh của table core_trans | — |
-| OFFER_ID | Desc: Mã định danh của đề nghị liên quan đến yêu cầu hoặc giao dịch. | — |
-| ONBOARDING_APPLICATION_ID | Desc: Mã định danh của ứng dụng onboarding liên quan đến yêu cầu hoặc giao dịch. | — |
-| ONBOARDING_APPLICATION_STATUS | Desc: Trạng thái của ứng dụng onboarding liên quan đến yêu cầu hoặc giao dịch. | — |
-| CONTRACT_ID | Desc: Mã định danh của hợp đồng liên quan đến yêu cầu hoặc giao dịch. | — |
-| CONTRACT_NAME | Desc: Tên của hợp đồng liên quan đến yêu cầu hoặc giao dịch. | — |
-| CONTRACT_AMOUNT | <p>Desc: Số tiền của hợp đồng liên quan đến yêu cầu hoặc giao dịch.<br>hãy dùng cột này để tính số giải ngân/disbursed</p> | — |
-| MINIMAL_CREDIT_AMOUNT | Desc: Số tiền tín dụng tối thiểu liên quan đến yêu cầu hoặc giao dịch. | — |
-| MAXIMAL_CREDIT_AMOUNT | Desc: Số tiền tín dụng tối đa liên quan đến yêu cầu hoặc giao dịch. | — |
-| REQUESTED_CREDIT_AMOUNT | Desc: Số tiền tín dụng được yêu cầu trong giao dịch. | — |
-| APPROVED_CREDIT_AMOUNT | Desc: Số tiền tín dụng được phê duyệt trong giao dịch. | — |
-| DISBURSED_CREDIT_AMOUNT | Desc: Số tiền tín dụng đã được giải ngân trong giao dịch. | — |
-| REVENUE_TEMP | Desc: Doanh thu tạm thời liên quan đến yêu cầu hoặc giao dịch. | — |
-| REVENUE | Desc: Doanh thu thực tế liên quan đến yêu cầu hoặc giao dịch. | — |
-| OFFER_TYPE | Để phân biệt user được giải ngân thuộc ACL hay CLX, chỉ áp dụng cho lending_mp_homecredit | — |
-| SERVICE_TYPE | <p>Để phân biệt dịch vụ CRO hoặc CLO</p><p>luôn có thêm điều kiện cột này = 'CLO' </p> | — |
-
-## Domain Knowledge (from Mimir)
-
-- Số giải ngân (disbursed amount) được tính bằng cột CONTRACT_AMOUNT trong bảng momovn-prod.BU_FI.FIS_TCST.
-- Khi người dùng hỏi về 'home', 'FE', 'CRO', hoặc 'VIB', hãy sử dụng PARTNER_ID tương ứng: 'home' -> 'lending_mp_homecredit', 'FE' -> 'clo_fecredit', 'CRO' -> 'cro_vib', 'VIB' -> 'cro_vib'
-- Khi xử lý vấn đề liên quan tới việc loại trừ user_id, sử dụng điều kiện 'where not exists' thay vì 'user_id NOT IN'
-- Khi truy vấn số liệu giải ngân, luôn thêm điều kiện service_type = 'CLO'
-- Khi tính trung bình CONTRACT_AMOUNT, sử dụng sum(CONTRACT_AMOUNT)/count(distinct ticket_id) thay vì AVG(CONTRACT_AMOUNT)
-- Để tính tổng số tiền giải ngân cho dịch vụ CLO, sử dụng CONTRACT_AMOUNT thay vì DISBURSED_CREDIT_AMOUNT
-- Trong bảng momovn-prod.BU_FI.FIS_CLO_TRAFFIC_FLOW, sử dụng cột VALUE để lọc theo đối tác thay vì PARTNER_ID
-- Khi so sánh lượng application submitted, cần sử dụng status_code bao gồm: 'APPLICATION_CANCELED', 'APPLICATION_REJECTED', 'APPLICATION_APPROVED', 'APPLICATION_RESUBMIT', 'APPLICATION_SUBMITTED', 'DISBURSED', 'CONTRACT_SIGNED', 'RESET'
-- New user = Người dùng mới phát sinh giao dịch lần đầu. Retention user = Người dùng đã từng dùng dịch vụ trước đó và tiếp tục dùng trong tháng này. Reactive user = Người dùng từng dùng trước đây, rớt trong các tháng gần đây, nay quay lại dùng. Churn user = Người dùng ngưng sử dụng trong tháng.
-
-## Suggested Probe Questions
-
-- Status: **Not yet probed**
+## Schema DDL
+```sql
+###Dataset name: BU FS: FI Solutions 
+ ## Table information : {"table_name":"momovn-prod.BU_FI.FIS_CLO_TRAFFIC_FLOW","table_desc":"<p>Bảng lưu thông tin user truy cập vào sản phẩm CLO theo từng nguồn</p>","column_desc":[{"column_name":"SOURCE","description":"<p>nguồn dẫn user tới truy cập sản phẩm</p>","data_type":"STRING"},{"column_name":"VALUE","description":"<p>đối tác của sản phẩm:</p><ul class=\"om-list-disc\"><li class=\"om-leading-normal\"><p>'clo_fecredit' : FE CREDIT</p></li><li class=\"om-leading-normal\"><p>'lending_mp_homecredit': HOME CREDIT</p></li><li class=\"om-leading-normal\"><p>'cro_vib': VIB</p><p><br></p><p><br></p></li></ul><p></p>","data_type":"STRING"},{"column_name":"ETL_DATE","description":"<p>ngày người dùng truy cập</p>","data_type":"DATE"},{"column_name":"MOMO_SESSION_ID_V2","description":"<p>định danh cho lượt truy cập của người dùng</p>","data_type":"STRING"},{"column_name":"AGENT_ID","description":"<p>định danh mã người dùng</p>","data_type":"STRING"}]}
+## Table information : {"table_name":"momovn-prod.BU_FI.FI_TRANS","table_desc":"<p>Bảng chứa thông tin các giao dịch liên quan tới dịch vụ tài chính: thu chi hộ, thanh toán khoản vay, thanh toán thẻ tín dụng....</p>","column_desc":[{"column_name":"ID","description":"<p>tid / mã định danh của giao dịch</p>","data_type":"INT"},{"column_name":"DATE_PARTITION","description":"<p>Thời điểm update cuối cùng của giao dịch.</p><p>Lưu ý, luôn chuyển về múi giờ UTC +7 khi sử dụng cột này</p>","data_type":"INT"},{"column_name":"_DATE_PARTITION","description":"<p>Thời điểm update cuối cùng của giao dịch.</p><p>Lưu ý, luôn chuyển về múi giờ UTC +7 khi sử dụng cột này</p>","data_type":"TIMESTAMP"},{"column_name":"FUNDID","description":"<p>Nguồn tiền của giao dịch:</p><p>1      Nguồn tiền momo</p><p>2\tNguồn tiền ngân hàng liên kết</p><p>3\tNguồn tiền napas</p><p>4\tNguồn tiền visa debit</p><p>5\tNguồn tiền visa credit</p><p>6\tTúi thần tài</p><p>7\tPaylater</p><p>8\tCashback</p><p>9\tNguồn tiền thẻ visa ảo ccm </p><p>10\tBNPL</p><p>11\tNewton</p><p>12\tDirect Debit</p><p>13\tMoney pool</p><p>14\tVirtual Account </p>","data_type":"FLOAT"},{"column_name":"SERVICE_CODE","description":"<p>Dịch vụ của giao dịch<br></p>","data_type":"STRING"},{"column_name":"USER_PAYMENT","description":"<p>Agent_id thực hiện giao dịch\t</p>","data_type":"FLOAT"},{"column_name":"DEBITOR","description":"<p>bỏ qua cột này</p>","data_type":"STRING"},{"column_name":"CREDITOR","description":"<p>bỏ qua cột này</p>","data_type":"STRING"},{"column_name":"INITIATOR","description":"<p>bỏ qua cột này</p>","data_type":"STRING"},{"column_name":"TRANS_TYPE","description":"<p>Loại giao dịch</p>","data_type":"STRING"},{"column_name":"EWALLET_TYPEID","description":"<p>bỏ qua cột này</p>","data_type":"INT"},{"column_name":"STATUSID","description":"<p>Trạng thái giao dịch (2 là thành công, 6 là thất bại)\t</p><p>nếu user không đề cập gì tới trạng thái giao dịch thì luôn mặc định hiểu là giao dịch thành công </p>","data_type":"INT"},{"column_name":"AMOUNT","description":"<p>Số tiền của giao dịch</p>","data_type":"FLOAT"},{"column_name":"PARENTID","description":"<p>bỏ qua cột này</p>","data_type":"FLOAT"},{"column_name":"AGENT_CREDIT","description":"<p>Agentid của tài khoản được cộng tiền\t</p>","data_type":"FLOAT"},{"column_name":"AGENT_DEBIT","description":"<p>Agentid của tài khoản bị trừ tiền\t</p>","data_type":"FLOAT"},{"column_name":"RESULT","description":"<p>Mã lỗi của core\t</p>","data_type":"FLOAT"},{"column_name":"TOTAL_AMOUNT","description":"<p>Tổng giá trị bill (không tính chiết khấu)\t</p>","data_type":"FLOAT"},{"column_name":"MM_AMOUNT","description":"<p>Số tiền thực trả của user</p>","data_type":"FLOAT"},{"column_name":"VC_AMOUNT","description":"<p>Số tiền được giảm trừ từ voucher\t</p>","data_type":"FLOAT"},{"column_name":"FEE","description":"<p>Số tiền thu phí dịch vụ\t</p>","data_type":"FLOAT"},{"column_name":"SERVICE_GROUP","description":"<p>ID của nhóm dịch vụ của giao dịch:</p><p>1 : dịch vụ thanh toán</p><p>2: dịch vụ chuyển tiền</p><p>3: nộp tiền từ bank vào ví momo</p><p>4: rút tiền từ momo về bank</p><p>10: dịch vụ giải ngân<br></p>","data_type":"FLOAT"},{"column_name":"USER_TYPE_NAME","description":"<p>bỏ qua cột này</p>","data_type":"STRING"},{"column_name":"DATE_TRANS","description":"<p>ngày thực hiện giao dịch</p>","data_type":"DATE"},{"column_name":"BU_GROUP_CODE_L1","description":"<p>nhóm dịch vụ l1</p><p>luôn where cột này = 'PAYMENT'</p>","data_type":"STRING"},{"column_name":"BU_GROUP_CODE_L2","description":"<p>nhóm dịch vụ level 2:</p><p>hãy where cột này = 'LOAN COLLECTION' với giao dịch thanh toán khoản vay.</p><p>hãy where cột này = 'CREDIT CARD COLLECTION' với giao dịch thanh toán thẻ tín dụng.</p><p>hãy where cột này = 'PAYOUT' với giao dịch chi hộ.</p>","data_type":"STRING"},{"column_name":"BU_GROUP_CODE_L3","description":"<p>nhóm dịch vụ level 3:</p><ul class=\"om-list-disc\"><li class=\"om-leading-normal\"><p>FM: giao dịch liên quan tới sản phẩm vay nhanh</p></li><li class=\"om-leading-normal\"><p>BANK: giao dịch liên quan tới các ngân hàng</p></li><li class=\"om-leading-normal\"><p>FINCOS: giao dịch liên quan tới các tổ chức tài chính</p></li><li class=\"om-leading-normal\"><p>OTHERS: giao dịch liên quan tới giấy phép cầm đồ</p><p></p><p><br></p></li></ul><p></p>","data_type":"STRING"},{"column_name":"BU_GROUP_CODE_L4","description":"<p>nhóm dịch vụ level 4:</p><ul class=\"om-list-disc\"><li class=\"om-leading-normal\"><p>'COLLECTION' : nhóm dịch vụ thu hộ</p></li><li class=\"om-leading-normal\"><p>'DISBURSEMENT': nhóm dịch vụ chi hộ</p></li></ul><p></p>","data_type":"STRING"},{"column_name":"BU_NAME","description":"<p>bỏ qua cột này</p>","data_type":"STRING"},{"column_name":"MERCHANT","description":"<p>tên đối tác</p>","data_type":"STRING"},{"column_name":"SERVICE_DESCRIPTION","description":"<p>mô tả cụ thể cho dịch vụ</p>","data_type":"STRING"},{"column_name":"BILLID","description":"<p>mã hợp đồng liên quan tới dịch vụ thanh toán </p>","data_type":"STRING"},{"column_name":"TYPEID","description":"","data_type":"ARRAY"},{"column_name":"ERROR_NAME","description":"<p>bỏ qua cột này</p>","data_type":"STRING"},{"column_name":"ERROR_NAME_DETAIL","description":"<p>bỏ qua cột này</p>","data_type":"STRING"},{"column_name":"SERVICEID","description":"","data_type":"STRING"},{"column_name":"TIME_TRANS","description":"","data_type":"TIME"},{"column_name":"MONEY_SOURCE","description":"","data_type":"STRING"},{"column_name":"TYPE","description":"","data_type":"STRING"},{"column_name":"HOUR_TRANS","description":"","data_type":"INT"},{"column_name":"PAYMENT_CHANNEL","description":"","data_type":"STRING"},{"column_name":"CB_AMOUNT","description":"","data_type":"FLOAT"},{"column_name":"BILL_AMOUNT","description":"","data_type":"FLOAT"},{"column_name":"BILL_DUE","description":"","data_type":"DATE"},{"column_name":"D_DIFF","description":"","data_type":"INT"},{"column_name":"REPAY_TYPE","description":"","data_type":"STRING"}]}
+## Table information : {"table_name":"momovn-prod.BU_FI.FIS_TCST","table_desc":"<p>Đây là bảng chứa dữ liệu của sản phẩm CLO. Trong bảng này chứa thông tin về trạng thái của ticket, số tiền giải ngân và doanh thu.</p>","column_desc":[{"column_name":"TICKET_ID","description":"Desc: Mã định danh cho mỗi yêu cầu hoặc giao dịch.\nSample value: ['116472', '116487', '116520']","data_type":"STRING"},{"column_name":"USER","description":"Desc: Người dùng thực hiện yêu cầu hoặc giao dịch.\nSample value: ['25136673', '36677566', '36940788']","data_type":"STRING"},{"column_name":"PARTNER_ID","description":"<p>Desc: Mã định danh của đối tác liên quan đến yêu cầu hoặc giao dịch.<br>Sample value: ['lending_mp_homecredit']</p><p>định nghĩa :<br>lending_mp_homecredit : Home Credit<br>cro_vib : VIB<br>clo_fecredit: FE CREDIT</p><p>clo_mcredit: MCREDIT</p>","data_type":"STRING"},{"column_name":"FAILED_TIMES","description":"Desc: Số lần yêu cầu hoặc giao dịch thất bại.\nSample value: ['nan']","data_type":"FLOAT"},{"column_name":"STATUS_CODE","description":"Desc: Mã trạng thái của yêu cầu hoặc giao dịch.\nSample value: ['PRE_CHECK']","data_type":"STRING"},{"column_name":"DATE_REQUESTED","description":"Desc: Ngày yêu cầu được thực hiện.\nSample value: ['2022-11-24']","data_type":"DATE"},{"column_name":"DATETIME_REQUESTED","description":"Desc: Thời điểm yêu cầu được thực hiện.\nSample value: ['2022-11-24 00:30:11', '2022-11-24 00:47:15', '2022-11-24 01:39:53']","data_type":"DATETIME"},{"column_name":"DATE_MODIFIED","description":"Ngày cập nhật trạng thái mới nhất của ticket. Nếu lấy theo trạng thái giải ngân thì dùng cột này","data_type":"DATE"},{"column_name":"DATETIME_MODIFIED","description":"Ngày giờ trạng thái mới nhất của ticket","data_type":"DATETIME"},{"column_name":"DATETIME_EXPIRED","description":"**Desc**: Thời điểm yêu cầu hoặc giao dịch được đẩy đi.","data_type":"DATETIME"},{"column_name":"DATETIME_PUSHED","description":"Desc: Thời điểm yêu cầu hoặc giao dịch được đẩy đi.","data_type":"DATETIME"},{"column_name":"SCORING_CODE","description":"Desc: Mã điểm số liên quan đến yêu cầu hoặc giao dịch.","data_type":"STRING"},{"column_name":"CORE_ID","description":"Desc: Mã định danh của giao dịch, tương ứng với mã định danh của table core_trans","data_type":"STRING"},{"column_name":"OFFER_ID","description":"Desc: Mã định danh của đề nghị liên quan đến yêu cầu hoặc giao dịch.","data_type":"STRING"},{"column_name":"ONBOARDING_APPLICATION_ID","description":"Desc: Mã định danh của ứng dụng onboarding liên quan đến yêu cầu hoặc giao dịch.","data_type":"STRING"},{"column_name":"ONBOARDING_APPLICATION_STATUS","description":"Desc: Trạng thái của ứng dụng onboarding liên quan đến yêu cầu hoặc giao dịch.","data_type":"STRING"},{"column_name":"CONTRACT_ID","description":"Desc: Mã định danh của hợp đồng liên quan đến yêu cầu hoặc giao dịch.","data_type":"STRING"},{"column_name":"CONTRACT_NAME","description":"Desc: Tên của hợp đồng liên quan đến yêu cầu hoặc giao dịch.","data_type":"STRING"},{"column_name":"CONTRACT_AMOUNT","description":"<p>Desc: Số tiền của hợp đồng liên quan đến yêu cầu hoặc giao dịch.<br>hãy dùng cột này để tính số giải ngân/disbursed</p>","data_type":"FLOAT"},{"column_name":"MINIMAL_CREDIT_AMOUNT","description":"Desc: Số tiền tín dụng tối thiểu liên quan đến yêu cầu hoặc giao dịch.","data_type":"FLOAT"},{"column_name":"MAXIMAL_CREDIT_AMOUNT","description":"Desc: Số tiền tín dụng tối đa liên quan đến yêu cầu hoặc giao dịch.","data_type":"FLOAT"},{"column_name":"REQUESTED_CREDIT_AMOUNT","description":"Desc: Số tiền tín dụng được yêu cầu trong giao dịch.","data_type":"FLOAT"},{"column_name":"APPROVED_CREDIT_AMOUNT","description":"Desc: Số tiền tín dụng được phê duyệt trong giao dịch.","data_type":"FLOAT"},{"column_name":"DISBURSED_CREDIT_AMOUNT","description":"Desc: Số tiền tín dụng đã được giải ngân trong giao dịch.","data_type":"FLOAT"},{"column_name":"REVENUE_TEMP","description":"Desc: Doanh thu tạm thời liên quan đến yêu cầu hoặc giao dịch.","data_type":"FLOAT"},{"column_name":"REVENUE","description":"Desc: Doanh thu thực tế liên quan đến yêu cầu hoặc giao dịch.","data_type":"FLOAT"},{"column_name":"OFFER_TYPE","description":"Để phân biệt user được giải ngân thuộc ACL hay CLX, chỉ áp dụng cho lending_mp_homecredit","data_type":"STRING"},{"column_name":"SERVICE_TYPE","description":"<p>Để phân biệt dịch vụ CRO hoặc CLO</p><p>luôn có thêm điều kiện cột này = 'CLO' </p>","data_type":"STRING"}]}
+```

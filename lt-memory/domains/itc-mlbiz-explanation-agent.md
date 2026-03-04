@@ -1,45 +1,10 @@
-# Domain: ITC MLBIZ: Explanation Agent
+# ITC MLBIZ: Explanation Agent
 
-## Identity
-- **Domain ID:** `7e533485-3f9d-45d1-b97c-82eb59aa3d01`
-- **Description:** 
-- **Tables:** 1
-- **Metadata fetched:** 2026-02-03
+**Domain ID:** `7e533485-3f9d-45d1-b97c-82eb59aa3d01`
+**Last refreshed:** 2026-03-03
 
-## Tables & Columns
-
-### momovn-dev.PASION.MERCHANT_VTS_OFFER_TRACING_YYYYMMDD
-> Báº£ng momovn-dev.PASION.MERCHANT_VTS_OFFER_TRACING_YYYYMMDD lÆ°u trá»¯ thÃ´ng tin vá» cÃ¡c chÆ°Æ¡ng trÃ¬nh khuyáº¿n mÃ£i VÃ­ Tráº£ Sau (VTS) liÃªn quan Äáº¿n cÃ¡c merchant trong má»t khoáº£ng thá»i gian cá»¥ thá». Báº£ng nÃ y cung cáº¥p dá»¯ liá»u Äá» phÃ¢n tÃ­ch vÃ  theo dÃµi cÃ¡c khuyáº¿n...
-
-| Column | Type | Description | Examples |
-|--------|------|-------------|----------|
-| merchant_code | STRING | MÃ£ Äá»nh danh duy nháº¥t cho má»i merchant. | MOMOLMJL20250520, MOMOSRYL20230522, MOMOD9JS20250301 |
-| merchant_type | STRING | Loáº¡i hÃ¬nh cá»§a merchant. | BPU, P2M, PRE_MERCHANT, AGENT_NETWORK, TOP_BRAND |
-| onboarding_actor | STRING | NgÆ°á»i thá»±c hiá»n onboard cho merchant. | SELF, SALE, COLLABORATOR, ADMIN, PARTNER |
-| onboard_date | DATETIME | NgÃ y merchant ÄÆ°á»£c onboard. | 2022-10-18 11:06:08, 2022-04-22 11:03:01, 2022-04-22 11:03:00 |
-| adhoc_offer_date | STRING | NgÃ y diá»n ra chÆ°Æ¡ng trÃ¬nh khuyáº¿n mÃ£i ad-hoc. | 250712, 250813, 251117 |
-| daily_offer_date | STRING | NgÃ y diá»n ra chÆ°Æ¡ng trÃ¬nh khuyáº¿n mÃ£i hÃ ng ngÃ y. | 251228, 251117, 251119 |
-| offer_source | STRING | Nguá»n gá»c cá»§a chÆ°Æ¡ng trÃ¬nh khuyáº¿n mÃ£i. | no offer, daily offer, adhoc offer, adhoc + daily |
-| soundbox_install_date | DATE | NgÃ y láº¯p Äáº·t Soundbox cho merchant. | 2025-11-15, 2025-12-26, 2025-12-31 |
-| is_blacklisted | STRING | Tráº¡ng thÃ¡i merchant cÃ³ trong danh sÃ¡ch Äen hay khÃ´ng. | no, yes |
-| in_dls_block | INTEGER | Khá»i gá»m nhá»¯ng merchant trong há» thá»ng DLS. | 0, 1 |
-| in_online_offline_block | INTEGER | Khá»i gá»m nhá»¯ng merchant há» trá»£ giao dá»ch online vÃ  offline. | 0, 1 |
-| in_fs_block | INTEGER | Khá»i gá»m cÃ¡c merchant cÃ³ trong há» thá»ng FS. | 0, 1 |
-| in_v2_block | INTEGER | Khá»i gá»m nhá»¯ng merchant há» trá»£ báº£n V2. | 0, 1 |
-| in_sme_bpu_block | INTEGER | Khá»i SME/BPU mÃ  merchant Äang thuá»c vá». | 0, 1 |
-| in_soundbox_risk | INTEGER | Merchant thuá»c diá»n rá»§i ro khi sá»­ dá»¥ng Soundbox. | 0, 1 |
-| in_rm_quasi_list | INTEGER | Merchant náº±m trong danh sÃ¡ch RM quasi. | 0, 1 |
-| paylater_active | BOOLEAN | Tráº¡ng thÃ¡i hoáº¡t Äá»ng cá»§a dá»ch vá»¥ VÃ­ Tráº£ Sau (true: Äang hoáº¡t Äá»ng, false: khÃ... | true, false |
-| ccm_active | BOOLEAN | Tráº¡ng thÃ¡i hoáº¡t Äá»ng cá»§a dá»ch vá»¥ CCM (true: Äang hoáº¡t Äá»ng, false: khÃ´ng hoáº¡t... | false, true |
-| last_updated | TIMESTAMP | Thá»i Äiá»m láº§n cuá»i cÃ¹ng báº£ng dá»¯ liá»u ÄÆ°á»£c cáº­p nháº­t. | 2025-06-13 10:28:48+00, 2025-06-13 10:25:33+00, 2025-06-13 10:32:59+00 |
-
-## Domain Knowledge (from Mimir)
-
-- Merchant MOMOJVUP20251209: BPU merchant, tự onboard và cài đặt soundbox ngày 2025-12-09, không bị blacklist nhưng không được offer VTS vì chưa đạt đủ điểm score theo quy định giai đoạn sau 8.9.2025
-- Merchant MOMOJVUP20251209: BPU merchant, tự onboard và cài đặt soundbox ngày 2025-12-09, không bị blacklist nhưng không được offer VTS vì chưa đạt đủ điểm score theo quy định giai đoạn sau 8.9.2025
-
-## Suggested Probe Questions
-
-- Numeric aggregation possible (has numeric columns)
-- Time-series query possible (has date column)
-- Status: **Not yet probed**
+## Schema DDL
+```sql
+###Dataset name: ITC MLBIZ: Explanation Agent 
+ ## Table information : {"table_name": "momovn-dev.PASION.MERCHANT_VTS_OFFER_TRACING_YYYYMMDD", "table_description": "B\u1ea3ng momovn-dev.PASION.MERCHANT_VTS_OFFER_TRACING_YYYYMMDD l\u01b0u tr\u1eef th\u00f4ng tin v\u1ec1 c\u00e1c ch\u01b0\u01a1ng tr\u00ecnh khuy\u1ebfn m\u00e3i V\u00ed Tr\u1ea3 Sau (VTS) li\u00ean quan \u0111\u1ebfn c\u00e1c merchant trong m\u1ed9t kho\u1ea3ng th\u1eddi gian c\u1ee5 th\u1ec3. B\u1ea3ng n\u00e0y cung c\u1ea5p d\u1eef li\u1ec7u \u0111\u1ec3 ph\u00e2n t\u00edch v\u00e0 theo d\u00f5i c\u00e1c khuy\u1ebfn m\u00e3i VTS bao g\u1ed3m th\u00f4ng tin m\u00e3 merchant, lo\u1ea1i h\u00ecnh merchant, v\u00e0 c\u00e1c ng\u00e0y li\u00ean quan \u0111\u1ebfn onboard v\u00e0 c\u00e0i \u0111\u1eb7t thi\u1ebft b\u1ecb Soundbox.\nTable c\u00f3 c\u1ea5u t\u1ea1o d\u1ea1ng sharding. S\u1eed d\u1ee5ng _TABLE_SUFFIX \u0111\u1ec3 ti\u1ebfn h\u00e0nh truy v\u1ea5n theo ng\u00e0y", "table_columns": [{"column_name": "merchant_code", "mode": "NULLABLE", "data_type": "STRING", "description": "M\u00e3 \u0111\u1ecbnh danh duy nh\u1ea5t cho m\u1ed7i merchant.", "structs": [], "example_data": ["MOMOLMJL20250520", "MOMOSRYL20230522", "MOMOD9JS20250301"]}, {"column_name": "merchant_type", "mode": "NULLABLE", "data_type": "STRING", "description": "Lo\u1ea1i h\u00ecnh c\u1ee7a merchant.", "structs": [], "example_data": ["BPU", "P2M", "PRE_MERCHANT", "AGENT_NETWORK", "TOP_BRAND", "SME", "OTHER", "MINI_APP", "MERCHANT", "DONATION_MERCHANT", "P2SU", "MINI_WEB"]}, {"column_name": "onboarding_actor", "mode": "NULLABLE", "data_type": "STRING", "description": "Ng\u01b0\u1eddi th\u1ef1c hi\u1ec7n onboard cho merchant.", "structs": [], "example_data": ["SELF", "SALE", "COLLABORATOR", "ADMIN", "PARTNER"]}, {"column_name": "onboard_date", "mode": "NULLABLE", "data_type": "DATETIME", "description": "Ng\u00e0y merchant \u0111\u01b0\u1ee3c onboard.", "structs": [], "example_data": ["2022-10-18 11:06:08", "2022-04-22 11:03:01", "2022-04-22 11:03:00"]}, {"column_name": "adhoc_offer_date", "mode": "NULLABLE", "data_type": "STRING", "description": "Ng\u00e0y di\u1ec5n ra ch\u01b0\u01a1ng tr\u00ecnh khuy\u1ebfn m\u00e3i ad-hoc.", "structs": [], "example_data": ["250712", "250813", "251117"]}, {"column_name": "daily_offer_date", "mode": "NULLABLE", "data_type": "STRING", "description": "Ng\u00e0y di\u1ec5n ra ch\u01b0\u01a1ng tr\u00ecnh khuy\u1ebfn m\u00e3i h\u00e0ng ng\u00e0y.", "structs": [], "example_data": ["251228", "251117", "251119"]}, {"column_name": "offer_source", "mode": "NULLABLE", "data_type": "STRING", "description": "Ngu\u1ed3n g\u1ed1c c\u1ee7a ch\u01b0\u01a1ng tr\u00ecnh khuy\u1ebfn m\u00e3i.", "structs": [], "example_data": ["no offer", "daily offer", "adhoc offer", "adhoc + daily"]}, {"column_name": "soundbox_install_date", "mode": "NULLABLE", "data_type": "DATE", "description": "Ng\u00e0y l\u1eafp \u0111\u1eb7t Soundbox cho merchant.", "structs": [], "example_data": ["2025-11-15", "2025-12-26", "2025-12-31"]}, {"column_name": "is_blacklisted", "mode": "NULLABLE", "data_type": "STRING", "description": "Tr\u1ea1ng th\u00e1i merchant c\u00f3 trong danh s\u00e1ch \u0111en hay kh\u00f4ng.", "structs": [], "example_data": ["no", "yes"]}, {"column_name": "in_dls_block", "mode": "NULLABLE", "data_type": "INTEGER", "description": "Kh\u1ed1i g\u1ed3m nh\u1eefng merchant trong h\u1ec7 th\u1ed1ng DLS.", "structs": [], "example_data": ["0", "1"]}, {"column_name": "in_online_offline_block", "mode": "NULLABLE", "data_type": "INTEGER", "description": "Kh\u1ed1i g\u1ed3m nh\u1eefng merchant h\u1ed7 tr\u1ee3 giao d\u1ecbch online v\u00e0 offline.", "structs": [], "example_data": ["0", "1"]}, {"column_name": "in_fs_block", "mode": "NULLABLE", "data_type": "INTEGER", "description": "Kh\u1ed1i g\u1ed3m c\u00e1c merchant c\u00f3 trong h\u1ec7 th\u1ed1ng FS.", "structs": [], "example_data": ["0", "1"]}, {"column_name": "in_v2_block", "mode": "NULLABLE", "data_type": "INTEGER", "description": "Kh\u1ed1i g\u1ed3m nh\u1eefng merchant h\u1ed7 tr\u1ee3 b\u1ea3n V2.", "structs": [], "example_data": ["0", "1"]}, {"column_name": "in_sme_bpu_block", "mode": "NULLABLE", "data_type": "INTEGER", "description": "Kh\u1ed1i SME/BPU m\u00e0 merchant \u0111ang thu\u1ed9c v\u1ec1.", "structs": [], "example_data": ["0", "1"]}, {"column_name": "in_soundbox_risk", "mode": "NULLABLE", "data_type": "INTEGER", "description": "Merchant thu\u1ed9c di\u1ec7n r\u1ee7i ro khi s\u1eed d\u1ee5ng Soundbox.", "structs": [], "example_data": ["0", "1"]}, {"column_name": "in_rm_quasi_list", "mode": "NULLABLE", "data_type": "INTEGER", "description": "Merchant n\u1eb1m trong danh s\u00e1ch RM quasi.", "structs": [], "example_data": ["0", "1"]}, {"column_name": "paylater_active", "mode": "NULLABLE", "data_type": "BOOLEAN", "description": "Tr\u1ea1ng th\u00e1i ho\u1ea1t \u0111\u1ed9ng c\u1ee7a d\u1ecbch v\u1ee5 V\u00ed Tr\u1ea3 Sau (true: \u0111ang ho\u1ea1t \u0111\u1ed9ng, false: kh\u00f4ng ho\u1ea1t \u0111\u1ed9ng).", "structs": [], "example_data": ["true", "false"]}, {"column_name": "ccm_active", "mode": "NULLABLE", "data_type": "BOOLEAN", "description": "Tr\u1ea1ng th\u00e1i ho\u1ea1t \u0111\u1ed9ng c\u1ee7a d\u1ecbch v\u1ee5 CCM (true: \u0111ang ho\u1ea1t \u0111\u1ed9ng, false: kh\u00f4ng ho\u1ea1t \u0111\u1ed9ng).", "structs": [], "example_data": ["false", "true"]}, {"column_name": "last_updated", "mode": "NULLABLE", "data_type": "TIMESTAMP", "description": "Th\u1eddi \u0111i\u1ec3m l\u1ea7n cu\u1ed1i c\u00f9ng b\u1ea3ng d\u1eef li\u1ec7u \u0111\u01b0\u1ee3c c\u1eadp nh\u1eadt.", "structs": [], "example_data": ["2025-06-13 10:28:48+00", "2025-06-13 10:25:33+00", "2025-06-13 10:32:59+00"]}]}
+```

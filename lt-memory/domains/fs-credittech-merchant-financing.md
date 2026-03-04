@@ -1,33 +1,13 @@
-# Domain: BU FS: CreditTech – Merchant Financing
+# BU FS: CreditTech – Merchant Financing
 
-## Identity
-- **Domain ID:** `076f32ab-ad98-46fc-9998-1dd58de7134a`
-- **Description:** Data của sản phẩm Vay nhanh cho nhà bán hàng, bao gồm các step accessed/submitted/disbursed
-- **Tables:** 1
-- **Metadata fetched:** 2026-02-25
+**Domain ID:** `076f32ab-ad98-46fc-9998-1dd58de7134a`
+**Last refreshed:** 2026-03-03
 
-## Tables & Columns
+## Description
+Data của sản phẩm Vay nhanh cho nhà bán hàng, bao gồm các step accessed/submitted/disbursed
 
-### momovn-prod.BU_FI.FMOB_PERFORMANCE_BY_OFFER
-> Data về performance của sản phẩm Vay nhanh cho nhà bán hàng
-
-| Column | Description | Examples |
-|--------|-------------|----------|
-| ETL_DATE | ngày thực hiện hành động | — |
-| AGENT_ID | mã người dùng momo | — |
-| OFFER_GROUP | luồng offer của user, được phân chia ở đầu whitelist: - 50M - 70M | — |
-| ACTION | hành động của user bao gồm: - accessed - submitted - disbursed | — |
-| AMOUNT | số tiền vay | — |
-| LOAN_ID | mã hợp đồng khoản vay | — |
-| TENOR | kỳ hạn | — |
-| EMI | số tiền phải trả hàng tháng | — |
-| GMV_3_MONTH | gmv 3 tháng gần nhất của user | — |
-| GMV_6_MONTH | gmv 6 tháng gần nhất của user | — |
-
-## Domain Knowledge (from Mimir)
-
-- GMV = Gross Merchandise Value = Tổng giá trị giao dịch của người dùng trong một khoảng thời gian nhất định. Dữ liệu hiện có bao gồm GMV 3 tháng và GMV 6 tháng của user.
-
-## Suggested Probe Questions
-
-- Status: **Not yet probed**
+## Schema DDL
+```sql
+###Dataset name: BU FS: CreditTech – Merchant Financing 
+ ## Table information : {"table_name":"momovn-prod.BU_FI.FMOB_PERFORMANCE_BY_OFFER","table_desc":"Data về performance của sản phẩm Vay nhanh cho nhà bán hàng","column_desc":[{"column_name":"ETL_DATE","description":"ngày thực hiện hành động","data_type":"DATE"},{"column_name":"AGENT_ID","description":"mã người dùng momo","data_type":"STRING"},{"column_name":"OFFER_GROUP","description":"luồng offer của user, được phân chia ở đầu whitelist:\n- 50M\n- 70M","data_type":"STRING"},{"column_name":"ACTION","description":"hành động của user bao gồm:\n- accessed\n- submitted\n- disbursed","data_type":"STRING"},{"column_name":"AMOUNT","description":"số tiền vay","data_type":"FLOAT"},{"column_name":"LOAN_ID","description":"mã hợp đồng khoản vay","data_type":"STRING"},{"column_name":"TENOR","description":"kỳ hạn","data_type":"FLOAT"},{"column_name":"EMI","description":"số tiền phải trả hàng tháng","data_type":"FLOAT"},{"column_name":"GMV_3_MONTH","description":"gmv 3 tháng gần nhất của user","data_type":"FLOAT"},{"column_name":"GMV_6_MONTH","description":"gmv 6 tháng gần nhất của user","data_type":"FLOAT"}]}
+```

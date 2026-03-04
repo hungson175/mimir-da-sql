@@ -1,28 +1,13 @@
-# Domain: BU Payment: OFFLINE M4B ENGAGEMENT
+# BU Payment: OFFLINE M4B ENGAGEMENT
 
-## Identity
-- **Domain ID:** `68f8f83f-cd21-4efc-9743-5c238b325818`
-- **Description:** A DATASET containing processed information about offline payment
-- **Tables:** 1
-- **Metadata fetched:** 2026-02-03
+**Domain ID:** `68f8f83f-cd21-4efc-9743-5c238b325818`
+**Last refreshed:** 2026-03-03
 
-## Tables & Columns
+## Description
+A DATASET containing processed information about offline payment
 
-### momovn-prod.MBI_DA.kmean-feature-20251012-firstsaved
-> Báº£ng nÃ y lÆ°u trá»¯ dá»¯ liá»u liÃªn quan Äáº¿n cÃ¡c Äáº·c tÃ­nh cá»§a cá»¥m (cluster) ÄÆ°á»£c xÃ¡c Äá»nh báº±ng phÆ°Æ¡ng phÃ¡p phÃ¢n cá»¥m k-means. Má»¥c ÄÃ­ch cá»§a báº£ng nÃ y bao gá»m: 
-- PhÃ¢n tÃ­ch cÃ¡c Äáº·c tÃ­nh quan trá»ng cá»§a má»i cá»¥m ngÆ°á»i dÃ¹ng dá»±a trÃªn cÃ¡c Äáº...
-
-| Column | Type | Description | Examples |
-|--------|------|-------------|----------|
-| feature | STRING | TÃªn cá»§a Äáº·c trÆ°ng hoáº·c tÃ­nh nÄng Äang ÄÆ°á»£c phÃ¢n tÃ­ch. | [Celebration]. Bấm nút X để đóng popup Celebration, [GoldenPocket]. Bấm nút "Khá... |
-| feature_age_in_month | INTEGER | Äá» tuá»i cá»§a Äáº·c trÆ°ng tÃ­nh theo thÃ¡ng. | 11, 2, 3, 4, 8 |
-| users | FLOAT | Sá» lÆ°á»£ng ngÆ°á»i dÃ¹ng liÃªn quan Äáº¿n Äáº·c trÆ°ng nÃ y. | 265, 2540, 805218 |
-| feature_reten | FLOAT | Tá»· lá» giá»¯ chÃ¢n cá»§a Äáº·c trÆ°ng. | 0, 0.0077529742013099853, 0.11328412597635529 |
-| product_reten | FLOAT | Tá»· lá» giá»¯ chÃ¢n cá»§a sáº£n pháº©m. | 0.59793814432989689, 0.33677832951007475, 0.86497813103801269 |
-| Cluster | INTEGER | MÃ£ Äá»nh danh cho cá»¥m ÄÆ°á»£c xÃ¡c Äá»nh bá»i k-means. | 1, 3, 5, 2 |
-| Cluster_name | STRING | TÃªn cá»§a cá»¥m ÄÃ£ ÄÆ°á»£c Äáº·t theo Äáº·c Äiá»m chung cÃ¡c Äá»i tÆ°á»£ng trong cá»¥m. | Cluster 1 High Feature Volume, Weak Engagement, Cluster 3 Bloated Features With ... |
-
-## Suggested Probe Questions
-
-- Numeric aggregation possible (has numeric columns)
-- Status: **Not yet probed**
+## Schema DDL
+```sql
+###Dataset name: BU Payment: OFFLINE M4B ENGAGEMENT 
+ ## Table information : {"table_name": "momovn-prod.MBI_DA.kmean-feature-20251012-firstsaved", "table_description": "B\u1ea3ng n\u00e0y l\u01b0u tr\u1eef d\u1eef li\u1ec7u li\u00ean quan \u0111\u1ebfn c\u00e1c \u0111\u1eb7c t\u00ednh c\u1ee7a c\u1ee5m (cluster) \u0111\u01b0\u1ee3c x\u00e1c \u0111\u1ecbnh b\u1eb1ng ph\u01b0\u01a1ng ph\u00e1p ph\u00e2n c\u1ee5m k-means. M\u1ee5c \u0111\u00edch c\u1ee7a b\u1ea3ng n\u00e0y bao g\u1ed3m: \n- Ph\u00e2n t\u00edch c\u00e1c \u0111\u1eb7c t\u00ednh quan tr\u1ecdng c\u1ee7a m\u1ed7i c\u1ee5m ng\u01b0\u1eddi d\u00f9ng d\u1ef1a tr\u00ean c\u00e1c \u0111\u1eb7c tr\u01b0ng \u0111\u00e3 l\u01b0u l\u1ea7n \u0111\u1ea7u.\n- \u0110\u00e1nh gi\u00e1 \u0111\u1ed9 tu\u1ed5i v\u00e0 t\u00ednh l\u01b0u gi\u1eef c\u1ee7a t\u1eebng \u0111\u1eb7c tr\u01b0ng qua c\u00e1c th\u00e1ng.\n- Ph\u00e2n t\u00edch \u0111\u1ed9 l\u01b0u gi\u1eef s\u1ea3n ph\u1ea9m \u0111\u1ec3 hi\u1ec3u r\u00f5 h\u01a1n v\u1ec1 h\u00e0nh vi kh\u00e1ch h\u00e0ng trong t\u1eebng c\u1ee5m.", "table_columns": [{"column_name": "feature", "mode": "NULLABLE", "data_type": "STRING", "description": "T\u00ean c\u1ee7a \u0111\u1eb7c tr\u01b0ng ho\u1eb7c t\u00ednh n\u0103ng \u0111ang \u0111\u01b0\u1ee3c ph\u00e2n t\u00edch.", "structs": [], "example_data": ["[Celebration]. B\u1ea5m n\u00fat X \u0111\u1ec3 \u0111\u00f3ng popup Celebration", "[GoldenPocket]. B\u1ea5m n\u00fat \"Kh\u00e1m ph\u00e1\" block sinh l\u1eddi", "[Top Navigator]. B\u1ea5m CTA T\u1ea1o l\u1eddi nh\u1eafc \u0111.k\u1ef3"]}, {"column_name": "feature_age_in_month", "mode": "NULLABLE", "data_type": "INTEGER", "description": "\u0110\u1ed9 tu\u1ed5i c\u1ee7a \u0111\u1eb7c tr\u01b0ng t\u00ednh theo th\u00e1ng.", "structs": [], "example_data": ["11", "2", "3", "4", "8"]}, {"column_name": "users", "mode": "NULLABLE", "data_type": "FLOAT", "description": "S\u1ed1 l\u01b0\u1ee3ng ng\u01b0\u1eddi d\u00f9ng li\u00ean quan \u0111\u1ebfn \u0111\u1eb7c tr\u01b0ng n\u00e0y.", "structs": [], "example_data": ["265", "2540", "805218"]}, {"column_name": "feature_reten", "mode": "NULLABLE", "data_type": "FLOAT", "description": "T\u1ef7 l\u1ec7 gi\u1eef ch\u00e2n c\u1ee7a \u0111\u1eb7c tr\u01b0ng.", "structs": [], "example_data": ["0", "0.0077529742013099853", "0.11328412597635529"]}, {"column_name": "product_reten", "mode": "NULLABLE", "data_type": "FLOAT", "description": "T\u1ef7 l\u1ec7 gi\u1eef ch\u00e2n c\u1ee7a s\u1ea3n ph\u1ea9m.", "structs": [], "example_data": ["0.59793814432989689", "0.33677832951007475", "0.86497813103801269"]}, {"column_name": "Cluster", "mode": "NULLABLE", "data_type": "INTEGER", "description": "M\u00e3 \u0111\u1ecbnh danh cho c\u1ee5m \u0111\u01b0\u1ee3c x\u00e1c \u0111\u1ecbnh b\u1edfi k-means.", "structs": [], "example_data": ["1", "3", "5", "2"]}, {"column_name": "Cluster_name", "mode": "NULLABLE", "data_type": "STRING", "description": "T\u00ean c\u1ee7a c\u1ee5m \u0111\u00e3 \u0111\u01b0\u1ee3c \u0111\u1eb7t theo \u0111\u1eb7c \u0111i\u1ec3m chung c\u00e1c \u0111\u1ed1i t\u01b0\u1ee3ng trong c\u1ee5m.", "structs": [], "example_data": ["Cluster 1 High Feature Volume, Weak Engagement", "Cluster 3 Bloated Features With Low Stickiness", "Cluster 5 Strong Supporting Features", "Cluster 4 Edge Case / Power User Features", "Cluster 0 Low-Value, Low-Usage Features"]}]}
+```
