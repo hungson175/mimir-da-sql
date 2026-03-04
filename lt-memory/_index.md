@@ -1,48 +1,49 @@
 # Long-Term Memory Index
 
-> Auto-maintained catalog. The DA updates this file after every learning event.
-> Bootstrapped from mimir-da domain knowledge on 2026-02-25.
+> Read this FIRST every session. Updated 2026-03-04.
+
+## Two-Source Architecture
+
+| Directory | Owner | Purpose | Safe to overwrite? |
+|-----------|-------|---------|--------------------|
+| `domains/` | **Machine** (daily auto-refresh) | Raw Mimir schemas, table definitions | YES — auto-refreshed |
+| `knowledge/` | **DA / Users** | Learned gotchas, corrections, business insights | **NEVER** — human-curated |
+
+**Rule:** Never write learned knowledge into `domains/`. Never auto-overwrite `knowledge/`.
+
+## Knowledge Files (load alongside domain files)
+
+| File | Domains covered | Key gotchas |
+|------|----------------|-------------|
+| `knowledge/_general.md` | All — BQ access, Mimir behavior, SQL | Reserved words, OR precedence, BQ blocked datasets |
+| `knowledge/paylater.md` | CreditTech Paylater | Column name mismatches, result_code filter, 40/40/20 split |
+| `knowledge/ttt.md` | Tui Than Tai | MAU_TYPE filter, AUM snapshot (NOT sum), REGEXP_EXTRACT dedup |
+| `knowledge/insurtech.md` | InsurTech Insurance | CC_STATUS='SUCCESS', seasonal calendar, take rates |
+| `knowledge/vaynhanh.md` | Vay Nhanh | DISBURSED_DATE vs CREATED_DATE, Mimir 3x undercount |
+| `knowledge/clo.md` | FI Solutions (CLO) | STATUS_CODE, SHB ramp, HC concentration |
+| `knowledge/p2p.md` | P2P Revenue | W2W=free, VietQR MDR rising, weekend data unreliable |
+| `knowledge/moni-qlct.md` | Expense Mgmt / Moni | PRODUCT+ACTION filter, ETL lag, AGE_GROUP format |
+| `knowledge/momo-revenue.md` | Cross-domain | P&L structure, ARPU ranking |
+| `knowledge/expense-management.md` | Growth Platform | Standard queries, Jan 2026 baselines |
+| `knowledge/notification.md` | MDS Notification | BU domain works, Platform times out, CTR formulas |
 
 ## Domain Master List
-- **Full catalog:** `domains/_all.md` — 65 domains (last verified 2026-03-03)
-- **Domains with metadata files:** 65 (all refreshed from Mimir API on 2026-03-03)
-- **Domains probed (via mimir-da):** 37 (33 successful, 4 with issues)
-- **Domains with SQL patterns:** 2 (Paylater, Vay Nhanh)
-
-## Domains
-| Domain | File | Known Tables/Columns | SQL Probe Status | Last Updated |
-|--------|------|---------------------|-----------------|--------------|
-| (Inherited from mimir-da — domain files contain metadata. SQL patterns to be built.) | | | | |
+- **Full catalog:** `domains/_all.md` — 65 domains (verified 2026-03-03)
+- **Domains with metadata files:** 58 (after dedup cleanup)
+- **Domains probed via SQL:** 13 (7 FS + 6 Non-FS)
 
 ## Patterns
-| Date | File | What it does |
-|------|------|--------------|
-| 2026-02-25 | `patterns/cross-sell-conversion.md` | Paylater → Vay Nhanh sequential conversion (within-month + lifetime) |
+| File | What it does |
+|------|--------------|
+| `patterns/cross-sell-conversion.md` | Paylater → Vay Nhanh sequential conversion |
 
-## Session Stats (2026-03-03 — Batch 15-17)
-| Metric | Value |
-|--------|-------|
-| Total BQ queries run | ~140+ |
-| Total Mimir interactions | ~20 comparisons |
-| Lessons accumulated | 56 (in sql-gotchas.md) |
-| Domains tested | 13 (7 FS + 6 Non-FS) |
-| Mimir trust: HIGH | Paylater, InsurTech, Chatbot Moni, Moni |
-| Mimir trust: MEDIUM | TTT, VN, CLO, Billpay |
-| Mimir trust: LOW | P2P Revenue (600M× wrong on W2W) |
-| Mimir trust: MIMIR-ONLY | Airtime, DLS, Check Scam, Report Scam, Media AD |
-| Skill built | `~/.claude/skills/mimir-distill/` — SKILL.md + refs + scripts |
-
-## Errors
-| Date | File | Lesson |
-|------|------|--------|
-| 2026-02-25 | `errors/bigquery-access-map.md` | Which BQ datasets are accessible vs blocked, with fallback strategies |
-| 2026-02-25 | `errors/sql-gotchas.md` | Reserved words, AGE_GROUP format, PAYLATER_MAU_SEGMENT is 1-row-per-user-month |
-| 2026-02-28 | `errors/bigquery-access-map.md` | Updated: BU_ECOM and project-5400504384186300846.REPORT are inaccessible. TTT mart stores ~2 years only |
-| 2026-03-02 | `errors/sql-gotchas.md` | TTT MAU_TYPE/MFU_TYPE filter required (11M total vs 720K MAU vs 1.67M MFU). SQL OR precedence trap. |
-| 2026-03-03 | `errors/mimir-insurtech-status.md` | InsurTech CC_STATUS: metadata says 'Thành Công' but data stores 'SUCCESS'. Mimir gets 0 results. |
-| 2026-03-03 | `errors/sql-gotchas.md` | 56 lessons: P2P W2W=free, VietQR MDR rising, InsurTech seasonal, DPD tables, BQ access map, Money Pool cohorts, VN 3x undercount, SEMANTIC ETL lag, + more |
+## Errors (kept)
+| File | Purpose |
+|------|---------|
+| `errors/bigquery-access-map.md` | Which BQ datasets are accessible vs blocked |
+| `errors/mimir-insurtech-status.md` | InsurTech CC_STATUS metadata vs data mismatch |
 
 ## Meta
-| Topic | File | Summary |
-|-------|------|---------|
-| Mimir behavior | `meta/mimir-behavior.md` | 19 queries tested. Trust: Paylater+Chatbot+Moni+VN+CLO=high, InsurTech=inconsistent CC_STATUS. Feb-29 date bug confirmed. |
+| File | Summary |
+|------|---------|
+| `meta/mimir-behavior.md` | 19 queries tested. Trust levels per domain. Feb-29 date bug. |

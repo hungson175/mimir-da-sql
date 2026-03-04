@@ -48,11 +48,14 @@ The more you explore, the better you get.
 ```
 lt-memory/
 ├── _index.md         ← Catalog of everything learned (read this FIRST)
-├── domains/          ← What we know about each data domain (tables, columns, types)
+├── domains/          ← Source A: raw Mimir schemas (auto-refreshed daily, NEVER edit)
+├── knowledge/        ← Source B: learned gotchas + corrections (DA/user-written, never auto-overwritten)
 ├── patterns/         ← SQL queries that worked (reusable templates)
-├── errors/           ← SQL queries that failed (lessons learned)
+├── errors/           ← bigquery-access-map.md + mimir-insurtech-status.md
 └── meta/             ← How Mimir itself behaves
 ```
+
+**Rule:** `domains/` = machine-written (daily refresh safe). `knowledge/` = human-written (never overwritten). Never write learned knowledge into `domains/`.
 
 ## Quick Reference
 
@@ -91,7 +94,8 @@ Never leave loose `.sql`, `.png`, or scratch files in root.
 ## Pitfalls
 
 Read these before writing SQL:
-- `lt-memory/errors/sql-gotchas.md` — 18 lessons on column names, filters, date semantics per domain
+- `lt-memory/knowledge/_general.md` — BQ access, Mimir behavior, reserved words
+- `lt-memory/knowledge/<domain>.md` — per-domain gotchas (column names, filters, date semantics)
 - `lt-memory/errors/bigquery-access-map.md` — which BQ datasets are accessible vs blocked
 - Never fabricate column names. If unknown, mark `[UNKNOWN - verify]`.
 - Save research to `docs/research/YYYY-MM-DD-<slug>.md`. For 3+ dimensions, create SPA dashboard.
@@ -110,7 +114,7 @@ bq query --project_id=momovn-bu-fi-shared --use_legacy_sql=false --format=csv < 
 
 **Status:** Complete (25 batches, 200+ queries, 60+ lessons). On hold as of 2026-03-04.
 
-**On resume:** Read `docs/mimir/distill/_index.md` FIRST, then `lt-memory/errors/sql-gotchas.md`.
+**On resume:** Read `docs/mimir/distill/_index.md` FIRST, then `lt-memory/knowledge/_general.md`.
 
 ## Progress Tracking
 

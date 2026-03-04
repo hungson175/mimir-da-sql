@@ -34,15 +34,17 @@ Read your memory before writing any SQL.
 
 ```
 1. Read lt-memory/_index.md
-2. Find the relevant domain file in lt-memory/domains/
-   → Domain files contain table schemas, column definitions, and verified metrics
-3. Check lt-memory/patterns/ for similar past SQL queries
+2. Find the relevant domain file in lt-memory/domains/<domain>.md
+   → Domain files contain table schemas, column definitions (auto-refreshed daily, never edit)
+3. Load lt-memory/knowledge/<domain>.md alongside the domain file
+   → Knowledge files contain learned gotchas, corrections, business insights (human-curated)
+4. Load lt-memory/knowledge/_general.md for BQ access, Mimir behavior, SQL gotchas
+5. Check lt-memory/patterns/ for similar past SQL queries
    → Reuse exact SQL templates that worked before
-4. Check lt-memory/errors/ for known pitfalls
-5. Consult docs/ref/domain-router.md to pick the right domain ID
+6. Consult docs/ref/domain-router.md to pick the right domain ID
 ```
 
-Use what you find. If the domain file has column names and types — use them exactly. If an error file says "this column doesn't exist" — don't use it.
+Use what you find. If the domain file has column names and types — use them exactly. If a knowledge file says "this column doesn't exist" — don't use it.
 
 If no memory exists for this topic, that's fine — discover the schema first, then write SQL.
 
@@ -187,24 +189,51 @@ Create `lt-memory/patterns/YYYY-MM-DD_<slug>.md`:
 <any new tables, columns, types discovered>
 ```
 
-Update the domain file in `lt-memory/domains/` with any new knowledge (columns, types, table relationships).
+### On failure or discovery → save to knowledge
 
-### On failure → write a lesson
+Save corrections and gotchas to `lt-memory/knowledge/<domain>.md` (NOT to `domains/` which is auto-refreshed):
+```markdown
+### <Title> (YYYY-MM-DD)
+<What was wrong> → <What is correct>
+Source: BQ verification / user correction
+```
 
-Create `lt-memory/errors/YYYY-MM-DD_<slug>.md`:
-```
-# Error: <what happened>
-## SQL
-<the query that failed>
-## Error
-<error message>
-## Lesson
-<what to do differently — wrong column name? wrong table? wrong date format?>
-```
+**Never save learned knowledge to `domains/`** — those files are auto-refreshed daily and your knowledge will be overwritten.
 
 ### Always update the index
 
 Add a row to `lt-memory/_index.md` so future sessions can find it.
+
+---
+
+## AUTO-LEARN — Correction Detection (Mandatory)
+
+Detect correction signals automatically from user messages:
+
+**Explicit corrections:**
+- "wrong", "sai", "should be X not Y", "fix it", "that's not right"
+- "use column X instead", "the correct value is..."
+
+**Implicit corrections:**
+- Angry/frustrated tone → treat as correction, not offense
+- User shares a different number than your result → they may have the right answer
+- User re-asks the same question differently → your first answer was wrong/incomplete
+
+**On detection:**
+1. Acknowledge immediately: "Got it, updating my knowledge."
+2. Extract the correction: which domain, table, column? What's correct? Why was the old answer wrong?
+3. Save to `lt-memory/knowledge/<domain>.md` with format:
+   ```markdown
+   ### <Title> (YYYY-MM-DD)
+   <What was wrong> → <What is correct>
+   Source: user correction
+   ```
+4. Re-run the corrected query and present updated results
+
+**Rules:**
+- **Never save to `domains/`** — those files are auto-refreshed daily and your knowledge will be overwritten
+- Only save concrete, actionable lessons. Vague frustration without a specific correction = don't save
+- If unsure whether it's a correction or just a question, ask: "Should I update my knowledge about this?"
 
 ---
 
