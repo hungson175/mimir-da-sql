@@ -61,60 +61,70 @@ lt-memory/
 | Prod | `https://s.mservice.io/mimir-server-to-server` |
 | Dev | `https://s.dev.mservice.io/mimir-server-to-server` |
 | User | `son.pham9@mservice.com.vn` |
-| Moni domain | `af241589-f5be-4b97-8928-fe0823c8dc75` |
+| API field | `user_email` (NOT `user` — causes 500 error) |
+
+**FS Domain IDs (verified 2026-03-03):**
+
+| Domain | ID |
+|--------|----|
+| Paylater | `7e23d41a-0baf-4b36-84c3-07fb850bdb6e` |
+| Vay Nhanh | `bb231763-b11c-45c6-9b0d-eb6d24588e3d` |
+| TTT | `fa0fb3af-d3d9-4459-9a82-fb7c6eafab11` |
+| InsurTech | `800bf3e8-a8ba-45c3-90d8-5f54bdaba156` |
+| FI Solutions | `5cd09ae2-90b8-4102-a717-0ae6f649ff69` |
+| Moni (QLCT) | `af241589-f5be-4b97-8928-fe0823c8dc75` |
+| Chatbot Moni | `9066c2ad-5109-4fa9-abc0-06d85c6eed7e` |
+
+## File Organization
+
+**Keep the root clean.** Only `CLAUDE.md` and top-level directories belong in root.
+
+| What | Where |
+|------|-------|
+| SQL query files | `docs/mimir/distill/sql-queries/` |
+| Dashboard images | `docs/research/dashboards/` |
+| Research outputs | `docs/research/YYYY-MM-DD-<slug>.md` |
+| Experiment scripts | `experiments/` |
+
+Never leave loose `.sql`, `.png`, or scratch files in root.
 
 ## Pitfalls
 
-- **Empty schema? Fetch it yourself, don't guess or ask.** Before writing SQL, check the domain file for column info. If empty, call `GET /v1/domain/metadata?domain_id=...`, update the domain file, then write SQL. Only ask the user if the API itself returns no schema.
-- **Never fabricate column names.** SQL identifiers are exact — no "close enough." If a column name doesn't appear in (1) metadata API, (2) Mimir domain memory, or (3) a pattern file with actual SQL, it doesn't exist in your knowledge. Mark it `[UNKNOWN - verify]` in the SQL. Never interpolate from naming patterns of other tables.
-- **Trace claims to exact sources.** When flagging uncertain data, check each piece individually. Don't blanket-blame one source when only specific items are unverified. Three trust tiers: (1) metadata API = verified, (2) Mimir domain memory/past SQL = likely correct, (3) no source = hallucination.
-- **Some domains have hidden schemas.** InsurTech metadata returns `?` for all column names. For these, use Mimir question API from `mimir-da` to get a simple query back, then extract column names from the returned SQL.
-- **BigQuery access is limited.** Accessible: `momovn-prod.BU_FI`, `momovn-prod.MBI_DA`. Inaccessible: `momovn-prod.BU_ECOM` (DLS tables), `project-5400504384186300846.REPORT` (Transaction MoMo), `D_OP_USER_PROFILE`, `STRONGHOLD_ANALYTICS`. For demographics, fall back to `SEMANTIC_QLCT_VISIT`. See `lt-memory/errors/bigquery-access-map.md`.
-- **`PAYLATER_MAU_SEGMENT` is 1 row per user per month.** The `usecase` column is the primary usecase, not transaction-level. Cannot measure multi-usecase breadth from this table. Use `PAYLATER_ALL_TRANS` for that.
-- **`groups` is a BigQuery reserved word.** Use `user_groups` for CTE names. See `lt-memory/errors/sql-gotchas.md` for more.
-- **TTT `mart_ttt_daily_user_record` stores ~2 years only.** Querying dates before 2025 returns no data. Use quarterly end-of-period snapshots (GRASS_DATE = 'YYYY-MM-DD') for point-in-time user/AUM counts.
-- **TTT table has 11M rows but only ~3.4M MAU.** Always filter `MAU_TYPE != '0.Churn'` for active users or `MFU_TYPE != '0.Churn'` for funded users. Without this, `COUNT(DISTINCT USER_ID)` returns total accounts (11M), not active users. Use full-month date range (not single-day snapshot, which underreports at ~720K). See `lt-memory/errors/sql-gotchas.md`.
-- **Always save research to `docs/research/YYYY-MM-DD-<slug>.md`.** For complex reports (3+ dimensions), auto-create an SPA dashboard in `docs/research/spa/` and open it in the browser for the user. See `docs/DA_PROMPT.md` > "Presenting Results (UX)".
+Read these before writing SQL:
+- `lt-memory/errors/sql-gotchas.md` — 18 lessons on column names, filters, date semantics per domain
+- `lt-memory/errors/bigquery-access-map.md` — which BQ datasets are accessible vs blocked
+- Never fabricate column names. If unknown, mark `[UNKNOWN - verify]`.
+- Save research to `docs/research/YYYY-MM-DD-<slug>.md`. For 3+ dimensions, create SPA dashboard.
 
-## Google Cloud CLI (BigQuery)
-
-gcloud SDK is installed at `~/google-cloud-sdk/`. Always set these env vars when calling gcloud/bq:
+## BigQuery
 
 ```bash
 export CLOUDSDK_PYTHON=/Library/Frameworks/Python.framework/Versions/3.11/bin/python3
 export PATH="$HOME/google-cloud-sdk/bin:$PATH"
+bq query --project_id=momovn-bu-fi-shared --use_legacy_sql=false --format=csv < query.sql
 ```
 
-| Item | Value |
-|------|-------|
-| SDK path | `~/google-cloud-sdk/` |
-| Auth account | `son.pham9@mservice.com.vn` |
-| ADC credentials | `~/.config/gcloud/application_default_credentials.json` |
-| Python for gcloud | `/Library/Frameworks/Python.framework/Versions/3.11/bin/python3` |
-| `.env` file | Project root — has `GOOGLE_APPLICATION_CREDENTIALS` and paths |
+**Job project:** `momovn-bu-fi-shared`. Data lives in `momovn-prod`.
 
-**Usage examples:**
-```bash
-# BigQuery query
-bq query --use_legacy_sql=false 'SELECT * FROM dataset.table LIMIT 10'
+## Mimir Distill (Data Collection) — PAUSED
 
-# Set project (required before querying)
-gcloud config set project PROJECT_ID
+**Status:** Complete (25 batches, 200+ queries, 60+ lessons). On hold as of 2026-03-04.
 
-# Check auth
-gcloud auth list
-```
+**On resume:** Read `docs/mimir/distill/_index.md` FIRST, then `lt-memory/errors/sql-gotchas.md`.
 
-**Job project:** Always use `--project_id=momovn-bu-fs-ondemand` for BigQuery queries. Data lives in `momovn-prod` but you run jobs from `momovn-bu-fs-ondemand`. The default project `totemic-arcana-459117-e0` has no BQ permissions.
+## Progress Tracking
 
-> **⚠ TEMPORARY:** `momovn-bu-fs-ondemand` is an expensive on-demand project for demo purposes. Previous project was `momovn-bu-fi-shared` — may revert back later.
+| Timeframe | Where | How |
+|-----------|-------|-----|
+| **Past** | Git history | Commit meaningful work with descriptive messages |
+| **Current** | `docs/current-progress.md` | Short 10-line note on what's in flight |
+| **Future** | `docs/backlog.md` | Features, tasks, and ideas |
 
-## Product Backlog
-
-See `docs/backlog.md` — dump for features, to-do tasks, and ideas.
+**Rule:** When you complete a substantial, working segment — commit it with a meaningful message. Git history is the primary progress tracker.
 
 ## Commands
 
 | Command | What it does |
 |---------|--------------|
 | `/improve-da` | Reviews lt-memory/ learnings and upgrades DA_PROMPT.md |
+| `/dis-mimir` | Stress-test Mimir accuracy: compare our SQL vs Mimir's answers across 6 metrics |
