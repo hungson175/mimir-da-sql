@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoMo Board Strategy 2026 — Confidential</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --red: #d0021b;
+    --red-light: #ff1f38;
+    --red-dim: rgba(208,2,27,0.15);
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #888;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; }
+  .logo-dot { width: 28px; height: 28px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; font-weight: 800; }
+  .badge { background: var(--red-dim); color: var(--red-light); font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--red); }
+  .date { color: var(--muted); font-size: 0.8rem; }
+
+  /* NAV */
+  .nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky; top: 56px; z-index: 99;
+    overflow-x: auto;
+  }
+  .nav-inner { max-width: 1400px; margin: 0 auto; display: flex; gap: 0; }
+  .nav-tab {
+    padding: 12px 20px; font-size: 0.85rem; color: var(--muted); cursor: pointer;
+    border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s;
+    background: none; border-top: none; border-left: none; border-right: none;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--red-light); border-bottom-color: var(--red); font-weight: 600; }
+
+  /* MAIN */
+  .main { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* HERO */
+  .hero { text-align: center; padding: 3rem 1rem 2rem; }
+  .hero-tag { display: inline-block; background: var(--red-dim); color: var(--red-light); font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--red); margin-bottom: 1rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  .hero h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; }
+  .hero h1 span { color: var(--red-light); }
+  .hero-sub { color: var(--muted); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+  @media (max-width: 1100px) { .grid-3 { grid-template-columns: 1fr 1fr; } .grid-4 { grid-template-columns: 1fr 1fr; } }
+
+  /* CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+  .card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.75rem; }
+  .card-value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+  .card-sub { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; }
+
+  /* STAT CARDS */
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; }
+  .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+  .stat-val { font-size: 1.8rem; font-weight: 800; }
+  .stat-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .green { color: var(--green); }
+  .red { color: var(--red-light); }
+  .yellow { color: var(--yellow); }
+  .blue { color: var(--blue); }
+  .purple { color: var(--purple); }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { text-align: left; padding: 10px 14px; color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .tr-total td { border-top: 1px solid var(--border); font-weight: 700; background: rgba(208,2,27,0.05); }
+  .verified { display: inline-flex; align-items: center; gap: 4px; color: var(--green); font-size: 0.75rem; }
+  .unverified { color: var(--muted); font-size: 0.75rem; }
+
+  /* CHART WRAP */
+  .chart-wrap { position: relative; height: 280px; }
+  .chart-wrap-sm { position: relative; height: 220px; }
+
+  /* SECTION TITLE */
+  .section-header { margin-bottom: 2rem; }
+  .section-header h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .section-header p { color: var(--muted); font-size: 0.9rem; }
+
+  /* INSIGHT BOX */
+  .insight { background: var(--red-dim); border: 1px solid var(--red); border-radius: 10px; padding: 1rem 1.25rem; margin: 1.5rem 0; }
+  .insight-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--red-light); margin-bottom: 0.35rem; }
+  .insight p { font-size: 0.9rem; line-height: 1.5; }
+
+  /* PILL */
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+  .pill-invest { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .pill-grow { background: rgba(59,130,246,0.15); color: var(--blue); border: 1px solid rgba(59,130,246,0.3); }
+  .pill-maintain { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+  .pill-exit { background: rgba(208,2,27,0.15); color: var(--red-light); border: 1px solid rgba(208,2,27,0.3); }
+
+  /* RECOMMENDATION CARD */
+  .rec-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; display: flex; gap: 1rem; }
+  .rec-num { width: 36px; height: 36px; min-width: 36px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; }
+  .rec-body h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .rec-body p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .rec-impact { margin-top: 0.5rem; font-size: 0.8rem; font-weight: 600; color: var(--green); }
+
+  /* CAMPAIGN TABLE */
+  .campaign-rank { width: 28px; height: 28px; background: var(--red-dim); border: 1px solid var(--red); border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; color: var(--red-light); }
+
+  /* RISK BAR */
+  .risk-bar { height: 6px; border-radius: 3px; background: var(--border); margin-top: 6px; overflow: hidden; }
+  .risk-fill { height: 100%; border-radius: 3px; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.75rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-dot">M</div>
+      MoMo Board Strategy 2026
+    </div>
+    <div style="display:flex;gap:1rem;align-items:center">
+      <span class="badge">CONFIDENTIAL</span>
+      <span class="date">March 4, 2026</span>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('s1',this)">01 · Revenue Reality</button>
+    <button class="nav-tab" onclick="showSection('s2',this)">02 · Asset-Light Model</button>
+    <button class="nav-tab" onclick="showSection('s3',this)">03 · Campaigns Ready</button>
+    <button class="nav-tab" onclick="showSection('s4',this)">04 · Portfolio Matrix</button>
+    <button class="nav-tab" onclick="showSection('s5',this)">05 · Top 10 Recs</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ===== SECTION 1: REVENUE REALITY ===== -->
+<section id="s1" class="section active">
+  <div class="hero">
+    <div class="hero-tag">Revenue Reality — January 2026</div>
+    <h1>MoMo generates <span>$53M–82M</span><br>annually. Not what the market thinks.</h1>
+    <p class="hero-sub">Based on 200+ BigQuery queries across 13 domains. Verified splits, partner economics, and net revenue after costs.</p>
+  </div>
+
+  <!-- KPI ROW -->
+  <div class="grid-4" style="margin-bottom:1.5rem">
+    <div class="stat-card">
+      <div class="stat-label">Confirmed Floor Revenue</div>
+      <div class="stat-val green">$53M</div>
+      <div class="stat-sub">~107.8B VND/month · BQ verified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Realistic Annual Revenue</div>
+      <div class="stat-val blue">$65–82M</div>
+      <div class="stat-sub">Including Airtime, DLS, TTT spread, VN fees</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total GMV Facilitated</div>
+      <div class="stat-val">$2.1–2.3B</div>
+      <div class="stat-sub">~50–55T VND/month across all products</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Revenue Split</div>
+      <div class="stat-val yellow">85 / 15</div>
+      <div class="stat-sub">Utility vs FS — not the other way around</div>
+    </div>
+  </div>
+
+  <!-- CHART + TABLE -->
+  <div class="grid-2" style="margin-bottom:1.5rem">
+    <div class="card">
+      <div class="card-title">Revenue Breakdown — Jan 2026 (Net to MoMo)</div>
+      <div class="chart-wrap">
+        <canvas id="revenueDonut"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Verified P&amp;L — Monthly Net Revenue</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Revenue Stream</th>
+              <th>Monthly (VND)</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Paylater distribution fee (40% of gross)</td><td>~47.8B</td><td><span class="verified">✅ BQ verified</span></td></tr>
+            <tr><td>P2P W2B merchant fees (net)</td><td>38.6B</td><td><span class="verified">✅ BQ verified</span></td></tr>
+            <tr><td>P2P CASHOUT fees</td><td>4.41B</td><td><span class="verified">✅ BQ verified</span></td></tr>
+            <tr><td>Billpay platform fee</td><td>8.64B</td><td><span class="verified">✅ BQ verified</span></td></tr>
+            <tr><td>CLO origination fee</td><td>4.85B</td><td><span class="verified">✅ BQ verified</span></td></tr>
+            <tr><td>InsurTech commission (43.6% of GWP)</td><td>4.13B</td><td><span class="verified">✅ BQ verified</span></td></tr>
+            <tr class="tr-total"><td>CONFIRMED TOTAL</td><td>~107.8B</td><td><span class="verified">✅</span></td></tr>
+            <tr><td>DLS Online (platform fee)</td><td>~54.85B</td><td><span class="unverified">Mimir only</span></td></tr>
+            <tr><td>Airtime (platform fee)</td><td>~17.75B</td><td><span class="unverified">Mimir only</span></td></tr>
+            <tr><td>TTT interest spread (~53%)</td><td>~20B est.</td><td><span class="unverified">Estimated</span></td></tr>
+            <tr><td>VN origination fee (~2%)</td><td>~62B est.</td><td><span class="unverified">Estimated</span></td></tr>
+            <tr class="tr-total"><td>FULL ESTIMATE</td><td>~260–290B</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONTHLY TREND CHART -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-title">Utility vs FS Revenue Composition (Verified Streams Only — Monthly)</div>
+    <div class="chart-wrap">
+      <canvas id="revenueBar"></canvas>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-label">Board Narrative</div>
+    <p><strong>"MoMo is a utility payment company growing into fintech — not the other way around."</strong><br>
+    Non-FS utility (DLS + P2P + Airtime + Billpay = 130B/month) generates 5–6× more revenue than FS products today.
+    FS is the <em>growth layer</em> — InsurTech +163% YoY, VN loans +160% YoY — but utility is the moat that makes the cross-sell economics unbeatable.</p>
+  </div>
+
+  <!-- VALUATION CONTEXT -->
+  <div class="grid-3">
+    <div class="stat-card">
+      <div class="stat-label">Last Known Valuation</div>
+      <div class="stat-val">$2.2B</div>
+      <div class="stat-sub">2021 funding round</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">P/S Ratio (Conservative)</div>
+      <div class="stat-val yellow">41×</div>
+      <div class="stat-sub">$2.2B / $53M = 41× P/S (floor)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">P/S Ratio (Realistic)</div>
+      <div class="stat-val green">27–34×</div>
+      <div class="stat-sub">$2.2B / $65–82M · Reasonable for growth-stage SEA fintech</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2: ASSET-LIGHT MODEL ===== -->
+<section id="s2" class="section">
+  <div class="hero">
+    <div class="hero-tag">Asset-Light Credit Model</div>
+    <h1>MoMo facilitates <span>19.2T VND</span><br>in credit. Holds &lt;0.2% on balance sheet.</h1>
+    <p class="hero-sub">MoMo = Vietnam's largest fintech credit distributor. Lenders bear all credit risk. MoMo earns pure distribution margin.</p>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:1.5rem">
+    <div class="stat-card">
+      <div class="stat-label">Total Credit Facilitated</div>
+      <div class="stat-val">19.2T</div>
+      <div class="stat-sub">VN 17.3T + Paylater 1.88T VND</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">MoMo Credit Risk</div>
+      <div class="stat-val green">&lt;0.2%</div>
+      <div class="stat-sub">~28B/month Paylater provision only</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Paylater Split</div>
+      <div class="stat-val">40/40/20</div>
+      <div class="stat-sub">MoMo / TPBank / Credit loss buffer</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Paylater Headroom</div>
+      <div class="stat-val yellow">82%</div>
+      <div class="stat-sub">Only 18% of 11.35T approved credit utilized</div>
+    </div>
+  </div>
+
+  <!-- PAYLATER ECONOMICS -->
+  <div class="grid-2" style="margin-bottom:1.5rem">
+    <div class="card">
+      <div class="card-title">Paylater Economic Structure — MoMo as Scheme (like Visa)</div>
+      <div style="margin-top:0.5rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--surface2);border-radius:8px;margin-bottom:0.75rem">
+          <div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">MoMo (Distribution)</div>
+            <div style="font-size:1.5rem;font-weight:800;color:var(--green)">40%</div>
+            <div style="font-size:0.78rem;color:var(--muted)">~47.8B VND/month net · ZERO credit risk</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">Gross Revenue</div>
+            <div style="font-size:1.5rem;font-weight:800">~140B</div>
+            <div style="font-size:0.78rem;color:var(--muted)">VND/month total Paylater pool</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.75rem">
+          <div style="flex:1;padding:0.75rem;background:var(--surface2);border-radius:8px">
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">TPBank / MBV (Issuer)</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--blue)">40%</div>
+            <div style="font-size:0.75rem;color:var(--muted)">Bear full credit risk, fund 1.88T portfolio</div>
+          </div>
+          <div style="flex:1;padding:0.75rem;background:var(--surface2);border-radius:8px">
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">Credit Loss Buffer</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--yellow)">20%</div>
+            <div style="font-size:0.75rem;color:var(--muted)">~28B/month · DPD31+ = 5.6%</div>
+          </div>
+        </div>
+        <div class="insight" style="margin-top:0.75rem;margin-bottom:0">
+          <div class="insight-label">The Visa Analog</div>
+          <p style="font-size:0.82rem">MoMo = scheme (Visa). TPBank = issuer. MoMo earns distribution without holding credit. This is the optimal asset-light fintech model.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">FS Credit Book — Portfolio by Partner (Feb 2026)</div>
+      <div class="chart-wrap">
+        <canvas id="creditPie"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANKING PARTNER RISK MAP -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-title">Banking Partner Risk Map — Operational Disruption if Partner Exits</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Partner</th>
+            <th>Product</th>
+            <th>Outstanding</th>
+            <th>MoMo Dependency</th>
+            <th>Risk Level</th>
+            <th>Mitigation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TPBank</strong></td>
+            <td>Paylater</td>
+            <td>1.685T VND</td>
+            <td>~83% of Paylater volume</td>
+            <td><span class="red">● HIGH</span></td>
+            <td>Accelerate MBV to 30% share (12 months)</td>
+          </tr>
+          <tr>
+            <td><strong>VIET_CREDIT</strong></td>
+            <td>Vay Nhanh</td>
+            <td>11.1T VND</td>
+            <td>64% of VN disbursement</td>
+            <td><span class="yellow">● MEDIUM</span></td>
+            <td>MBV joining VN = natural diversification underway</td>
+          </tr>
+          <tr>
+            <td><strong>MCREDIT</strong></td>
+            <td>Vay Nhanh</td>
+            <td>3.64T VND</td>
+            <td>21% of VN volume</td>
+            <td><span class="green">● LOW</span></td>
+            <td>Diversified exposure</td>
+          </tr>
+          <tr>
+            <td><strong>AMBER</strong></td>
+            <td>Vay Nhanh</td>
+            <td>2.31T VND</td>
+            <td>13% of VN volume</td>
+            <td><span class="green">● LOW</span></td>
+            <td>Entry-level segment (avg 14.5M vs VC 19.6M)</td>
+          </tr>
+          <tr>
+            <td><strong>SHB</strong></td>
+            <td>CLO</td>
+            <td>~0.62T VND</td>
+            <td>57% of CLO (Feb 2026)</td>
+            <td><span class="yellow">● MEDIUM</span></td>
+            <td>Monitor March batch — validate pipeline</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAYLATER DORMANT OPPORTUNITY -->
+  <div class="card">
+    <div class="card-title">Paylater Activation Funnel — 1.39M Dormant Accounts</div>
+    <div class="grid-3">
+      <div style="padding:1rem;background:var(--surface2);border-radius:8px">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">WARM LAPSED (1–3 months)</div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--green)">658K</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">40% conversion est. = 263K activations</div>
+        <div class="risk-bar"><div class="risk-fill" style="width:66%;background:var(--green)"></div></div>
+      </div>
+      <div style="padding:1rem;background:var(--surface2);border-radius:8px">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">COLD LAPSED (3+ months)</div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--yellow)">337K</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">15% conversion est. = 50K activations</div>
+        <div class="risk-bar"><div class="risk-fill" style="width:34%;background:var(--yellow)"></div></div>
+      </div>
+      <div style="padding:1rem;background:var(--surface2);border-radius:8px">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">NEVER USED</div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--muted)">151K</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">5–10% conversion = 8–15K activations</div>
+        <div class="risk-bar"><div class="risk-fill" style="width:13%;background:var(--muted)"></div></div>
+      </div>
+    </div>
+    <div class="insight" style="margin-bottom:0">
+      <div class="insight-label">Revenue Opportunity</div>
+      <p><strong>+11.5B VND/month net</strong> from dormant activation campaign (415K clean exit × 40% + 114K purchase intent × 25% + 28K bad exit × 10% = ~197K activations × 2.12M avg balance × 6.9% yield × 40% MoMo share)</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 3: CAMPAIGNS READY ===== -->
+<section id="s3" class="section">
+  <div class="hero">
+    <div class="hero-tag">Campaign Readiness — Q2 2026</div>
+    <h1>5 campaigns ready to launch.<br><span>+21B VND/month</span> from existing users.</h1>
+    <p class="hero-sub">No new user acquisition needed. Pure monetization of the existing 10M+ user base. Total cost ~4–5B/month. ROI: 4–5×.</p>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:1.5rem">
+    <div class="stat-card">
+      <div class="stat-label">Total Monthly Impact</div>
+      <div class="stat-val green">+21B</div>
+      <div class="stat-sub">VND/month net from 5 campaigns</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Annual Impact</div>
+      <div class="stat-val green">+252B</div>
+      <div class="stat-sub">VND/year = ~+$10M USD/year</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Campaign Spend</div>
+      <div class="stat-val">4–5B</div>
+      <div class="stat-sub">VND/month total across all 5</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Blended ROAS</div>
+      <div class="stat-val yellow">4–5×</div>
+      <div class="stat-sub">Marginal spend to marginal revenue</div>
+    </div>
+  </div>
+
+  <!-- CAMPAIGN TABLE -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-title">Top 5 Campaign Actions — Priority Ranked</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Campaign</th>
+            <th>Target Segment</th>
+            <th>Expected Impact</th>
+            <th>Cost</th>
+            <th>ROAS</th>
+            <th>Timeline</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="campaign-rank">1</span></td>
+            <td><strong>Dormant Paylater Activation</strong><br><span style="font-size:0.75rem;color:var(--muted)">'Use your credit limit' push notification</span></td>
+            <td>658K warm lapsed (1–3 months inactive)</td>
+            <td><span class="green">+15.4B/month net</span></td>
+            <td>~3–5B</td>
+            <td><span class="green">3–5×</span></td>
+            <td>Q2 2026</td>
+          </tr>
+          <tr>
+            <td><span class="campaign-rank">2</span></td>
+            <td><strong>Scale Car Insurance (ins_bhot_new)</strong><br><span style="font-size:0.75rem;color:var(--muted)">Campaign exists · scale budget 628 → 3,000 orders</span></td>
+            <td>4–5M car owners in MoMo app</td>
+            <td><span class="green">+5.7B/month</span></td>
+            <td>~100M incremental</td>
+            <td><span class="green">57×</span></td>
+            <td>Immediate</td>
+          </tr>
+          <tr>
+            <td><span class="campaign-rank">3</span></td>
+            <td><strong>Travel Insurance Billpay Placement</strong><br><span style="font-size:0.75rem;color:var(--muted)">No budget needed — UI placement in billpay flow</span></td>
+            <td>3.1M billpay MAU (100% organic today)</td>
+            <td><span class="green">+775M/month</span></td>
+            <td>Near-zero (UI)</td>
+            <td><span class="green">∞</span></td>
+            <td>Sprint 1</td>
+          </tr>
+          <tr>
+            <td><span class="campaign-rank">4</span></td>
+            <td><strong>Scale InsurTech Campaign Budget</strong><br><span style="font-size:0.75rem;color:var(--muted)">316M → 600M/month · existing 3.85× ROAS</span></td>
+            <td>All InsurTech channels (Vehicle + Travel + PA Bus)</td>
+            <td><span class="green">+818M/month</span></td>
+            <td>+284M incremental</td>
+            <td><span class="green">3.85×</span></td>
+            <td>Q2 2026</td>
+          </tr>
+          <tr>
+            <td><span class="campaign-rank">5</span></td>
+            <td><strong>PJICO Voluntary Car (replicate Liberty TYPEID='dd')</strong><br><span style="font-size:0.75rem;color:var(--muted)">Liberty went 3 → 39 orders/month in 3 months with same code</span></td>
+            <td>PJICO organic buyers (currently 0 promo orders)</td>
+            <td><span class="green">+45–75M/month</span></td>
+            <td>~10M incentive</td>
+            <td><span class="green">4.5–7.5×</span></td>
+            <td>Q2 2026</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- IMPACT CHART -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Campaign Impact by Initiative (VND/month)</div>
+      <div class="chart-wrap">
+        <canvas id="campaignBar"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">InsurTech Campaign Architecture (Jan 2026 Live Campaigns)</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Campaign</th><th>Code</th><th>Orders</th><th>ROAS</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Vehicle Renewal BAU</td><td>renewal_bau_q1</td><td>3,434</td><td><span class="green">4.2×</span></td></tr>
+            <tr><td>Vehicle New Acquisition</td><td>new_motorins</td><td>2,226</td><td><span class="green">4.3×</span></td></tr>
+            <tr><td>Vehicle Churn Recovery</td><td>bhxm_churn_q1</td><td>1,729</td><td><span class="green">3.6×</span></td></tr>
+            <tr><td>Car Insurance (new)</td><td>ins_bhot_new</td><td>628</td><td><span class="yellow">2.0×</span></td></tr>
+            <tr><td>Liberty Original Promo</td><td>dd</td><td>134</td><td>—</td></tr>
+            <tr class="tr-total"><td colspan="2">TOTAL · ROAS = 820M / 213M spend</td><td>8,151</td><td><span class="green">3.85×</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="insight" style="margin-bottom:0;margin-top:0.75rem">
+        <div class="insight-label">Sept = Structural Pause Every Year</div>
+        <p style="font-size:0.82rem">InsurTech has -16% to -21% structural trough every September. <strong>PAUSE ALL marketing spend in September.</strong> Resume aggressively in October–November for motorcycle renewal season.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 4: PORTFOLIO MATRIX ===== -->
+<section id="s4" class="section">
+  <div class="hero">
+    <div class="hero-tag">Strategic Portfolio Matrix</div>
+    <h1>Where to <span>INVEST</span>, GROW, maintain,<br>and <span style="color:#d0021b">EXIT</span> now.</h1>
+    <p class="hero-sub">Data-driven portfolio decisions across all MoMo FS and payment products. Based on growth trajectory, revenue quality, and competitive position.</p>
+  </div>
+
+  <!-- FS ARPU PYRAMID -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-title">FS ARPU Pyramid — Revenue per User (Jan 2026)</div>
+    <div class="grid-4">
+      <div style="padding:1rem;background:var(--surface2);border-radius:8px;text-align:center">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">CLO (Personal Loans)</div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--purple)">1.0M</div>
+        <div style="font-size:0.75rem;color:var(--muted)">VND/contract · 4,809 contracts</div>
+        <div class="risk-bar" style="margin-top:8px"><div class="risk-fill" style="width:100%;background:var(--purple)"></div></div>
+      </div>
+      <div style="padding:1rem;background:var(--surface2);border-radius:8px;text-align:center">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">Vay Nhanh (Personal Loans)</div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--red-light)">422K</div>
+        <div style="font-size:0.75rem;color:var(--muted)">VND/borrower · 148K borrowers</div>
+        <div class="risk-bar" style="margin-top:8px"><div class="risk-fill" style="width:42%;background:var(--red-light)"></div></div>
+      </div>
+      <div style="padding:1rem;background:var(--surface2);border-radius:8px;text-align:center">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">Paylater (BNPL)</div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--blue)">48K</div>
+        <div style="font-size:0.75rem;color:var(--muted)">VND/borrower · 1.45M borrowers</div>
+        <div class="risk-bar" style="margin-top:8px"><div class="risk-fill" style="width:5%;background:var(--blue)"></div></div>
+      </div>
+      <div style="padding:1rem;background:var(--surface2);border-radius:8px;text-align:center">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">TTT Money Pool</div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--green)">8.5K</div>
+        <div style="font-size:0.75rem;color:var(--muted)">VND/MFU · 2.35M funded users</div>
+        <div class="risk-bar" style="margin-top:8px"><div class="risk-fill" style="width:0.85%;background:var(--green)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSURTECH MATRIX -->
+  <div class="grid-2" style="margin-bottom:1.5rem">
+    <div class="card">
+      <div class="card-title">InsurTech Portfolio Decision Matrix</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Product</th><th>Decision</th><th>Rationale</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Vehicle Insurance</td><td><span class="pill pill-invest">INVEST</span></td><td>+277% growth, 8 partners, full-funnel campaign live. Seasonal blitz Nov–Dec annually.</td></tr>
+            <tr><td>Domestic Travel</td><td><span class="pill pill-grow">GROW</span></td><td>Year-round demand, +47% stable. 100% organic — any spend = incremental. 3.1M billpay users = target.</td></tr>
+            <tr><td>International Travel</td><td><span class="pill pill-grow">SCALE UP</span></td><td>179 orders/month but 554K premium = 8× domestic ARPU. Add 2 partners. Push Q2 2026.</td></tr>
+            <tr><td>PA Bus</td><td><span class="pill pill-maintain">MAINTAIN</span></td><td>Seasonal: push Dec + post-Tet Feb 18–25. Stable volume otherwise.</td></tr>
+            <tr><td>Cyber Basic</td><td><span class="pill pill-maintain">KEEP AS FEATURE</span></td><td>0 MoMo revenue, but wallet retention tool. Don't cut.</td></tr>
+            <tr><td>Health Insurance</td><td><span class="pill pill-exit">EXIT</span></td><td>-48% declining, single partner (PVI), no recovery path visible.</td></tr>
+            <tr><td>Property Insurance</td><td><span class="pill pill-exit">DIVEST</span></td><td>-47% YoY each January, secular decline toward extinction.</td></tr>
+            <tr><td>Cyber Plus</td><td><span class="pill pill-maintain">MINIMAL</span></td><td>~1.6K VND/order marginal. Low priority.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">InsurTech Revenue Growth Trajectory (Monthly Orders)</div>
+      <div class="chart-wrap">
+        <canvas id="insurtechLine"></canvas>
+      </div>
+      <div class="insight" style="margin-top:0.75rem;margin-bottom:0">
+        <div class="insight-label">PVI Concentration Risk</div>
+        <p style="font-size:0.82rem">PVI = 40.6% of InsurTech revenue (4 product lines). Action: exit Health + Property to reduce PVI dependency. Find backup for PA Bus.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT PORTFOLIO OVERVIEW -->
+  <div class="card">
+    <div class="card-title">Full Product Portfolio — Strategic Assessment</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Product</th><th>Jan 2026 Users</th><th>Monthly Revenue</th><th>YoY Growth</th><th>Decision</th><th>Priority Action</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>DLS Online</td><td>6.7M</td><td>~54.85B (est)</td><td>+21% orders</td><td><span class="pill pill-invest">PROTECT</span></td><td>Don't disrupt. Monetize edge (MDR).</td></tr>
+          <tr><td>P2P (W2W + W2B)</td><td>~10M+</td><td>~49B (W2B+CASHOUT)</td><td>+19% GMV</td><td><span class="pill pill-invest">PROTECT</span></td><td>VietQR MDR: 0.033% → 0.05%</td></tr>
+          <tr><td>Airtime</td><td>5.0M</td><td>~17.75B (est)</td><td>Stable</td><td><span class="pill pill-maintain">MAINTAIN</span></td><td>Stable utility. Cross-sell TTT.</td></tr>
+          <tr><td>Billpay</td><td>3.1M</td><td>8.64B</td><td>Stable</td><td><span class="pill pill-maintain">MAINTAIN</span></td><td>Add Travel Insurance to billpay flow.</td></tr>
+          <tr><td>Paylater</td><td>1.45M active</td><td>~47.8B net</td><td>+10% GMV</td><td><span class="pill pill-invest">INVEST</span></td><td>Activate 658K warm dormant. 82% headroom.</td></tr>
+          <tr><td>TTT Money Pool</td><td>3.0M MFU</td><td>~20B est</td><td>+52% CAGR AUM</td><td><span class="pill pill-grow">GROW</span></td><td>Quality cohort strategy. Target 24.4% super-savers.</td></tr>
+          <tr><td>Vay Nhanh</td><td>865K borrowers</td><td>~62B est</td><td>+160% YoY</td><td><span class="pill pill-grow">GROW</span></td><td>Monitor VIET_CREDIT concentration. Accelerate MBV.</td></tr>
+          <tr><td>CLO</td><td>4,809 contracts</td><td>4.85B</td><td>SHB +3,828 contracts</td><td><span class="pill pill-grow">GROW</span></td><td>Support SHB to 5K+/month. Monitor HC decline.</td></tr>
+          <tr><td>InsurTech (Vehicle)</td><td>57.6K orders/mo</td><td>~3.31B</td><td>+277%</td><td><span class="pill pill-invest">INVEST</span></td><td>Scale car (202→2,000). Annual Nov–Dec blitz.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 5: TOP 10 RECOMMENDATIONS ===== -->
+<section id="s5" class="section">
+  <div class="hero">
+    <div class="hero-tag">Top 10 Strategic Recommendations</div>
+    <h1>+100B VND/year from <span>existing users</span>.<br>No new acquisition needed.</h1>
+    <p class="hero-sub">Generated from 200+ BigQuery queries, 60+ Mimir comparisons, 13 domains, 25 batches. March 4, 2026.</p>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:1.5rem">
+    <div class="stat-card">
+      <div class="stat-label">Total Annual Revenue Uplift</div>
+      <div class="stat-val green">+100B</div>
+      <div class="stat-sub">VND/year from existing users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">In USD</div>
+      <div class="stat-val green">~$4M</div>
+      <div class="stat-sub">Incremental annual revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Investment Required</div>
+      <div class="stat-val">4–5B</div>
+      <div class="stat-sub">VND/month campaign spend</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Blended ROI</div>
+      <div class="stat-val yellow">20–25×</div>
+      <div class="stat-sub">Annual revenue / annual spend</div>
+    </div>
+  </div>
+
+  <!-- RECS GRID -->
+  <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem">
+
+    <div class="rec-card">
+      <div class="rec-num">1</div>
+      <div class="rec-body">
+        <h4>Dormant Paylater Activation — Highest ROI Campaign</h4>
+        <p>1.18M TPB + 211K MBV = 1.39M dormant accounts with approved credit limits sitting unused. 87% are lapsed (ever-transacted), 66% are warm (1–3 months inactive). Window: act within 60 days before cold.</p>
+        <div class="rec-impact">+11.5B VND/month net · Near-zero CAC (existing customers) · Q2 2026</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">2</div>
+      <div class="rec-body">
+        <h4>Voluntary Car Insurance Scale-Up (202 → 2,000 orders/month)</h4>
+        <p>0.004% penetration of 4–5M car market. Campaign ins_bhot_new already exists and running. Scale budget. Replicate Liberty TYPEID='dd' promo for PJICO (0 → 30–50 orders in 3 months expected). International travel: 554K avg premium per order — 8× domestic. Add 2 partners.</p>
+        <div class="rec-impact">+1.76B VND/month vehicle · +138M/month intl travel · By H2 2026</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">3</div>
+      <div class="rec-body">
+        <h4>TTT Money Pool Acquisition Quality Strategy</h4>
+        <p>Stop Wave 1-style mass campaigns (median deposit 272 VND = worthless). Jan 2025 cohort template: 662K avg first deposit, 41.8% 12-month retention. Super-saver profile (24.4% of Jan 2025 cohort) continuously funded 13 months — target for premium insurance cross-sell. Reactivation: 24.9K (Paylater+TTT lapsed), 232K (Paylater+TTT never), 1.59M (VietQR-only).</p>
+        <div class="rec-impact">+138.5B new AUM (one-time) · Cohort quality > cohort volume · Q2 2026</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">4</div>
+      <div class="rec-body">
+        <h4>International Travel Insurance Expansion</h4>
+        <p>179 orders/month at 554K VND premium = 166K MoMo commission/order. Only 1 partner effectively contributing. Add VBI, Bảo Việt International, or Tokio Marine. Current domestic travel: 30K organic orders/month with zero campaign spend — pure upside from any marketing.</p>
+        <div class="rec-impact">+138M VND/month at 1,000 orders · Push Q2 2026 holiday season</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">5</div>
+      <div class="rec-body">
+        <h4>VietQR MDR Expansion (Fintech Platform Playbook)</h4>
+        <p>Current MDR 0.033% vs market benchmark 0.05–0.3% (Visa/MC: 1–2%). Continue gradual increase (+0.001%/month pace). At 0.05% × 10T GMV = 5B/month. VietQR at 55 VND/txn = 40M txn × 55 = 2.24B vs direct P2B at 1,665 VND/txn = volume plays. MoMo is executing classic platform MDR compression then expansion.</p>
+        <div class="rec-impact">+2.8B VND/month = +33.6B VND/year · Target: March–April 2027</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">6</div>
+      <div class="rec-body">
+        <h4>TTT Cross-Sell from Paylater Users (233K Prime Targets)</h4>
+        <p>233K users: Paylater active + TTT account exists but never funded. 24.9K warmest: Paylater active + TTT lapsed just 1 month (50% conversion potential). Message: "Vừa mua hàng với Paylater — để tiết kiệm bù lại, gửi vào TTT ngay." Zero acquisition cost — in-app push.</p>
+        <div class="rec-impact">+31B new AUM (one-time injection) · 20% conversion of 233K = 46.6K users</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">7</div>
+      <div class="rec-body">
+        <h4>CLO / SHB Scale-Up (Monitor and Enable)</h4>
+        <p>SHB exploded from 2 contracts (Nov pilot) to 3,830 contracts in Feb 2026 — overtook Home Credit. Conservative underwriting at 6.5% approval rate from 60K+ applications = quality. Higher take rate 4.09% vs HC 3.80% = better economics. HC deliberately declining (3,489 → 2,828 contracts = volume shift to SHB). Confirm March pipeline (batch processing vs genuine pause).</p>
+        <div class="rec-impact">+1B VND/month from SHB at 5K+ contracts · Q2 2026 target</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">8</div>
+      <div class="rec-body">
+        <h4>InsurTech Marketing Calendar — Execute Annually</h4>
+        <p>Data-confirmed pattern (2024 + 2025): Vehicle renewal season starts Nov 27 (not Nov 1). Campaign must launch Nov 20–25. September = structural trough -16% to -21% EVERY year — pause all spend. PA Bus: push Dec + post-Tet Feb 18–25. Travel: year-round, bump October. Decision: exit Health Insurance (-48%), exit Property Insurance (-47% YoY secular).</p>
+        <div class="rec-impact">Calendar optimization = same spend, +15–20% campaign efficiency annually</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">9</div>
+      <div class="rec-body">
+        <h4>TPBank Dependency Risk Mitigation</h4>
+        <p>TPBank = 1.685T VND Paylater outstanding, ~83% of Paylater volume. If TPBank exits = 1.4M users disrupted (largest product). MoMo bears ZERO credit risk, but loses Paylater distribution revenue. Accelerate MBV Paylater: currently 35.2% utilization vs TPB 43.4%, growing from 17% to 30% share in 12 months = manageable.</p>
+        <div class="rec-impact">Risk mitigation: TPBank from 83% → 70% share in 12 months</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-num">10</div>
+      <div class="rec-body">
+        <h4>VIET_CREDIT Monitoring (Quarterly)</h4>
+        <p>VIET_CREDIT = 64% of 17.3T VN portfolio, 64% reloan rate = mutual dependency (not just concentration risk — VIET_CREDIT needs MoMo for origination). MoMo bears ZERO credit risk, but loses VN distribution if VIET_CREDIT exits. Natural mitigation already happening: MBV joined VN Nov 2025. Monitor quarterly: VIET_CREDIT NPL + capital adequacy via regulatory/news data.</p>
+        <div class="rec-impact">Quarterly monitoring only · MBV joining = structural diversification in progress</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- REVENUE UPLIFT SUMMARY CHART -->
+  <div class="card">
+    <div class="card-title">Revenue Uplift Summary — From Existing Users (No New Acquisition)</div>
+    <div class="chart-wrap" style="height:320px">
+      <canvas id="upliftBar"></canvas>
+    </div>
+    <div class="insight" style="margin-top:1rem;margin-bottom:0">
+      <div class="insight-label">Capstone Finding</div>
+      <p><strong>MoMo's 5-layer competitive moat:</strong> Distribution (10M+ users) → Credit (19.2T facilitated) → Savings (1.75T TTT AUM) → Insurance (InsurTech +163%) → Banking (CLO SHB, VN MBV). Each layer multiplies the others. The moat is not payment — it's <em>ecosystem density</em>.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  MoMo Board Strategy Deck · Confidential · March 4, 2026 · Data from 200+ BigQuery queries, 13 domains, 25 distill batches
+</footer>
+
+<script>
+// NAVIGATION
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  // Re-init charts on tab switch
+  setTimeout(initCharts, 50);
+}
+
+Chart.defaults.color = '#888';
+Chart.defaults.borderColor = '#2a2a2a';
+const chartInstances = {};
+
+function destroyChart(id) {
+  if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+}
+
+function initCharts() {
+  // --- S1: Revenue Donut ---
+  if (document.getElementById('revenueDonut') && document.getElementById('s1').classList.contains('active')) {
+    destroyChart('revenueDonut');
+    chartInstances['revenueDonut'] = new Chart(document.getElementById('revenueDonut'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Paylater (net)', 'P2P W2B', 'P2P CASHOUT', 'Billpay', 'CLO', 'InsurTech', 'DLS (est)', 'Airtime (est)', 'TTT spread (est)', 'VN fees (est)'],
+        datasets: [{
+          data: [47.8, 38.6, 4.41, 8.64, 4.85, 4.13, 54.85, 17.75, 20, 62],
+          backgroundColor: ['#d0021b','#ff6384','#ff9f40','#22c55e','#a855f7','#3b82f6','#555','#444','#333','#222'],
+          borderColor: '#0d0d0d', borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}B VND` } }
+        }
+      }
+    });
+  }
+
+  // --- S1: Revenue Stacked Bar ---
+  if (document.getElementById('revenueBar') && document.getElementById('s1').classList.contains('active')) {
+    destroyChart('revenueBar');
+    chartInstances['revenueBar'] = new Chart(document.getElementById('revenueBar'), {
+      type: 'bar',
+      data: {
+        labels: ['Paylater\n(net)', 'P2P W2B\n+ CASHOUT', 'Billpay', 'CLO', 'InsurTech', 'Total\nVerified'],
+        datasets: [{
+          label: 'Monthly Net Revenue (B VND)',
+          data: [47.8, 43.01, 8.64, 4.85, 4.13, 108.43],
+          backgroundColor: ['#d0021b','#ff6384','#22c55e','#a855f7','#3b82f6','rgba(208,2,27,0.3)'],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: '#1e1e1e' }, ticks: { callback: v => v + 'B' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // --- S2: Credit Pie ---
+  if (document.getElementById('creditPie') && document.getElementById('s2').classList.contains('active')) {
+    destroyChart('creditPie');
+    chartInstances['creditPie'] = new Chart(document.getElementById('creditPie'), {
+      type: 'doughnut',
+      data: {
+        labels: ['VIET_CREDIT (VN)', 'MCREDIT (VN)', 'AMBER (VN)', 'MBV (VN)', 'TPBank (PL)', 'MBV (PL)', 'SHB (CLO)', 'HC / Others (CLO)'],
+        datasets: [{
+          data: [11100, 3640, 2310, 230, 1685, 195, 620, 325],
+          backgroundColor: ['#d0021b','#ff6384','#ff9f40','#22c55e','#3b82f6','#93c5fd','#a855f7','#555'],
+          borderColor: '#0d0d0d', borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '55%',
+        plugins: {
+          legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${(ctx.parsed/1000).toFixed(2)}T VND` } }
+        }
+      }
+    });
+  }
+
+  // --- S3: Campaign Impact Bar ---
+  if (document.getElementById('campaignBar') && document.getElementById('s3').classList.contains('active')) {
+    destroyChart('campaignBar');
+    chartInstances['campaignBar'] = new Chart(document.getElementById('campaignBar'), {
+      type: 'bar',
+      data: {
+        labels: ['Dormant PL\nActivation', 'Scale Car\nInsurance', 'Travel Ins\nPlacement', 'Scale InsurTech\nBudget', 'PJICO Car\nCampaign'],
+        datasets: [{
+          label: 'Monthly Revenue Impact (B VND)',
+          data: [15.4, 5.7, 0.775, 0.818, 0.06],
+          backgroundColor: ['#d0021b','#ff6384','#22c55e','#3b82f6','#a855f7'],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: '#1e1e1e' }, ticks: { callback: v => v + 'B' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // --- S4: InsurTech Line ---
+  if (document.getElementById('insurtechLine') && document.getElementById('s4').classList.contains('active')) {
+    destroyChart('insurtechLine');
+    chartInstances['insurtechLine'] = new Chart(document.getElementById('insurtechLine'), {
+      type: 'line',
+      data: {
+        labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+        datasets: [
+          {
+            label: 'Vehicle Ins Orders',
+            data: [null, null, null, 15700, 19200, 30900, 48500, 57600],
+            borderColor: '#d0021b', backgroundColor: 'rgba(208,2,27,0.1)',
+            tension: 0.4, fill: true, borderWidth: 2
+          },
+          {
+            label: 'Travel Ins Orders',
+            data: [22000, 24000, 18000, 26000, 28000, 29000, 28800, 28760],
+            borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.05)',
+            tension: 0.4, fill: true, borderWidth: 2
+          },
+          {
+            label: 'PA Bus Orders',
+            data: [8000, 6000, 5000, 7000, 25000, 48000, 18000, 46000],
+            borderColor: '#f59e0b',
+            tension: 0.4, borderWidth: 2, borderDash: [4,4]
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          y: { grid: { color: '#1e1e1e' }, ticks: { callback: v => (v/1000).toFixed(0) + 'K' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // --- S5: Uplift Bar ---
+  if (document.getElementById('upliftBar') && document.getElementById('s5').classList.contains('active')) {
+    destroyChart('upliftBar');
+    chartInstances['upliftBar'] = new Chart(document.getElementById('upliftBar'), {
+      type: 'bar',
+      data: {
+        labels: ['#1 Dormant PL', '#2 Car Insurance', '#3 VietQR MDR', '#4 Intl Travel', '#5 TTT Cross-sell\n(AUM one-time)', '#7 CLO SHB'],
+        datasets: [{
+          label: 'Monthly Revenue Uplift (B VND)',
+          data: [11.5, 1.76, 2.8, 0.138, 0, 1.0],
+          backgroundColor: ['#d0021b','#ff6384','#22c55e','#3b82f6','#a855f7','#f59e0b'],
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: '#1e1e1e' }, ticks: { callback: v => v + 'B VND/mo' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  }
+}
+
+// INIT on load
+window.addEventListener('load', initCharts);
+</script>
+</body>
+</html>
