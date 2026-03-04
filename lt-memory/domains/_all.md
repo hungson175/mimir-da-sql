@@ -13,7 +13,7 @@
 | 7 | BU FS: InsurTech - Insurance | `800bf3e8-a8ba-45c3-90d8-5f54bdaba156` | `fs-insurtech-insurance.md` |
 | 8 | BU FS: Túi Thần Tài | `fa0fb3af-d3d9-4459-9a82-fb7c6eafab11` | `fs-tui-than-tai.md` |
 | 9 | BU FS: Vay Nhanh | `bb231763-b11c-45c6-9b0d-eb6d24588e3d` | `fs-vay-nhanh.md` |
-| 10 | BU Growth Platform: Expense Management | `af241589-f5be-4b97-8928-fe0823c8dc75` | `expense-management.md` |
+| 10 | BU Growth Platform: Expense Management | `af241589-f5be-4b97-8928-fe0823c8dc75` | `growth-platform-expense-management.md` |
 | 11 | BU MDS: Business Page | `3220e3ea-a817-4cad-a795-6221771b5956` | `mds-business-page.md` |
 | 12 | BU MDS: Donation | `dd5f63eb-9981-4d0b-ba85-bd73ce80f52f` | `mds-donation.md` |
 | 13 | BU MDS: Journey | `6471b001-623f-4ce2-a6a5-5bf63b2cf928` | `mds-journey.md` |
@@ -40,7 +40,7 @@
 | 34 | BU Payment: P2P OVERALL | `838c1168-492d-4751-995d-d356dd8b9a42` | `payment-p2p-overall.md` |
 | 35 | BU Payment: P2P QUYNHOM | `3a52651b-b3a6-4865-8a11-7b06ea99be24` | `payment-p2p-quynhom.md` |
 | 36 | BU Payment: P2P RECEIVER GENERAL | `390df75f-43e9-4caa-a418-0959e0691f73` | `payment-p2p-receiver-general.md` |
-| 37 | BU Payment: P2P REVENUE | `67150ae4-a5a7-47b0-88a1-5a75e6635988` | `p2p-revenue.md` |
+| 37 | BU Payment: P2P REVENUE | `67150ae4-a5a7-47b0-88a1-5a75e6635988` | `payment-p2p-revenue.md` |
 | 38 | BU Payment: P2P SOCIAL | `a7a4abe7-ba98-48dd-b9f0-8d0752c75910` | `payment-p2p-social.md` |
 | 39 | BU Payment: P2P W2B | `526c040d-6956-4cb9-8919-87828de05cfc` | `payment-p2p-w2b.md` |
 | 40 | BU Payment: P2P W2W | `f3d8838b-5f96-4f78-8c39-2b146978dbd8` | `payment-p2p-w2w.md` |
