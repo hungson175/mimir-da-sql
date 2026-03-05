@@ -1,0 +1,219 @@
+{
+  "domain_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419",
+  "name": "BU FS: Bank Partnership",
+  "metadata": {
+    "id": "7102da6a-2fdc-4475-a3bf-b66be5bca419",
+    "name": "BU FS: Bank Partnership",
+    "description": "Thông tin dữ liệu về các dịch vụ liên quan tới ngân hàng (nạp/ rút/ liên kết/ direct debit/ w2b/ ...)",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: BU FS: Bank Partnership \n ## Table information : {\"table_name\":\"momovn-prod.BU_FI.BANK_W2B_RAW\",\"table_desc\":\"Bảng này chứa thông tin chi tiết về các giao dịch chuyển tiền từ ví MoMo đến ngân hàng (W2B).\",\"column_desc\":[{\"column_name\":\"DATE\",\"description\":\"**Desc**: Ngày khởi tạo giao dịch chuyển tiền từ ví MoMo đến ngân hàng.\\n\\n**Sample value**: ['2024-07-10']\",\"data_type\":\"DATE\"},{\"column_name\":\"PARTNER_CODE\",\"description\":\"**Desc**: Mã lỗi đối tác phản hồi.\",\"data_type\":\"STRING\"},{\"column_name\":\"BANK_CODE\",\"description\":\"**Desc**: Mã ngân hàng dùng để thực hiện chuyển tiền từ ví MoMo đến ngân hàng.\\n\\n**Sample value**: ['VTB']\",\"data_type\":\"STRING\"},{\"column_name\":\"BANK_NAME\",\"description\":\"**Desc**: Tên ngân hàng dùng để thực hiện chuyển tiền từ ví MoMo đến ngân hàng.\",\"data_type\":\"STRING\"},{\"column_name\":\"BANK_RECEIVED\",\"description\":\"**Desc**: Mã ngân hàng được nhận tiền từ ví MoMo.\\n\\n**Sample value**: ['ACB', 'DongABank', 'None', 'VIB']\",\"data_type\":\"STRING\"},{\"column_name\":\"TYPE\",\"description\":\"**Desc**: Luồng chuyển tiền từ ví MoMo tới ngân hàng\\n\\n**Sample value**:\\n\\n1. SAME: luồng internal\\n2. DIFF: luồng external\",\"data_type\":\"STRING\"},{\"column_name\":\"REQUEST_ID\",\"description\":\"**Desc**: Mã định danh duy nhất cho mỗi yêu cầu chuyển tiền từ ví MoMo tới ngân hàng.\\n\\n**Sample value**: ['1ec08f95-691b-4e27-90fd-1cd056fe6445', '220c95cb-3669-4ada-a34f-fdd78376bbd5', '50172894-f3a5-4553-b4d9-2d66e3585f11']\",\"data_type\":\"STRING\"},{\"column_name\":\"TID\",\"description\":\"**Desc**: Mã định danh giao dịch.\\n\\n**Sample value**: ['62187421058.0', '62199181951.0', '62210667900.0']\",\"data_type\":\"FLOAT\"},{\"column_name\":\"USER\",\"description\":\"**Desc**: Mã định danh người dùng (còn có thể gọi là agentid) thực hiện chuyển tiền từ ví MoMo tới ngân hàng.\\n\\n**Sample value**: ['33938882', '4343039', '47197973']\",\"data_type\":\"STRING\"},{\"column_name\":\"AMOUNT\",\"description\":\"**Desc**: Số tiền chuyển tiền từ ví MoMo tới ngân hàng.\\n\\n**Sample value**: ['150000.0', '1500000.0', '200000.0']\",\"data_type\":\"FLOAT\"},{\"column_name\":\"AMT_RANGE\",\"description\":\"**Desc**: Khoảng giá trị của số tiền chuyển tiền.\\n\\n**Sample value**: ['1.1-500K', '2.500001-2M', '3.2000001-300M']\",\"data_type\":\"STRING\"},{\"column_name\":\"STATUS\",\"description\":\"**Desc**: Trạng thái của giao dịch .\\n\\n**Sample value**:\\n1. 1: giao dịch treo\\n2. 2: giao dịch thành công\\n3. 6: giao dịch thất bại\",\"data_type\":\"INT\"},{\"column_name\":\"CHANNEL\",\"description\":\"**Desc**: Kênh thực hiện chuyển tiền từ ví MoMo tới ngân hàng.\\n\\n**Sample value**:\\n\\n1. VietQR: quét mã VietQR\\n2. Other: những kênh khác\",\"data_type\":\"STRING\"},{\"column_name\":\"CHANNEL_DETAIL\",\"description\":\"**Desc**: Chi tiết kênh thực hiện chuyển tiền từ ví MoMo tới ngân hàng.\\n\\n**Sample value**:\",\"data_type\":\"STRING\"},{\"column_name\":\"CASHOUT_ACC_TYPE\",\"description\":\"**Desc**: Giao dịch từ tài khoản gì?\\n\\n**Sample value**: \\n1. UNKNOWN: không xác định được\\n2. ACCOUNT: giao dịch từ tài khoản\\n3. CARD: giao dịch từ thẻ\\n4. CARD_TQT: giao dịch từ thẻ quốc tế\",\"data_type\":\"STRING\"},{\"column_name\":\"TRANSFER_TYPE\",\"description\":\"**Desc**: Loại chuyển tiền được thực hiện.\\n\\n**Sample value**: ['APP']\",\"data_type\":\"STRING\"},{\"column_name\":\"ROUTE_TYPE\",\"description\":\"**Desc**: Chi tiết luồng đi của giao dịch chuyển tiền từ ví MoMo tới ngân hàng.\\n\\n**Sample value**: ['external']\",\"data_type\":\"STRING\"},{\"column_name\":\"DETAIL_FLOW\",\"description\":\"**Desc**: Chi tiết 2 của luồng đi của giao dịch chuyển tiền từ ví MoMo tới ngân hàng.\\n\\n**Sample value**: ['None']\",\"data_type\":\"STRING\"},{\"column_name\":\"DATETIME\",\"description\":\"**Desc**: Ngày và giờ khởi tạo giao dịch chuyển tiền từ ví MoMo đến ngân hàng.\",\"data_type\":\"DATETIME\"},{\"column_name\":\"RESPONSE_DATETIME\",\"description\":\"**Desc**: Thời gian ngân hàng phản hồi lại kết quả chuyển tiền.\",\"data_type\":\"DATETIME\"},{\"column_name\":\"PARTNER_ID\",\"description\":\"**Desc**: Mã ngân hàng (hiển thị dưới dạng số) dùng để thực hiện chuyển tiền từ ví MoMo đến ngân hàng.\",\"data_type\":\"STRING\"},{\"column_name\":\"PROCESS_NAME\",\"description\":\"**Desc**: Tên của quy trình xử lý chuyển tiền từ ví MoMo tới ngân hàng.\",\"data_type\":\"STRING\"},{\"column_name\":\"PARTNER_REQUEST_ID\",\"description\":\"**Desc**: Mã định danh từ đối tác để trace log.\",\"data_type\":\"STRING\"},{\"column_name\":\"PARTNER_REF_NUMBER\",\"description\":\"**Desc**: Mã định danh 2 từ đối tác để trace log.\",\"data_type\":\"STRING\"},{\"column_name\":\"STATUS_FINAL\",\"description\":\"**Desc**: Trạng thái cuối cùng của giao dịch\\n\\n**Sample value**:\\n1. 2: giao dịch thành công\\n2. 6: giao dịch thất bại\\n3. null: giao dịch chưa có trạng thái cuối\",\"data_type\":\"INT\"},{\"column_name\":\"MS_CODE\",\"description\":\"**Desc**: Mã lỗi của MoMo.\",\"data_type\":\"STRING\"},{\"column_name\":\"PARTNER_MESSAGE\",\"description\":\"**Desc**: Diễn giải ý nghĩa mã lỗi đối tác phản hồi.\",\"data_type\":\"STRING\"},{\"column_name\":\"INQUIRY_STATUS\",\"description\":\"**Desc**: Trạng thái của giao dịch sau khi được đối soát\\n\\n**Sample value**:\\n1. 2: giao dịch thành công\\n2. 6: giao dịch thất bại\\n3. null: giao dịch không đối soát\",\"data_type\":\"FLOAT\"},{\"column_name\":\"INQUIRY_FLOW\",\"description\":\"**Desc**: Gọi đối soát giao dịch từ luồng nào.\\n\\n**Sample value**:\\n1. momo_inquiry: MoMo chủ động gọi đối soát\\n2. partner_callback: đối tác gọi trả đối soát\",\"data_type\":\"STRING\"},{\"column_name\":\"INQUIRY_TIME\",\"description\":\"**Desc**: Thời gian gọi đối soát lần đầu.\\n\\n**Sample value**: ['None']\",\"data_type\":\"INT\"},{\"column_name\":\"FINAL_DATETIME\",\"description\":\"**Desc**: Thời gian thật hoàn tất giao dịch chuyển tiền từ ví MoMo đến ngân hàng (nếu đã có status_final thì = thời gian trong core, còn chưa có status_final thì là response_datetime).\",\"data_type\":\"DATETIME\"}]}\n\n## Table information : {\"table_name\":\"momovn-prod.BU_FI.BANK_MAP_ERROR\",\"table_desc\":\"Bảng này chứa thông tin về các lỗi xảy ra trong quá trình liên kết ngân hàng với ví MoMo.\",\"column_desc\":[{\"column_name\":\"REQUEST_ID\",\"description\":\"**Desc**: Mã định danh duy nhất cho mỗi yêu cầu liên kết ngân hàng.\\n\\n**Sample value**: ['ABB106987712024-02-28 10:22:25', 'ABB227538812024-02-28 07:55:12', 'ABB457042402024-02-28 16:39:45']\",\"data_type\":\"STRING\"},{\"column_name\":\"USER\",\"description\":\"**Desc**: Mã định danh người dùng (còn có thể gọi là agentid) thực hiện liên kết ngân hàng.\\n\\n**Sample value**: ['33938882', '4343039', '47197973']\",\"data_type\":\"STRING\"},{\"column_name\":\"PROCESS_NAME\",\"description\":\"**Desc**: Tên của quy trình xử lý liên kết ngân hàng.\\n\\n**Sample value**: \\n1. click_logo: bước chọn logo ngân hàng cần liên kết\\n2. verifyMap, verify_map_one_click: thực hiện liên kết\\n3. map, register, confirm_map_one_click: bước kết quả cuối (liên kết thành công hay thất bại)\",\"data_type\":\"STRING\"},{\"column_name\":\"LINKAGE\",\"description\":\"**Desc**: Nguồn liên kết của nguồn tiền ngân hàng đang thực hiện liên kết.\\n\\n**Sample value**: \\n1. NAPAS: là nguồn napas\\n2. VISA: là nguồn visa\\n3. NHLK: là nguồn ngân hàng liên kết\",\"data_type\":\"STRING\"},{\"column_name\":\"BANK_CODE\",\"description\":\"**Desc**: Mã ngân hàng liên kết đang thực hiện liên kết.\\n\\n**Sample value**: ['ABB']\",\"data_type\":\"STRING\"},{\"column_name\":\"DATE\",\"description\":\"**Desc**: Ngày khởi tạo liên kết ngân hàng.\\n\\n**Sample value**: ['2024-02-28']\",\"data_type\":\"DATE\"},{\"column_name\":\"DATE_TIME\",\"description\":\"**Desc**: Ngày và giờ khởi tạo liên kết ngân hàng.\\n\\n**Sample value**: ['2024-02-28 07:55:12', '2024-02-28 10:22:25', '2024-02-28 14:14:59']\",\"data_type\":\"DATETIME\"},{\"column_name\":\"HOUR\",\"description\":\"**Desc**: Giờ khởi tạo liên kết ngân hàng.\\n\\n**Sample value**: ['10', '14', '16']\",\"data_type\":\"INT\"},{\"column_name\":\"TYPE\",\"description\":\"**Desc**: Loại liên kết.\\n\\n**Sample value**: \\n\\n1. UNKNOWN: không xác định được\\n2. ACCOUNT: tài khoản\\n3. CARD:  thẻ\\n4. CARD_TQT: thẻ quốc tế\",\"data_type\":\"STRING\"},{\"column_name\":\"MS_CODE\",\"description\":\"**Desc**: Mã lỗi của MoMo.\\n\\n**Sample value**: ['1004', '3010', '9000']\",\"data_type\":\"STRING\"},{\"column_name\":\"PARTNER_CODE\",\"description\":\"**Desc**: Mã lỗi đối tác phản hồi.\\n\\n**Sample value**: ['-1']\",\"data_type\":\"STRING\"},{\"column_name\":\"ERROR_CATEGORY\",\"description\":\"**Desc**: Danh mục level 1 lỗi xảy ra trong quá trình liên kết.\\n\\n**Sample value**: ['SUCCESS']\",\"data_type\":\"STRING\"},{\"column_name\":\"ERROR_SUB_CATEGORY\",\"description\":\"**Desc**: Danh mục level 2 lỗi xảy ra trong quá trình liên kết.\\n\\n**Sample value**: ['THÀNH CÔNG']\",\"data_type\":\"STRING\"},{\"column_name\":\"DESCRIPTION\",\"description\":\"**Desc**: Diễn giải ý nghĩa mã lỗi.\\n\\n**Sample value**: ['Chặn tổng hạn mức tối đa / ngày', 'Transaction is pending', 'Vượt hạn mức giao dịch trong ngày']\",\"data_type\":\"STRING\"},{\"column_name\":\"VI_DESC\",\"description\":\"**Desc**: Diễn giải ý nghĩa mã lỗi để show cho người dùng.\\n\\n**Sample value**: ['Chặn tổng hạn mức tối đa / ngày', 'Transaction is pending', 'Vượt hạn mức giao dịch trong ngày']\",\"data_type\":\"STRING\"},{\"column_name\":\"FLOW\",\"description\":\"**Desc**: Người dùng liên kết từ luồng nào.\\n\\n**Sample value**:\\n\\n1. normal: liên kết luồng bình thường\\n2. one_click: liên kết luồng một chạm\\n3. counter: liên kết dưới quầy\\n4. null: không xác định\",\"data_type\":\"STRING\"},{\"column_name\":\"STAGE\",\"description\":\"**Desc**: Xác định dòng record thuộc bước nào.\\n\\n**Sample value**:\\n\\n1. 01. select_map: chọn ngân hàng\\n2. 02. try_map: thực hiện liên kết\\n3. 03. success_map: kết quả liên kết thành công hay thất bại\",\"data_type\":\"STRING\"},{\"column_name\":\"BANK_ID\",\"description\":\"**Desc**: Mã định danh từ ngân hàng để trace log.\\n\\n**Sample value**: ['None']\",\"data_type\":\"STRING\"},{\"column_name\":\"PARTNER_TRACE_ID\",\"description\":\"**Desc**: Mã định danh 2 từ ngân hàng để trace log.\\n\\n**Sample value**: ['None']\",\"data_type\":\"STRING\"},{\"column_name\":\"MOMO_REQUEST_ID\",\"description\":\"**Desc**: Mã định danh từ MoMo để trace log.\\n\\n**Sample value**: ['None']\",\"data_type\":\"STRING\"},{\"column_name\":\"FULL_NAME\",\"description\":\"**Desc**: Tên người dùng thực hiện liên kết\\n\\n**Sample value**:\",\"data_type\":\"STRING\"},{\"column_name\":\"ACCOUNT_NO\",\"description\":\"**Desc**: Tài khoản ngân hàng/ thẻ được dùng để liên kết\\n\\n**Sample value**:\",\"data_type\":\"STRING\"},{\"column_name\":\"APP_PERSONALID\",\"description\":\"**Desc**: CMND/ CCCD của người dùng thực hiện liên kết\\n\\n**Sample value**:\",\"data_type\":\"STRING\"},{\"column_name\":\"INQUIRY_FLOW\",\"description\":\"**Desc**: Gọi đối soát từ luồng nào.\\n\\n**Sample value**:\",\"data_type\":\"STRING\"},{\"column_name\":\"INQUIRY_STATUS\",\"description\":\"**Desc**: Trạng thái sau khi được đối soát\\n\\n**Sample value**:\",\"data_type\":\"FLOAT\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_FI.BANK_CO\",\"table_desc\":\"Bảng này chứa thông tin về các giao dịch rút tiền về ngân hàng từ MoMo.\",\"column_desc\":[{\"column_name\":\"DATE\",\"description\":\"**Desc**: Ngày khởi tạo giao dịch rút tiền về ngân hàng.\\n\\n**Sample value**: ['2022-12-01']\",\"data_type\":\"DATE\"},{\"column_name\":\"DATE_TIME\",\"description\":\"**Desc**: Ngày và giờ khởi tạo giao dịch rút tiền về ngân hàng.\\n\\n**Sample value**: ['2022-12-01 04:12:21', '2022-12-01 04:19:31', '2022-12-01 06:11:10']\",\"data_type\":\"DATETIME\"},{\"column_name\":\"LINKAGE\",\"description\":\"**Desc**: Nguồn liên kết của nguồn tiền ngân hàng đang thực hiện giao dịch rút tiền.\\n\\n**Sample value**: \\n1. NAPAS: là nguồn napas\\n2. VISA: là nguồn visa\\n3. NHLK: là nguồn ngân hàng liên kết\",\"data_type\":\"STRING\"},{\"column_name\":\"BANK_CODE\",\"description\":\"**Desc**: Mã ngân hàng liên kết đang thực hiện giao dịch rút tiền.\\n\\n**Sample value**: ['ABB']\",\"data_type\":\"STRING\"},{\"column_name\":\"LINKING_METHOD\",\"description\":\"**Desc**: Phương thức liên kết của nguồn được sử dụng.\\n\\n**Sample value**: \\n1. APP: liên kết từ app MoMo\\n2. IB (internet banking): liên kết từ app/web của ngân hàng đối tác\",\"data_type\":\"STRING\"},{\"column_name\":\"TYPE\",\"description\":\"**Desc**: Giao dịch từ tài khoản gì?\\n\\n**Sample value**:\\n \\n1. UNKNOWN: không xác định được\\n2. ACCOUNT: giao dịch từ tài khoản\\n3. CARD: giao dịch từ thẻ\\n4. CARD_TQT: giao dịch từ thẻ quốc tế\",\"data_type\":\"STRING\"},{\"column_name\":\"TID\",\"description\":\"**Desc**: Mã định danh giao dịch.\\n\\n**Sample value**: ['28743491909', '28743513851', '28744374659']\",\"data_type\":\"STRING\"},{\"column_name\":\"USER\",\"description\":\"**Desc**: Mã định danh người dùng (còn có thể gọi là agentid) thực hiện rút tiền.\\n\\n**Sample value**: ['33938882', '4343039', '47197973']\",\"data_type\":\"STRING\"},{\"column_name\":\"AMOUNT\",\"description\":\"**Desc**: Số tiền rút tiền.\\n\\n**Sample value**: ['10000.0', '100000.0', '17000000.0', '500000.0']\",\"data_type\":\"INT\"},{\"column_name\":\"MS_CODE\",\"description\":\"**Desc**: Mã lỗi của MoMo.\\n\\n**Sample value**: ['1004', '3010', '9000']\",\"data_type\":\"STRING\"},{\"column_name\":\"PARTNER_CODE\",\"description\":\"**Desc**: Mã lỗi đối tác phản hồi.\\n\\n**Sample value**: ['-1']\",\"data_type\":\"STRING\"},{\"column_name\":\"DESCRIPTION\",\"description\":\"**Desc**: Diễn giải ý nghĩa mã lỗi.\\n\\n**Sample value**: ['Chặn tổng hạn mức tối đa / ngày', 'Transaction is pending', 'Vượt hạn mức giao dịch trong ngày']\",\"data_type\":\"STRING\"},{\"column_name\":\"STATUS\",\"description\":\"**Desc**: Trạng thái của giao dịch .\\n\\n**Sample value**:\\n1. 1: giao dịch treo\\n2. 2: giao dịch thành công\\n3. 6: giao dịch thất bại\",\"data_type\":\"INT\"},{\"column_name\":\"STATUS_FINAL\",\"description\":\"**Desc**: Trạng thái cuối cùng của giao dịch\\n\\n**Sample value**:\\n1. 2: giao dịch thành công\\n2. 6: giao dịch thất bại\\n3. null: giao dịch chưa có trạng thái cuối\",\"data_type\":\"INT\"},{\"column_name\":\"G_\",\"description\":\"**Desc**: Người dùng thực hiện giao dịch thuộc nhóm nào?\\n\\n**Sample value**:\\n1. SIM: người dùng là sim chủ của MoMo\\n2. AUTO_MERCHANT: người dùng là đối tác\\n3. MERCHANT: người dùng là đối tác\\n4. null: là EU (end user: người dùng thật)\",\"data_type\":\"STRING\"},{\"column_name\":\"BANK_TIME\",\"description\":\"**Desc**: Thời gian ngân hàng phản hồi lại kết quả rút tiền.\\n\\n**Sample value**: ['2022-12-01 06:11:10', '2022-12-01 19:40:09', 'NaT']\",\"data_type\":\"DATETIME\"},{\"column_name\":\"FINAL_TIME\",\"description\":\"**Desc**: Thời gian thật hoàn tất giao dịch rút tiền (nếu đã có status_final thì = thời gian trong core, còn chưa có status_final thì là bank_time).\\n\\n**Sample value**: ['2022-12-01 04:12:21', '2022-12-01 04:19:31', '2022-12-01 06:11:10']\",\"data_type\":\"DATETIME\"},{\"column_name\":\"LATENCY\",\"description\":\"**Desc**: Độ trễ (số giây) trong xử lý giao dịch rút tiền (nếu đã có status_final thì = final_time - date_time, còn chưa có status_final thì là bank_time - date_time).\\n\\n**Sample value**: ['0']\",\"data_type\":\"INT\"},{\"column_name\":\"BANK_ID\",\"description\":\"**Desc**: Mã định danh từ ngân hàng để trace log.\\n\\n**Sample value**: ['None']\",\"data_type\":\"STRING\"},{\"column_name\":\"PARTNER_TRACE_ID\",\"description\":\"**Desc**: Mã định danh 2 từ ngân hàng để trace log.\\n\\n**Sample value**: ['None']\",\"data_type\":\"STRING\"},{\"column_name\":\"FLOW\",\"description\":\"**Desc**: Trạng thái của giao dịch sau khi được đối soát\\n\\n**Sample value**:\\n1. MANUAL: luồng rút tiền của người dùng bình thường về ngân hàng đang liên kết\\n2. W2B: luồng đảo từ luồng w2b \\n3. AUTO_PAYOUT_TRANS: luồng tự động rút tiền của người dùng là đối tác\\n4. UNKNOWN: không xác định được luồng\",\"data_type\":\"STRING\"},{\"column_name\":\"INQUIRY_STATUS\",\"description\":\"**Desc**: Trạng thái của giao dịch sau khi được đối soát\\n\\n**Sample value**:\\n1. 2: giao dịch thành công\\n2. 6: giao dịch thất bại\\n3. null: giao dịch không đối soát\",\"data_type\":\"INT\"},{\"column_name\":\"INQUIRY_FLOW\",\"description\":\"**Desc**: Gọi đối soát giao dịch từ luồng nào.\\n\\n**Sample value**:\\n1. momo_inquiry: MoMo chủ động gọi đối soát\\n2. partner_callback: đối tác gọi trả đối soát\",\"data_type\":\"STRING\"},{\"column_name\":\"INQUIRY_TIME\",\"description\":\"**Desc**: Thời gian gọi đối soát lần đầu.\\n\\n**Sample value**: ['None']\",\"data_type\":\"DATETIME\"},{\"column_name\":\"INQUIRY_TRY\",\"description\":\"**Desc**: Số lần gọi đối soát giao dịch.\\n\\n**Sample value**: ['None']\",\"data_type\":\"FLOAT\"},{\"column_name\":\"INQUIRY_PARTNER_CODE\",\"description\":\"**Desc**: Mã lỗi đối tác phản hồi sau khi đối soát\\n\\n**Sample value**: ['None']\",\"data_type\":\"STRING\"},{\"column_name\":\"INQUIRY_TIME_LATEST\",\"description\":\"**Desc**: Thời gian gọi đối soát gần nhất.\\n\\n**Sample value**: ['None']\",\"data_type\":\"DATETIME\"}]}\n\n",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "9c9597b4-1ae2-4479-b349-5953505f7f6b",
+        "memory": "Để tìm số lượng giao dịch loại C D, sử dụng điều kiện regexp_contains(bank_auth_code,'C|D|CD')",
+        "hash": "4e26863def7a59601884dba07ebb57cf",
+        "metadata": {
+          "user_name": "FS BANK"
+        },
+        "created_at": "2025-07-15T03:06:45.809208-07:00",
+        "updated_at": "2025-07-24T03:23:37.309896-07:00",
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "d1fd8994-2b87-4471-b91b-a2dfb17fadd3",
+        "memory": "Dùng câu lệnh SQL: REGEXP_CONTAINS(bank_auth_code, 'C|D|CD') để phân biệt loại CD trong bank_auth_code",
+        "hash": "169247674356e6a7a223149432d70e42",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-07-31T19:47:36.470983-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "50542eeb-428a-4673-b857-f942cf204bd2",
+        "memory": "Khi truy vấn số lượng khách hàng liên kết ví thành công, sử dụng mã ngân hàng 'mbb' cho cột BANK_CODE",
+        "hash": "788cc0d659aae52a69965ea732e520f1",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-08-13T19:30:23.179728-07:00",
+        "updated_at": "2025-08-13T19:30:54.574189-07:00",
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "0e81e2d5-7a30-4367-8dfe-4381ef014a5f",
+        "memory": "Mã ngân hàng Sacombank là 'SACOM'",
+        "hash": "d9d90ff258967e59f7bb07089a5a993a",
+        "metadata": {
+          "user_name": "FS BANK"
+        },
+        "created_at": "2025-07-15T03:07:33.555067-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "4b458300-d8cb-426e-8d1f-c71125603d67",
+        "memory": "Tỉ lệ liên kết ngân hàng thành công của HDB trong tháng 8/2025 là 21.65%",
+        "hash": "ead20e34cf28ae1a9f462cd9bcd5570d",
+        "metadata": null,
+        "created_at": "2025-10-02T00:09:56.192176-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "b51b5ace-769a-478b-acff-cda636438ee7",
+        "memory": "Tỉ lệ cashin thành công dưới 90% là đúng do dữ liệu báo cáo có loại giao dịch dính lỗi số dư",
+        "hash": "cacb352b2a02cdb4433552926fd8bcc7",
+        "metadata": {
+          "user_name": "FS BANK"
+        },
+        "created_at": "2025-07-17T02:23:36.111249-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "fd9c4217-1193-46fb-833e-6fef0e26b793",
+        "memory": "Tỷ lệ liên kết ví thành công được tính bằng: safe_divide(count(distinct case when stage = '03. success_map' then user end), count(distinct case when process_name not in ('click_logo') then user end))",
+        "hash": "25963fdb09a6763e690001b6e3d51630",
+        "metadata": {
+          "user_name": "FS BANK"
+        },
+        "created_at": "2025-07-30T20:00:19.904083-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "8eedbab6-9f63-40ff-99ad-ba876417def5",
+        "memory": "Cần chuyển đổi DATE_TIME sang kiểu TIMESTAMP để tính toán",
+        "hash": "1f53f98b00f73e9787fd5b6a23dc3f46",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-08-12T23:58:30.002520-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "b957b6ae-e6b0-4e6f-a202-3f38e4486a38",
+        "memory": "Khi lấy số lượt liên kết ví ngân hàng BIDV theo ngày, sử dụng COUNT(DISTINCT request_id) thay vì COUNT(DISTINCT USER)",
+        "hash": "9fc71bcec45bfc29c5ddc91c845965a9",
+        "metadata": null,
+        "created_at": "2025-09-09T00:27:32.749668-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "4e522ad4-1545-4c7d-ab38-bad086f20c91",
+        "memory": "Khi người dùng hỏi về loại giao dịch CD thì có nghĩa là đang đề cập tới cột bank_auth_code trong bảng BANK_CI",
+        "hash": "bbcb51e68d325ada7375b40a2fc73ba6",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-07-31T19:47:36.395966-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "b5a502f0-3dcb-457d-b6e5-15517cfd61d9",
+        "memory": "Khi tính tỉ lệ nạp tiền thành công, thêm điều kiện ci.LINKAGE = 'NHLK'",
+        "hash": "7404e341e5e0e6814841808d4b9e7239",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-08-12T00:06:37.440385-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "f17672fd-244d-4fa0-8fcf-0895309e50b4",
+        "memory": "Bank code EXIM",
+        "hash": "1f6933bfcf589607536c1cf5868fb38b",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-08-13T20:54:24.489495-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "a6e9d1cd-efe5-4c54-999e-098375d2fe0c",
+        "memory": "Để lấy số tiền giao dịch loại CD của ngân hàng MBB, sử dụng mã REGEXP_CONTAINS(BANK_AUTH_CODE, 'C|D|CD')",
+        "hash": "645541a3d31010c13972308b0b1c7f4b",
+        "metadata": {
+          "user_name": "FS BANK"
+        },
+        "created_at": "2025-07-24T03:23:37.709166-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "69d9c423-5273-4182-a797-dfb3fe2cd053",
+        "memory": "Mã ngân hàng Vietinbank là 'VTB'",
+        "hash": null,
+        "metadata": {
+          "user_name": "FS BANK"
+        },
+        "created_at": "2025-07-21T11:10:20.904192",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "2488ddcb-80c2-4ac0-9e4b-dceb827791d9",
+        "memory": "Khi tính tỉ lệ nạp tiền thành công, sử dụng cột STATUS_FINAL thay vì STATUS",
+        "hash": "a9d059e13fb6be76fba8c5383204f826",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-08-12T00:06:37.339332-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "6843bddc-0cad-4598-ace0-3e6c82cdcabc",
+        "memory": "Khi tính tỉ lệ nạp tiền thành công, sử dụng cột BANK_CODE thay vì BANK_NAME",
+        "hash": "ad726d0b24f8d4301f54cc5d3dce19f2",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-08-12T00:06:37.398317-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "29bb0795-f4a6-4999-8800-c1c14ed5221f",
+        "memory": "Cột thời gian trong bảng BANK_CO là DATE_TIME, không phải DATETIME",
+        "hash": "cf459c1eabbdacdb82eeb6900bf80f51",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-08-12T23:58:29.962460-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "de55662b-ee46-40b0-85fe-257aea2f2343",
+        "memory": "Loại bỏ lỗi có partner_error_sub_category/ms_sub_status = 'FAIL - SỐ DƯ' khi tính tỷ lệ giao dịch nạp tiền ngân hàng liên kết thành công",
+        "hash": "c4fee9d9977ceb8971e78b64abefdbd5",
+        "metadata": {
+          "user_name": "BU FS: Bank Partnership"
+        },
+        "created_at": "2025-08-13T00:01:33.925293-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      },
+      {
+        "id": "c58b0602-df7c-43d3-aa1a-6b1ed9438b3c",
+        "memory": "Trong tháng 7 năm 2025, có 32 ngân hàng liên kết hoạt động",
+        "hash": "31c31840b86da944aee20d601c447af2",
+        "metadata": {
+          "user_name": "FS BANK"
+        },
+        "created_at": "2025-07-15T03:07:59.848153-07:00",
+        "updated_at": null,
+        "user_id": "7102da6a-2fdc-4475-a3bf-b66be5bca419"
+      }
+    ]
+  }
+}

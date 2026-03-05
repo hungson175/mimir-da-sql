@@ -1,0 +1,80 @@
+{
+  "error_code": 200,
+  "data": {
+    "id": "20e405eb-5b2b-4a23-bacc-35196c4e707d",
+    "name": "Customer Experience: CEE USER SUGGESTIONS",
+    "description": "The dataset records information about user suggestions received through Feedback Feature in all CS channel",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: CEE USER SUGGESTIONS -- Description: The dataset records information about user suggestions received through Feedback Feature channel\nCREATE TABLE `momovn-cee-shared.CEE_MAIL.FF_CONTENTS_V2` (\n  created_date -- DATE, -- Ngày ghi nhận ticket được tạo\n  bu -- STRING, -- Business Unit được phân cho ticket\n  service_plus -- STRING, -- Phân loại dịch vụ góp ý\n  ticket_id -- STRING, -- mã phản ánh / ID của ticket\n  source -- STRING, -- Nguồn gửi góp ý\n  level2 -- STRING, -- Level 2 của ticket góp ý\n  level3 -- STRING, -- Level 3 của ticket góp ý\n  category -- STRING, -- Phân loại category góp ý\n  contents -- STRING, -- Nội dung góp ý của khách hàng kèm Ticket ID\n);#Table Data Examples\n  created_date                         bu               service_plus       ticket_id            source                level2                 level3                      category                                                                                                                                                                                                                                                               contents\n0   2025-05-07                Xác thực ví      Xác Thực eKYC Và TT23  250112.0000718  Feedback Feature             Tài Khoản  Xác Thực eKYC Và TT23                    Góp ý khác                                                                                                                                                                                                                    nên cho nhiều lì xì hơn (Ticket ID: 250112.0000718)\n1   2025-04-05       Thu hộ vay tiêu dùng       Thu hộ vay tiêu dùng  250430.0002956          FAQs             Tính Năng               Paylater            Góp ý về tính năng                                                                                                                                                                                                       tránh gian lận và mất uy tín từ MoMo (Ticket ID: 250430.0002956)\n2   2025-05-19                 Ví Trả Sau                 Ví Trả Sau  250116.0003735             Email  Tài Chính - Bảo Hiểm   Thu hộ vay tiêu dùng    Góp ý về vận hành sản phẩm  không có nhu cầu dùng những ưu đãi này và những phần quà ttương tự. đã nhiều lần phản ánh rồi \\ntặng ra tặng chứ đừng như kiểu gài, cho 50k với điều kiện bỏ ra hơn 50k, khôn vậy dưới xóm khoá mỗm xích lại hết rồi.\\nđừng gửi dùm thêm  (Ticket ID: 250116.0003735)\n3   2025-04-14  Chuyển tiền đến Ngân hàng  Chuyển tiền đến Ngân hàng  250122.0009356              None  Chi hộ vay tiêu dùng         Captcha Puzzle  Góp ý về chính sách sản phẩm  thêm nhiều voucher giảm tiền điện,  nước (Ticket ID: 250122.0009356)\n4   2025-05-05            Online Payments                  Promotion  241226.0000914              None      Chuyển Nhận Tiền  Quỹ nhóm - Money Pool                          None                         Phần thông báo \"lưu thẻ thành công\" đè lên 2 chức năng \"bỏ-lưu\", phải chờ thông báo này tắt đi mới bấm lưu tiếp được. Gây bất tiện, cũng như mất thời gian cho người dùng. Mong đội ngũ dev thiết kế lại phần này. (Ticket ID: 241226.0000914)\n",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "1c3e5f9c-d7b1-479c-816c-828a9d2dd4cf",
+        "memory": "Khi được yêu cầu tóm tắt nội dung, hay lấy ngẫu nhiên các contents khoảng 50 dòng, NO LIMIT 10. Rồi đọc các contents sau đó mới tóm tắt",
+        "hash": "7b1f509d3c22176d072069395899b715",
+        "metadata": {
+          "user_name": "CEE USER SUGGESTIONS"
+        },
+        "created_at": "2025-06-24T16:49:40.657903",
+        "updated_at": "2025-06-26T20:10:38.759306-07:00",
+        "user_id": "20e405eb-5b2b-4a23-bacc-35196c4e707d"
+      },
+      {
+        "id": "493f7ded-3a11-4e60-a683-059bda5f817a",
+        "memory": "Khi được hỏi về tổng quát, nhận định. Thì hãy lấy toàn bộ thông tin trong cột contents của bu đó. Sao đó đọc và đưa ra tổng quát, nhận định",
+        "hash": "545cdc5904a36023d93bb63656e0943e",
+        "metadata": {
+          "user_name": "CEE USER SUGGESTIONS"
+        },
+        "created_at": "2025-05-21T20:25:23.073645-07:00",
+        "updated_at": "2025-05-26T01:46:16.118651-07:00",
+        "user_id": "20e405eb-5b2b-4a23-bacc-35196c4e707d"
+      },
+      {
+        "id": "35e268df-c543-4303-9405-2f6c0dc31c00",
+        "memory": "Không có thông tin về agent_id và request_id trong bảng ghi nhận góp ý của người dùng",
+        "hash": "acd6c73ccfceacb8c9a71a836cb586b0",
+        "metadata": {
+          "user_name": "CEE USER SUGGESTIONS"
+        },
+        "created_at": "2025-05-21T20:32:06.534226-07:00",
+        "updated_at": null,
+        "user_id": "20e405eb-5b2b-4a23-bacc-35196c4e707d"
+      },
+      {
+        "id": "b718fd0b-590f-470e-b696-18931f47f32e",
+        "memory": "Dữ liệu chỉ chứa thông tin về góp ý của người dùng, không có thông tin về ticket và CSAT của dịch vụ",
+        "hash": "f8a3e96a785c05d5e1c36023fd59731e",
+        "metadata": {
+          "user_name": "CEE USER SUGGESTIONS"
+        },
+        "created_at": "2025-05-21T20:25:23.023400-07:00",
+        "updated_at": null,
+        "user_id": "20e405eb-5b2b-4a23-bacc-35196c4e707d"
+      },
+      {
+        "id": "d616119b-431a-467f-b393-10b9c6e633b2",
+        "memory": "Khi user hỏi data từ nguồn ứng dụng thì lấy source = 'FAQs', không phải 'Feedback Feature'",
+        "hash": "65e159d00152b11b3aaf7bc0261a0207",
+        "metadata": {
+          "user_name": "CEE USER SUGGESTIONS"
+        },
+        "created_at": "2025-05-30T00:11:33.443908-07:00",
+        "updated_at": null,
+        "user_id": "20e405eb-5b2b-4a23-bacc-35196c4e707d"
+      },
+      {
+        "id": "00d266e9-1754-4f8b-9345-5a4bc24ea2a9",
+        "memory": "Dữ liệu có trong cột `bu`:\nCinema\nMoMo Reward + Student Pass\nSOF\nVTTI Billpay - VTTI Public service\nChi hộ vay tiêu dùng\nThu hộ vay tiêu dùng\nDonation\nQuỹ nhóm\nTúi Thần Tài\nQR nhận tiền\nQuản lý tài khoản\nBank Partnership\nOnline Payments\nQuản lý chi tiêu\nChuyển tiền đến Ngân hàng\nXác thực ví\nChuyển/nhận tiền Ví - Ví và các dịch vụ khác\nQuản lý Ví & Phản ánh lừa đảo\nMarketing Platform\nOTA\nPromotion\nMua Bảo hiểm & Thanh toán Bảo hiểm\nVTTI Data - VTTI Airtime\nHạn mức ví\nHủy Ví\nLịch sử/ chi tiết giao dịch\nEPS\nChứng khoán\nSPS\nĐiểm tin cậy MoMo\nCCM\nTiết kiệm online\nApp performance\n---\nDữ liệu có trong cột `level2`:\nDu Lịch - Đi Lại\nTính Năng\nVTTI\nTài Chính - Bảo Hiểm\nChuyển Nhận Tiền\nTài Khoản\nLiên Kết/ Nạp Rút Ngân Hàng\nPayment Online - Digital Platform\nQuản lý chi tiêu\nChương Trình Khuyến Mãi\nPayment Offline - Miniapp MoMo\nMerchant Care\n----\nLưu ý: Nếu bị hỏi thông tin bên ngoài các giá trị này thì phải confirm lại với user, và suggest user các dịch vụ liên quan.",
+        "hash": "ea49295e13d4668f6580915fe83ef373",
+        "metadata": {
+          "user_name": "CEE USER SUGGESTIONS"
+        },
+        "created_at": "2025-05-21T20:15:01.933203-07:00",
+        "updated_at": "2025-09-15T03:52:24.346308-07:00",
+        "user_id": "20e405eb-5b2b-4a23-bacc-35196c4e707d"
+      }
+    ]
+  },
+  "error_message": ""
+}

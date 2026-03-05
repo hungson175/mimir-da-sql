@@ -2,6 +2,14 @@
 
 > Dump for features, to-do tasks, and ideas. Newest items at top.
 
+## Agent System Testing (TOP PRIORITY)
+
+- [ ] **Test the Claude Code-like agent on this system.** Verify the agent runs smoothly end-to-end on the Mimir DA SQL project — can it read memory, write SQL, call APIs, and learn correctly? This is the most urgent item before any new feature work.
+
+## Report-Based Learning
+
+- [ ] **Report-based ground truth testing.** Use real C-level end-of-year reports as ground truth to validate DA accuracy. Flow: take a report → extract key numbers → generate test questions (where we already know the correct answers) → run the DA → compare against ground truth → learn from mismatches. This is a level above Mimir Distill — instead of learning from Mimir's SQL, we learn from verified business reports. Solves the core problem: we lack domain knowledge to verify if the DA's answers are right or wrong. Folder: `experiments/training/reports_based/`.
+
 ## Verification & Testing
 
 - [ ] **Verify business performance query results.** Take the SQL queries from `data/output/momo_business_2024_vs_2025.md`, re-run them manually in BigQuery console, and cross-check the numbers match what the DA reported (P2P, Vay Nhanh, CLO, Moni — 2024 vs 2025).

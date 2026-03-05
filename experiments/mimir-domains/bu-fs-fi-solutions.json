@@ -1,0 +1,103 @@
+{
+  "domain_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69",
+  "name": "BU FS: FI Solutions",
+  "metadata": {
+    "id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69",
+    "name": "BU FS: FI Solutions",
+    "description": "Data về traffic và giải ngân của sản phẩm CLO và giao dịch thanh toán khoản vay, thanh toán thẻ tín dụng",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: BU FS: FI Solutions \n ## Table information : {\"table_name\":\"momovn-prod.BU_FI.FIS_CLO_TRAFFIC_FLOW\",\"table_desc\":\"<p>Bảng lưu thông tin user truy cập vào sản phẩm CLO theo từng nguồn</p>\",\"column_desc\":[{\"column_name\":\"SOURCE\",\"description\":\"<p>nguồn dẫn user tới truy cập sản phẩm</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"VALUE\",\"description\":\"<p>đối tác của sản phẩm:</p><ul class=\\\"om-list-disc\\\"><li class=\\\"om-leading-normal\\\"><p>'clo_fecredit' : FE CREDIT</p></li><li class=\\\"om-leading-normal\\\"><p>'lending_mp_homecredit': HOME CREDIT</p></li><li class=\\\"om-leading-normal\\\"><p>'cro_vib': VIB</p><p><br></p><p><br></p></li></ul><p></p>\",\"data_type\":\"STRING\"},{\"column_name\":\"ETL_DATE\",\"description\":\"<p>ngày người dùng truy cập</p>\",\"data_type\":\"DATE\"},{\"column_name\":\"MOMO_SESSION_ID_V2\",\"description\":\"<p>định danh cho lượt truy cập của người dùng</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"AGENT_ID\",\"description\":\"<p>định danh mã người dùng</p>\",\"data_type\":\"STRING\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_FI.FI_TRANS\",\"table_desc\":\"<p>Bảng chứa thông tin các giao dịch liên quan tới dịch vụ tài chính: thu chi hộ, thanh toán khoản vay, thanh toán thẻ tín dụng....</p>\",\"column_desc\":[{\"column_name\":\"ID\",\"description\":\"<p>tid / mã định danh của giao dịch</p>\",\"data_type\":\"INT\"},{\"column_name\":\"DATE_PARTITION\",\"description\":\"<p>Thời điểm update cuối cùng của giao dịch.</p><p>Lưu ý, luôn chuyển về múi giờ UTC +7 khi sử dụng cột này</p>\",\"data_type\":\"INT\"},{\"column_name\":\"_DATE_PARTITION\",\"description\":\"<p>Thời điểm update cuối cùng của giao dịch.</p><p>Lưu ý, luôn chuyển về múi giờ UTC +7 khi sử dụng cột này</p>\",\"data_type\":\"TIMESTAMP\"},{\"column_name\":\"FUNDID\",\"description\":\"<p>Nguồn tiền của giao dịch:</p><p>1      Nguồn tiền momo</p><p>2\\tNguồn tiền ngân hàng liên kết</p><p>3\\tNguồn tiền napas</p><p>4\\tNguồn tiền visa debit</p><p>5\\tNguồn tiền visa credit</p><p>6\\tTúi thần tài</p><p>7\\tPaylater</p><p>8\\tCashback</p><p>9\\tNguồn tiền thẻ visa ảo ccm </p><p>10\\tBNPL</p><p>11\\tNewton</p><p>12\\tDirect Debit</p><p>13\\tMoney pool</p><p>14\\tVirtual Account </p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"SERVICE_CODE\",\"description\":\"<p>Dịch vụ của giao dịch<br></p>\",\"data_type\":\"STRING\"},{\"column_name\":\"USER_PAYMENT\",\"description\":\"<p>Agent_id thực hiện giao dịch\\t</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"DEBITOR\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"CREDITOR\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"INITIATOR\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"TRANS_TYPE\",\"description\":\"<p>Loại giao dịch</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"EWALLET_TYPEID\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"INT\"},{\"column_name\":\"STATUSID\",\"description\":\"<p>Trạng thái giao dịch (2 là thành công, 6 là thất bại)\\t</p><p>nếu user không đề cập gì tới trạng thái giao dịch thì luôn mặc định hiểu là giao dịch thành công </p>\",\"data_type\":\"INT\"},{\"column_name\":\"AMOUNT\",\"description\":\"<p>Số tiền của giao dịch</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"PARENTID\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"AGENT_CREDIT\",\"description\":\"<p>Agentid của tài khoản được cộng tiền\\t</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"AGENT_DEBIT\",\"description\":\"<p>Agentid của tài khoản bị trừ tiền\\t</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"RESULT\",\"description\":\"<p>Mã lỗi của core\\t</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"TOTAL_AMOUNT\",\"description\":\"<p>Tổng giá trị bill (không tính chiết khấu)\\t</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"MM_AMOUNT\",\"description\":\"<p>Số tiền thực trả của user</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"VC_AMOUNT\",\"description\":\"<p>Số tiền được giảm trừ từ voucher\\t</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"FEE\",\"description\":\"<p>Số tiền thu phí dịch vụ\\t</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"SERVICE_GROUP\",\"description\":\"<p>ID của nhóm dịch vụ của giao dịch:</p><p>1 : dịch vụ thanh toán</p><p>2: dịch vụ chuyển tiền</p><p>3: nộp tiền từ bank vào ví momo</p><p>4: rút tiền từ momo về bank</p><p>10: dịch vụ giải ngân<br></p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"USER_TYPE_NAME\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"DATE_TRANS\",\"description\":\"<p>ngày thực hiện giao dịch</p>\",\"data_type\":\"DATE\"},{\"column_name\":\"BU_GROUP_CODE_L1\",\"description\":\"<p>nhóm dịch vụ l1</p><p>luôn where cột này = 'PAYMENT'</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"BU_GROUP_CODE_L2\",\"description\":\"<p>nhóm dịch vụ level 2:</p><p>hãy where cột này = 'LOAN COLLECTION' với giao dịch thanh toán khoản vay.</p><p>hãy where cột này = 'CREDIT CARD COLLECTION' với giao dịch thanh toán thẻ tín dụng.</p><p>hãy where cột này = 'PAYOUT' với giao dịch chi hộ.</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"BU_GROUP_CODE_L3\",\"description\":\"<p>nhóm dịch vụ level 3:</p><ul class=\\\"om-list-disc\\\"><li class=\\\"om-leading-normal\\\"><p>FM: giao dịch liên quan tới sản phẩm vay nhanh</p></li><li class=\\\"om-leading-normal\\\"><p>BANK: giao dịch liên quan tới các ngân hàng</p></li><li class=\\\"om-leading-normal\\\"><p>FINCOS: giao dịch liên quan tới các tổ chức tài chính</p></li><li class=\\\"om-leading-normal\\\"><p>OTHERS: giao dịch liên quan tới giấy phép cầm đồ</p><p></p><p><br></p></li></ul><p></p>\",\"data_type\":\"STRING\"},{\"column_name\":\"BU_GROUP_CODE_L4\",\"description\":\"<p>nhóm dịch vụ level 4:</p><ul class=\\\"om-list-disc\\\"><li class=\\\"om-leading-normal\\\"><p>'COLLECTION' : nhóm dịch vụ thu hộ</p></li><li class=\\\"om-leading-normal\\\"><p>'DISBURSEMENT': nhóm dịch vụ chi hộ</p></li></ul><p></p>\",\"data_type\":\"STRING\"},{\"column_name\":\"BU_NAME\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"MERCHANT\",\"description\":\"<p>tên đối tác</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"SERVICE_DESCRIPTION\",\"description\":\"<p>mô tả cụ thể cho dịch vụ</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"BILLID\",\"description\":\"<p>mã hợp đồng liên quan tới dịch vụ thanh toán </p>\",\"data_type\":\"STRING\"},{\"column_name\":\"TYPEID\",\"description\":\"\",\"data_type\":\"ARRAY\"},{\"column_name\":\"ERROR_NAME\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"ERROR_NAME_DETAIL\",\"description\":\"<p>bỏ qua cột này</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"SERVICEID\",\"description\":\"\",\"data_type\":\"STRING\"},{\"column_name\":\"TIME_TRANS\",\"description\":\"\",\"data_type\":\"TIME\"},{\"column_name\":\"MONEY_SOURCE\",\"description\":\"\",\"data_type\":\"STRING\"},{\"column_name\":\"TYPE\",\"description\":\"\",\"data_type\":\"STRING\"},{\"column_name\":\"HOUR_TRANS\",\"description\":\"\",\"data_type\":\"INT\"},{\"column_name\":\"PAYMENT_CHANNEL\",\"description\":\"\",\"data_type\":\"STRING\"},{\"column_name\":\"CB_AMOUNT\",\"description\":\"\",\"data_type\":\"FLOAT\"},{\"column_name\":\"BILL_AMOUNT\",\"description\":\"\",\"data_type\":\"FLOAT\"},{\"column_name\":\"BILL_DUE\",\"description\":\"\",\"data_type\":\"DATE\"},{\"column_name\":\"D_DIFF\",\"description\":\"\",\"data_type\":\"INT\"},{\"column_name\":\"REPAY_TYPE\",\"description\":\"\",\"data_type\":\"STRING\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_FI.FIS_TCST\",\"table_desc\":\"<p>Đây là bảng chứa dữ liệu của sản phẩm CLO. Trong bảng này chứa thông tin về trạng thái của ticket, số tiền giải ngân và doanh thu.</p>\",\"column_desc\":[{\"column_name\":\"TICKET_ID\",\"description\":\"Desc: Mã định danh cho mỗi yêu cầu hoặc giao dịch.\\nSample value: ['116472', '116487', '116520']\",\"data_type\":\"STRING\"},{\"column_name\":\"USER\",\"description\":\"Desc: Người dùng thực hiện yêu cầu hoặc giao dịch.\\nSample value: ['25136673', '36677566', '36940788']\",\"data_type\":\"STRING\"},{\"column_name\":\"PARTNER_ID\",\"description\":\"<p>Desc: Mã định danh của đối tác liên quan đến yêu cầu hoặc giao dịch.<br>Sample value: ['lending_mp_homecredit']</p><p>định nghĩa :<br>lending_mp_homecredit : Home Credit<br>cro_vib : VIB<br>clo_fecredit: FE CREDIT</p><p>clo_mcredit: MCREDIT</p>\",\"data_type\":\"STRING\"},{\"column_name\":\"FAILED_TIMES\",\"description\":\"Desc: Số lần yêu cầu hoặc giao dịch thất bại.\\nSample value: ['nan']\",\"data_type\":\"FLOAT\"},{\"column_name\":\"STATUS_CODE\",\"description\":\"Desc: Mã trạng thái của yêu cầu hoặc giao dịch.\\nSample value: ['PRE_CHECK']\",\"data_type\":\"STRING\"},{\"column_name\":\"DATE_REQUESTED\",\"description\":\"Desc: Ngày yêu cầu được thực hiện.\\nSample value: ['2022-11-24']\",\"data_type\":\"DATE\"},{\"column_name\":\"DATETIME_REQUESTED\",\"description\":\"Desc: Thời điểm yêu cầu được thực hiện.\\nSample value: ['2022-11-24 00:30:11', '2022-11-24 00:47:15', '2022-11-24 01:39:53']\",\"data_type\":\"DATETIME\"},{\"column_name\":\"DATE_MODIFIED\",\"description\":\"Ngày cập nhật trạng thái mới nhất của ticket. Nếu lấy theo trạng thái giải ngân thì dùng cột này\",\"data_type\":\"DATE\"},{\"column_name\":\"DATETIME_MODIFIED\",\"description\":\"Ngày giờ trạng thái mới nhất của ticket\",\"data_type\":\"DATETIME\"},{\"column_name\":\"DATETIME_EXPIRED\",\"description\":\"**Desc**: Thời điểm yêu cầu hoặc giao dịch được đẩy đi.\",\"data_type\":\"DATETIME\"},{\"column_name\":\"DATETIME_PUSHED\",\"description\":\"Desc: Thời điểm yêu cầu hoặc giao dịch được đẩy đi.\",\"data_type\":\"DATETIME\"},{\"column_name\":\"SCORING_CODE\",\"description\":\"Desc: Mã điểm số liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"STRING\"},{\"column_name\":\"CORE_ID\",\"description\":\"Desc: Mã định danh của giao dịch, tương ứng với mã định danh của table core_trans\",\"data_type\":\"STRING\"},{\"column_name\":\"OFFER_ID\",\"description\":\"Desc: Mã định danh của đề nghị liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"STRING\"},{\"column_name\":\"ONBOARDING_APPLICATION_ID\",\"description\":\"Desc: Mã định danh của ứng dụng onboarding liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"STRING\"},{\"column_name\":\"ONBOARDING_APPLICATION_STATUS\",\"description\":\"Desc: Trạng thái của ứng dụng onboarding liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"STRING\"},{\"column_name\":\"CONTRACT_ID\",\"description\":\"Desc: Mã định danh của hợp đồng liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"STRING\"},{\"column_name\":\"CONTRACT_NAME\",\"description\":\"Desc: Tên của hợp đồng liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"STRING\"},{\"column_name\":\"CONTRACT_AMOUNT\",\"description\":\"<p>Desc: Số tiền của hợp đồng liên quan đến yêu cầu hoặc giao dịch.<br>hãy dùng cột này để tính số giải ngân/disbursed</p>\",\"data_type\":\"FLOAT\"},{\"column_name\":\"MINIMAL_CREDIT_AMOUNT\",\"description\":\"Desc: Số tiền tín dụng tối thiểu liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"FLOAT\"},{\"column_name\":\"MAXIMAL_CREDIT_AMOUNT\",\"description\":\"Desc: Số tiền tín dụng tối đa liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"FLOAT\"},{\"column_name\":\"REQUESTED_CREDIT_AMOUNT\",\"description\":\"Desc: Số tiền tín dụng được yêu cầu trong giao dịch.\",\"data_type\":\"FLOAT\"},{\"column_name\":\"APPROVED_CREDIT_AMOUNT\",\"description\":\"Desc: Số tiền tín dụng được phê duyệt trong giao dịch.\",\"data_type\":\"FLOAT\"},{\"column_name\":\"DISBURSED_CREDIT_AMOUNT\",\"description\":\"Desc: Số tiền tín dụng đã được giải ngân trong giao dịch.\",\"data_type\":\"FLOAT\"},{\"column_name\":\"REVENUE_TEMP\",\"description\":\"Desc: Doanh thu tạm thời liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"FLOAT\"},{\"column_name\":\"REVENUE\",\"description\":\"Desc: Doanh thu thực tế liên quan đến yêu cầu hoặc giao dịch.\",\"data_type\":\"FLOAT\"},{\"column_name\":\"OFFER_TYPE\",\"description\":\"Để phân biệt user được giải ngân thuộc ACL hay CLX, chỉ áp dụng cho lending_mp_homecredit\",\"data_type\":\"STRING\"},{\"column_name\":\"SERVICE_TYPE\",\"description\":\"<p>Để phân biệt dịch vụ CRO hoặc CLO</p><p>luôn có thêm điều kiện cột này = 'CLO' </p>\",\"data_type\":\"STRING\"}]}",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "de7d37a3-ebb2-4854-ba80-8dd8479b54f9",
+        "memory": "Số giải ngân (disbursed amount) được tính bằng cột CONTRACT_AMOUNT trong bảng momovn-prod.BU_FI.FIS_TCST.",
+        "hash": null,
+        "metadata": {
+          "user_name": "BU-FS: FI Solutions"
+        },
+        "created_at": "2025-08-13T15:14:14.923219",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      },
+      {
+        "id": "aa3934a1-82a9-4ac4-9194-bdc7530adcb7",
+        "memory": "Khi người dùng hỏi về 'home', 'FE', 'CRO', hoặc 'VIB', hãy sử dụng PARTNER_ID tương ứng: 'home' -> 'lending_mp_homecredit', 'FE' -> 'clo_fecredit', 'CRO' -> 'cro_vib', 'VIB' -> 'cro_vib'",
+        "hash": null,
+        "metadata": {
+          "user_name": "FS - FI Solutions"
+        },
+        "created_at": "2025-08-13T13:51:41.179744",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      },
+      {
+        "id": "dd113aed-b7b6-4dee-976f-bf05c1f83d61",
+        "memory": "Khi xử lý vấn đề liên quan tới việc loại trừ user_id, sử dụng điều kiện 'where not exists' thay vì 'user_id NOT IN'",
+        "hash": "d3db83f4fee8597a18713b96797b0434",
+        "metadata": null,
+        "created_at": "2025-09-24T07:42:21.990404-07:00",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      },
+      {
+        "id": "a6b5c47d-3ed1-4898-9a3f-076e2af01d01",
+        "memory": "Khi so sánh lượng application submitted, cần sử dụng status_code bao gồm: 'APPLICATION_CANCELED', 'APPLICATION_REJECTED', 'APPLICATION_APPROVED', 'APPLICATION_RESUBMIT', 'APPLICATION_SUBMITTED', 'DISBURSED', 'CONTRACT_SIGNED', 'RESET'",
+        "hash": "d8ec3d6d7430746dceebf77c671c7b3c",
+        "metadata": null,
+        "created_at": "2025-08-20T21:00:03.328674-07:00",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      },
+      {
+        "id": "2142316d-8009-48a8-9bde-933fadfc8a63",
+        "memory": "New user = Người dùng mới phát sinh giao dịch lần đầu. Retention user = Người dùng đã từng dùng dịch vụ trước đó và tiếp tục dùng trong tháng này. Reactive user = Người dùng từng dùng trước đây, rớt trong các tháng gần đây, nay quay lại dùng. Churn user = Người dùng ngưng sử dụng trong tháng.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-10-13T14:59:28.895846",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      },
+      {
+        "id": "ee00e738-ebb0-4f95-8c13-f223e7345035",
+        "memory": "Để tính tổng số tiền giải ngân cho dịch vụ CLO, sử dụng CONTRACT_AMOUNT thay vì DISBURSED_CREDIT_AMOUNT",
+        "hash": "66044916d6832df2d230cead986f36b2",
+        "metadata": {
+          "user_name": "FS - FI Solutions"
+        },
+        "created_at": "2025-07-17T03:46:01.633709-07:00",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      },
+      {
+        "id": "dafa64a4-f0e7-4d76-9a98-ccf2989a9ed6",
+        "memory": "Trong bảng momovn-prod.BU_FI.FIS_CLO_TRAFFIC_FLOW, sử dụng cột VALUE để lọc theo đối tác thay vì PARTNER_ID",
+        "hash": "aa76054e62109d2aeecd5fcdcb6e8750",
+        "metadata": null,
+        "created_at": "2025-11-25T02:14:18.904991-08:00",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      },
+      {
+        "id": "06fa2286-e639-4ace-8428-7e7084fbbf75",
+        "memory": "Khi truy vấn số liệu giải ngân, luôn thêm điều kiện service_type = 'CLO'",
+        "hash": null,
+        "metadata": {
+          "user_name": "FS - FI Solutions"
+        },
+        "created_at": "2025-08-13T13:45:32.474427",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      },
+      {
+        "id": "6915c7a9-8e06-4554-935a-653cb9a7d6ad",
+        "memory": "Khi tính trung bình CONTRACT_AMOUNT, sử dụng sum(CONTRACT_AMOUNT)/count(distinct ticket_id) thay vì AVG(CONTRACT_AMOUNT)",
+        "hash": "64402543a78be9859fdbc5d9ebd9d781",
+        "metadata": null,
+        "created_at": "2025-09-23T07:44:39.580364-07:00",
+        "updated_at": null,
+        "user_id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69"
+      }
+    ]
+  }
+}

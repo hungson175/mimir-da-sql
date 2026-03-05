@@ -1,0 +1,13 @@
+{
+  "error_code": 200,
+  "data": {
+    "id": "be488435-9b4d-4449-92ba-7cb7fad81012",
+    "name": "BU MDS: Rewards - MEU",
+    "description": "Các thông tin của Rewards liên quan đến số user tương tác với các touchpoint của Rewards; tương tác với Rewards Hub; funnel chung hoặc theo gift_type_id từ Impression > Click > Burn Coin > Redeem Voucher",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: BU MDS: Rewards - MEU \n \n",
+    "knowledgebase": [],
+    "memory": []
+  },
+  "error_message": ""
+}

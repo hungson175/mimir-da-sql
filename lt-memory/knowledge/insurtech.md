@@ -109,5 +109,6 @@ Jan 2024: 13K → Jan 2025: 6.4K (-51%) → Jan 2026: 3.4K (-47%). Approaching e
 
 ## Mimir Trust
 - MAU: HIGH (< 1% diff from BQ)
-- CC_STATUS: INCONSISTENT (English vs Vietnamese)
-- Contract count: MEDIUM (misses renewals)
+- CC_STATUS: HIGH (consistently uses English 'SUCCESS' as of 2026-03-06, previously inconsistent)
+- Contract count: HIGH (exact match Feb 2026: 138,727)
+- General: HIGH

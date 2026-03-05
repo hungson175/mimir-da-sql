@@ -1,0 +1,13 @@
+{
+  "domain_id": "0c367c81-99d6-4b01-90e2-e7bab0b77677",
+  "name": "BU Payment: SUPPLIER TRACKING",
+  "metadata": {
+    "id": "0c367c81-99d6-4b01-90e2-e7bab0b77677",
+    "name": "BU Payment: SUPPLIER TRACKING",
+    "description": "Theo dõi performance của các nhà cung cấp Telco",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: SUPPLIER TRACKING ---\n## Table information : {\"schema_ddl\":\"{'table_name': 'project-5400504384186300846.BU_UTILITIES_TELCO.TELCO_WAREHOUSE_ARGG_ALL', 'table_desc': 'Bảng này lưu trữ thông tin chi tiết về các giao dịch viễn thông thông qua MoMo. Đây là bảng fact, giúp cung cấp thông tin về ngày phát sinh giao dịch, nhà mạng, dịch vụ và tổng số tiền phát sinh của các giao dịch viễn thông. \\\\nCác thông tin có thể lấy từ bảng này gồm:\\\\n- Theo dõi số lượng giao dịch theo ngày và nhà mạng.\\\\n- Phân loại các dịch vụ viễn thông và thống kê dịch vụ nào được sử dụng nhiều nhất.\\\\n- Tính toán tổng số tiền phát sinh theo nhóm dịch vụ.', 'column_desc': [{'column_name': 'date', 'description': 'Ngày phát sinh giao dịch\\\\n ', 'children': []}, {'column_name': 'cate', 'description': 'Nhà mạng của giao dịch\\\\n ', 'children': []}, {'column_name': 'group_service', 'description': 'Group dịch vụ của giao dịch: Topup&Mathe = Airtime, 3G/4G = Data\\\\n ', 'children': []}, {'column_name': 'service_code', 'description': 'Service code của giao dịch\\\\n ', 'children': []}, {'column_name': 'service', 'description': 'Loại dịch vụ. TOPUP: dịch vụ topup, MATHE: dịch vụ mã thẻ, COMBO: dịch vụ data combo, SIM: dịch vụ sim, OTHER: Dịch vụ khác\\\\n ', 'children': []}, {'column_name': 'supplier', 'description': 'Nhà cung cấp của giao dịch\\\\n ', 'children': []}, {'column_name': 'menh_gia', 'description': 'Mã sản phẩm của giao dịch\\\\n ', 'children': []}, {'column_name': 'amount', 'description': 'Tổng số tiền phát sinh\\\\n ', 'children': []}, {'column_name': 'quantity', 'description': 'Tổng số lượng mã sản phẩm\\\\n ', 'children': []}]}\",\"smart_top_value\":\"- Distinct value `cate` là ['Vnsky' 'Local' 'Viettel' 'Vietnamobile' 'Vinaphone' 'Saymee' 'Gmobile'\\n 'Xplori' 'OTHER' 'Wintel' 'Gohub' 'itel' 'Reddi' 'Mobifone' 'VNSKY']\\n- Distinct value `supplier` là ['VIETTEL DIRECT' 'MEGATEK' 'EWAVE' 'IMD' 'ASIM' 'VMG/IMEDIA' 'GOHUB'\\n 'WHYPAY' 'Vietnamobile' 'Viettel' 'WINTEL' 'Vinaphone' 'VIETNAMOBILE'\\n 'EPAY' 'Gmobile' 'MOBICAST' 'VIEN PHUONG NAM' 'OCTA/LOGICH' 'IO MEDIA'\\n 'Mobifoneplus' 'XPLORI' 'Mobifone' 'ZOTA/FIVI' 'VIETTEL' 'MobiPlus'\\n 'IMEDIA' 'PHUONG QUAN' 'Mservice' 'My data' 'VNSKY']\\n- Distinct value `group_service` là ['Topup&Mathe' '3G/4G']\\n- Distinct value `service` là ['MATHE' 'COMBO' 'OTHERS' 'TOPUP' 'SIM']\"}}",
+    "knowledgebase": [],
+    "memory": []
+  }
+}

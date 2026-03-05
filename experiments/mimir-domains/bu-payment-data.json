@@ -1,0 +1,399 @@
+{
+  "domain_id": "c210420f-d014-4463-bcb9-c9e4a38c0963",
+  "name": "BU Payment: Data",
+  "metadata": {
+    "id": "c210420f-d014-4463-bcb9-c9e4a38c0963",
+    "name": "BU Payment: Data",
+    "description": "All detailed transaction of service Data since 2021",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: BU Payment: Data\n ## Table project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS has information : {\"table_name\": \"project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS\", \"table_description\": \"B\\u1ea3ng n\\u00e0y l\\u01b0u tr\\u1eef chi ti\\u1ebft d\\u1eef li\\u1ec7u giao d\\u1ecbch li\\u00ean quan \\u0111\\u1ebfn d\\u1ecbch v\\u1ee5 vi\\u1ec5n th\\u00f4ng ti\\u1ec7n \\u00edch. D\\u1eef li\\u1ec7u c\\u00f3 th\\u1ec3 \\u0111\\u01b0\\u1ee3c s\\u1eed d\\u1ee5ng \\u0111\\u1ec3 ph\\u00e2n t\\u00edch th\\u00f4ng tin giao d\\u1ecbch, xu h\\u01b0\\u1edbng s\\u1eed d\\u1ee5ng d\\u1ecbch v\\u1ee5 vi\\u1ec5n th\\u00f4ng v\\u00e0 ph\\u00e2n t\\u00edch h\\u00e0nh vi ng\\u01b0\\u1eddi d\\u00f9ng. C\\u00e1c m\\u1ee5c \\u0111\\u00edch c\\u1ee5 th\\u1ec3 bao g\\u1ed3m: \\n - X\\u00e1c \\u0111\\u1ecbnh lo\\u1ea1i d\\u1ecbch v\\u1ee5 v\\u00e0 nh\\u00e0 m\\u1ea1ng li\\u00ean quan \\u0111\\u1ebfn t\\u1eebng giao d\\u1ecbch \\n - Ph\\u00e2n t\\u00edch s\\u1ed1 l\\u01b0\\u1ee3ng ti\\u1ec1n giao d\\u1ecbch v\\u00e0 m\\u1ee9c \\u0111\\u1ed9 khuy\\u1ebfn m\\u00e3i \\u0111\\u00e3 s\\u1eed d\\u1ee5ng \\n - Theo d\\u00f5i tr\\u1ea1ng th\\u00e1i v\\u00e0 chi ti\\u1ebft ng\\u01b0\\u1eddi d\\u00f9ng li\\u00ean quan \\u0111\\u1ebfn giao d\\u1ecbch vi\\u1ec5n th\\u00f4ng.\", \"table_columns\": [{\"column_name\": \"id\", \"mode\": \"NULLABLE\", \"data_type\": \"INTEGER\", \"description\": \"ID giao d\\u1ecbchtransaction id\", \"structs\": [], \"example_data\": [\"26566879862\", \"25791968392\", \"27203900506\"]}, {\"column_name\": \"date\", \"mode\": \"NULLABLE\", \"data_type\": \"DATE\", \"description\": \"Ng\\u00e0y th\\u1ef1c hi\\u1ec7n giao d\\u1ecbchng\\u00e0y th\\u1ef1c hi\\u1ec7n id\", \"structs\": [], \"example_data\": [\"2025-11-06\", \"2025-11-14\", \"2025-11-10\"]}, {\"column_name\": \"datetime\", \"mode\": \"NULLABLE\", \"data_type\": \"DATETIME\", \"description\": \"Th\\u1eddi gian th\\u1ef1c hi\\u1ec7n giao d\\u1ecbchth\\u1eddi gian th\\u1ef1c hi\\u1ec7n id\", \"structs\": [], \"example_data\": [\"2024-04-22 06:26:42\", \"2024-11-05 19:30:42\", \"2024-10-27 10:02:57\"]}, {\"column_name\": \"hour\", \"mode\": \"NULLABLE\", \"data_type\": \"INTEGER\", \"description\": \"Gi\\u1edd th\\u1ef1c hi\\u1ec7n giao d\\u1ecbchgi\\u1edd th\\u1ef1c hi\\u1ec7n id\", \"structs\": [], \"example_data\": [\"19\", \"7\", \"8\"]}, {\"column_name\": \"user_payment\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"ID ng\\u01b0\\u1eddi d\\u00f9ng th\\u1ef1c hi\\u1ec7n giao d\\u1ecbchuser_id th\\u1ef1c hi\\u1ec7n id\", \"structs\": [], \"example_data\": [\"43803706\", \"86561789\", \"86365594\"]}, {\"column_name\": \"amount\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"T\\u1ed5ng s\\u1ed1 ti\\u1ec1n c\\u1ee7a giao d\\u1ecbcht\\u1ed5ng s\\u1ed1 ti\\u1ec1n c\\u1ee7a id\", \"structs\": [], \"example_data\": [\"10000\", \"15000\", \"8000\"]}, {\"column_name\": \"mm_amount\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"T\\u1ed5ng s\\u1ed1 ti\\u1ec1n d\\u00f9ng trong ng\\u0103n v\\u00ed MoMo c\\u1ee7a giao d\\u1ecbcht\\u1ed5ng s\\u1ed1 ti\\u1ec1n d\\u00f9ng trong ng\\u0103n v\\u00ed momo c\\u1ee7a id\", \"structs\": [], \"example_data\": [\"10000\", \"0\", \"15000\"]}, {\"column_name\": \"vc_amount\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"T\\u1ed5ng s\\u1ed1 ti\\u1ec1n khuy\\u1ebfn m\\u00e3i c\\u1ee7a giao d\\u1ecbcht\\u1ed5ng s\\u1ed1 ti\\u1ec1n khuy\\u1ebfn m\\u00e3i c\\u1ee7a id\", \"structs\": [], \"example_data\": [\"0\", \"10000\", \"15000\"]}, {\"column_name\": \"voucher_or_not\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Ph\\u00e2n lo\\u1ea1i giao d\\u1ecbch c\\u00f3 s\\u1eed d\\u1ee5ng voucher hay kh\\u00f4ng, Voucher: giao d\\u1ecbch c\\u00f3 s\\u1eed d\\u1ee5ng voucher, Non voucher: giao d\\u1ecbch kh\\u00f4ng s\\u1eed d\\u1ee5ng voucher (giao d\\u1ecbch organic)ph\\u00e2n lo\\u1ea1i giao d\\u1ecbch c\\u00f3 s\\u1eed d\\u1ee5ng voucher hay kh\\u00f4ng, Voucher: id c\\u00f3 s\\u1eed d\\u1ee5ng voucher, Non voucher: giao d\\u1ecbch kh\\u00f4ng s\\u1eed d\\u1ee5ng voucher (giao d\\u1ecbch organic)\", \"structs\": [], \"example_data\": [\"Non voucher\", \"Voucher\", \"Non_voucher\"]}, {\"column_name\": \"cate\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Nh\\u00e0 m\\u1ea1ng c\\u1ee7a ng\\u01b0\\u1eddi \\u0111\\u01b0\\u1ee3c n\\u1ea1pNh\\u00e0 m\\u1ea1ng c\\u1ee7a ng\\u01b0\\u1eddi \\u0111\\u01b0\\u1ee3c n\\u1ea1p\", \"structs\": [], \"example_data\": [\"Viettel\", \"Mobifone\", \"Vinaphone\", \"Local\", \"Vietnamobile\", \"Wintel\", \"Saymee\", \"itel\", \"Gohub\", \"Xplori\", \"Vnsky\"]}, {\"column_name\": \"service\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"D\\u1ecbch v\\u1ee5 s\\u1eed d\\u1ee5ng: TOPUP: n\\u1ea1p ti\\u1ec1n \\u0111i\\u1ec7n tho\\u1ea1i, MATHE: m\\u00e3 th\\u1ebb, COMBO: combo data, SIM: mua sim, OTHER: d\\u1ecbch v\\u1ee5 kh\\u00e1cD\\u1ecbch v\\u1ee5 s\\u1eed d\\u1ee5ng: TOPUP: topup, MATHE: m\\u00e3 th\\u1ebb, COMBO: combo data, SIM: d\\u1ecbch v\\u1ee5 mua sim, OTHER: D\\u1ecbch v\\u1ee5 kh\\u00e1c\", \"structs\": [], \"example_data\": [\"TOPUP\", \"COMBO\", \"MATHE\", \"OTHERS\", \"SIM\"]}, {\"column_name\": \"subcategory\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Danh m\\u1ee5c con c\\u1ee7a d\\u1ecbch v\\u1ee5\", \"structs\": [], \"example_data\": [\"VIETTEL\", \"PHUONG QUAN\", \"VMG/IMEDIA\", \"My data\", \"MobiPlus\", \"Vinaphone\", \"VIEN PHUONG NAM\", \"Mservice\", \"VIETNAMOBILE\", \"MOBICAST\", \"ASIM\", \"LOCAL\", \"EPAY\", \"Viettel\", \"IMD\", \"XPLORI\", \"Mobifone\", \"Vietnamobile\", \"VNSKY\", \"Mobifoneplus\", \"GOHUB\", \"WINTEL\", \"VIETTEL DIRECT\", \"MOBIFONE\"]}, {\"column_name\": \"group_service\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Nh\\u00f3m d\\u1ecbch v\\u1ee5 c\\u1ee7a giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"3G/4G\"]}, {\"column_name\": \"merchant\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"T\\u00ean d\\u1ecbch v\\u1ee5 + nh\\u00e0 m\\u1ea1ng c\\u1ee7a giao d\\u1ecbch, \\u0111\\u01b0\\u1ee3c vi\\u1ebft d\\u01b0\\u1edbi d\\u1ea1ng in hoa kh\\u00f4ng d\\u1ea5uT\\u00ean d\\u1ecbch v\\u1ee5 + nh\\u00e0 m\\u1ea1ng c\\u1ee7a id, \\u0111\\u01b0\\u1ee3c vi\\u1ebft d\\u01b0\\u1edbi d\\u1ea1ng in hoa kh\\u00f4ng d\\u1ea5u\", \"structs\": [], \"example_data\": [\"TOPUP DATA VIETTEL\", \"TOPUP DATA MOBIFONE\", \"COMBO DATA VIETTEL\", \"TOPUP DATA VINAPHONE\", \"TOPUP DATA VIETTEL SPONSOR\", \"MA THE MOBIFONE DATA 3G/4G\", \"COMBO DATA VINAPHONE\", \"MA THE DATA VIETTEL\", \"COMBO MOBIFONE - PHUONG QUAN\", \"MA THE DATA VINAPHONE\", \"TOPUP DATA VIETNAMOBILE\", \"SIM WEB LOCAL\", \"WINTEL WEB\", \"TOPUP DATA SAYMEE\", \"TOPUP DATA LOCAL\", \"MA THE MOBIFONE DATA 3G/4G_KM\", \"LOCAL WEB AIRTIME\", \"SIM VIETTEL\", \"TOPUP DATA NHA MANG WINTEL (MOBICAST)\", \"ESIM DU LICH GOHUB\", \"SIM LOCAL\", \"SIM DONG DUONG TELECOM ITEL\", \"TOPUP VIETTEL DATA ROAMING\", \"CTKM TOPUP DATA VIETTEL 1 TANG 1\", \"SIM WINTEL\", \"DONG DUONG TELECOM - ITEL\", \"SIM MOBIFONE\", \"MA THE DATA VIETTEL_KM\", \"SIM DU LICH XPLORI\", \"SIM VIETNAMOBILE\"]}, {\"column_name\": \"region\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Khu v\\u1ef1c c\\u1ee7a merchantKhu v\\u1ef1c c\\u1ee7a merchant\", \"structs\": [], \"example_data\": [\"Mien Bac\"]}, {\"column_name\": \"supplier\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Nh\\u00e0 cung c\\u1ea5p c\\u1ee7a giao d\\u1ecbchNh\\u00e0 cung c\\u1ea5p c\\u1ee7a id\", \"structs\": [], \"example_data\": [\"VIETTEL\", \"PHUONG QUAN\", \"VMG/IMEDIA\", \"My data\", \"MobiPlus\", \"Vinaphone\", \"VIEN PHUONG NAM\", \"Mservice\", \"VIETNAMOBILE\", \"MOBICAST\", \"ASIM\", \"LOCAL\", \"EPAY\", \"IMD\", \"XPLORI\", \"Mobifone\", \"Vietnamobile\", \"VNSKY\", \"Mobifoneplus\", \"GOHUB\", \"WINTEL\", \"VIETTEL DIRECT\", \"MOBIFONE\"]}, {\"column_name\": \"service_code\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"M\\u00e3 d\\u1ecbch v\\u1ee5 li\\u00ean quan \\u0111\\u1ebfn giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"vttivt_topupdata_vt\", \"vttiphuongquan_topup\", \"vttiviettel_mathe_vt\"]}, {\"column_name\": \"bonus\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"S\\u1ed1 ti\\u1ec1n bonus cho ng\\u01b0\\u1eddi d\\u00f9ngs\\u1ed1 ti\\u1ec1n bonus cho user\", \"structs\": [], \"example_data\": [\"0\", \"1200\", \"2400\"]}, {\"column_name\": \"gender\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Gi\\u1edbi t\\u00ednh c\\u1ee7a ng\\u01b0\\u1eddi d\\u00f9nggi\\u1edbi t\\u00ednh c\\u1ee7a user\", \"structs\": [], \"example_data\": [\"male\", \"female\", \"MALE\", \"FEMALE\", \"UNKNOWN\", \"unknown\"]}, {\"column_name\": \"group_age\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Nh\\u00f3m \\u0111\\u1ed9 tu\\u1ed5i c\\u1ee7a ng\\u01b0\\u1eddi d\\u00f9nggroup \\u0111\\u1ed9 tu\\u1ed5i c\\u1ee7a user\", \"structs\": [], \"example_data\": [\"[2]. 18 - 22 y/o\", \"[3]. 23 - 26 y/o\", \"18_to_22\", \"[4]. 27 - 30 y/o\", \"23_to_27\", \"[5]. 31 - 35 y/o\", \"[1]. <18 y/o\", \"28_to_32\", \">37\", \"UNKNOWN\", \"[6]. 36 - 40 y/o\", \"[7]. >40 y/o\", \"33_to_37\"]}, {\"column_name\": \"age\", \"mode\": \"NULLABLE\", \"data_type\": \"NUMERIC\", \"description\": \"\\u0110\\u1ed9 tu\\u1ed5i c\\u1ee7a ng\\u01b0\\u1eddi d\\u00f9ng\\u0111\\u1ed9 tu\\u1ed5i c\\u1ee7a user\", \"structs\": [], \"example_data\": [\"20\", \"21\", \"22\"]}, {\"column_name\": \"statusid\", \"mode\": \"NULLABLE\", \"data_type\": \"INTEGER\", \"description\": \"Tr\\u1ea1ng th\\u00e1i giao d\\u1ecbch, 6 = giao d\\u1ecbch th\\u1ea5t b\\u1ea1i, 2 = giao d\\u1ecbch th\\u00e0nh c\\u00f4ngtr\\u1ea1ng th\\u00e1i giao d\\u1ecbch, 6 = giao d\\u1ecbch th\\u1ea5t b\\u1ea1i, 2 = giao d\\u1ecbch th\\u00e0nh c\\u00f4ng\", \"structs\": [], \"example_data\": [\"2\", \"6\"]}, {\"column_name\": \"group_user\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Nh\\u00f3m ng\\u01b0\\u1eddi d\\u00f9ng\", \"structs\": [], \"example_data\": [\"other\", \"Current\", \"New User\"]}, {\"column_name\": \"province\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"T\\u1ec9nh th\\u00e0nh ng\\u01b0\\u1eddi d\\u00f9ng \\u0111ang \\u1edfT\\u1ec9nh th\\u00e0nh user \\u0111ang \\u1edf\", \"structs\": [], \"example_data\": [\"H\\u1ed3 Ch\\u00ed Minh\", \"H\\u00e0 N\\u1ed9i\", \"B\\u00ecnh D\\u01b0\\u01a1ng\"]}, {\"column_name\": \"province_group\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Nh\\u00f3m t\\u1ec9nh th\\u00e0nh ng\\u01b0\\u1eddi d\\u00f9ng \\u0111ang \\u1edfgroup t\\u1ec9nh t\\u00ednh user \\u0111ang \\u1edf\", \"structs\": [], \"example_data\": [\"H\\u1ed3 Ch\\u00ed Minh\", \"Others\", \"KCN Mi\\u1ec1n Nam\", \"H\\u00e0 N\\u1ed9i\", \"KCN Mi\\u1ec1n B\\u1eafc\", \"T\\u1ec9nh kh\\u00e1c\", \"Unknown\", \"TP L\\u1edbn\", \"TP Du l\\u1ecbch\"]}, {\"column_name\": \"Revenue\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"Doanh thu c\\u1ee7a giao d\\u1ecbchDoanh thu c\\u1ee7a id\", \"structs\": [], \"example_data\": [\"1272.7272727272727\", \"2727.272727272727\", \"1018.1818181818181\"]}, {\"column_name\": \"quantity\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"S\\u1ed1 l\\u01b0\\u1ee3ng s\\u1ea3n ph\\u1ea9m ng\\u01b0\\u1eddi d\\u00f9ng muaS\\u1ed1 l\\u01b0\\u1ee3ng s\\u1ea3n ph\\u1ea9m user mua\", \"structs\": [], \"example_data\": [\"1\", \"2\", \"3\"]}, {\"column_name\": \"menh_gia\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"M\\u1ec7nh gi\\u00e1 c\\u1ee7a s\\u1ea3n ph\\u1ea9mm\\u1ec7nh gi\\u00e1 c\\u1ee7a s\\u1ea3n ph\\u1ea9m\", \"structs\": [], \"example_data\": [\"10000\", \"15000\", \"8000\"]}, {\"column_name\": \"goi_cuoc\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"M\\u00e3 g\\u00f3i c\\u01b0\\u1edbc c\\u1ee7a s\\u1ea3n ph\\u1ea9mm\\u00e3 g\\u00f3i c\\u01b0\\u1edbc c\\u1ee7a s\\u1ea3n ph\\u1ea9m\", \"structs\": [], \"example_data\": [\"KS8\", \"1N_TMDT\", \"ST15KDS\"]}, {\"column_name\": \"dung_luong\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Dung l\\u01b0\\u1ee3ng data c\\u1ee7a g\\u00f3i c\\u01b0\\u1edbcdung l\\u01b0\\u1ee3ng data c\\u1ee7a g\\u00f3i c\\u01b0\\u1edbc\", \"structs\": [], \"example_data\": [\"3 GB\", \"5\", \"2 GB\"]}, {\"column_name\": \"expire\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Th\\u1eddi gian h\\u1ebft h\\u1ea1n c\\u1ee7a g\\u00f3i c\\u01b0\\u1edbcTh\\u1eddi gian h\\u1ebft h\\u1ea1n c\\u1ee7a g\\u00f3i c\\u01b0\\u1edbc\", \"structs\": [], \"example_data\": [\"1\", \"3\", \"7\"]}, {\"column_name\": \"month_active\", \"mode\": \"NULLABLE\", \"data_type\": \"DATE\", \"description\": \"Th\\u00e1ng ng\\u01b0\\u1eddi d\\u00f9ng activeTh\\u00e1ng user active\", \"structs\": [], \"example_data\": [\"2025-11-01\", \"2025-10-01\", \"2025-08-01\"]}, {\"column_name\": \"user_segment\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Segment c\\u1ee7a ng\\u01b0\\u1eddi d\\u00f9ng trong th\\u00e1ng active. retain_user: ng\\u01b0\\u1eddi d\\u00f9ng \\u0111\\u00e3 active \\u1edf th\\u00e1ng tr\\u01b0\\u1edbc \\u0111\\u00f3 v\\u00e0 th\\u00e1ng n\\u00e0y ti\\u1ebfp t\\u1ee5c active, recover_user: ng\\u01b0\\u1eddi d\\u00f9ng churn Airtime h\\u01a1n 1 th\\u00e1ng v\\u00e0 quay l\\u1ea1i active d\\u1ecbch v\\u1ee5 th\\u00e1ng n\\u00e0y, new_user: ng\\u01b0\\u1eddi d\\u00f9ng ch\\u01b0a t\\u1eebng active d\\u1ecbch v\\u1ee5 Data tr\\u01b0\\u1edbc \\u0111\\u00f3Segment c\\u1ee7a user trong th\\u00e1ng active. retain_user: user \\u0111\\u00e3 active \\u1edf th\\u00e1ng tr\\u01b0\\u1edbc \\u0111\\u00f3 v\\u00e0 th\\u00e1ng n\\u00e0y ti\\u1ebfp t\\u1ee5c active, recover_user: user churn Airtime h\\u01a1n 1 th\\u00e1ng v\\u00e0 quay l\\u1ea1i active d\\u1ecbch v\\u1ee5 th\\u00e1ng n\\u00e0y, mew_user: user ch\\u01b0a t\\u1eebng active d\\u1ecbch v\\u1ee5 Data tr\\u01b0\\u1edbc \\u0111\\u00f3\", \"structs\": [], \"example_data\": [\"retain_user\", \"recover_user\", \"new_user\"]}, {\"column_name\": \"churn_duration\", \"mode\": \"NULLABLE\", \"data_type\": \"INTEGER\", \"description\": \"S\\u1ed1 th\\u00e1ng ng\\u01b0\\u1eddi d\\u00f9ng r\\u1eddi b\\u1ecf d\\u1ecbch v\\u1ee5s\\u1ed1 th\\u00e1ng user r\\u1eddi b\\u1ecf d\\u1ecbch v\\u1ee5\", \"structs\": [], \"example_data\": [\"1\", \"2\", \"3\"]}, {\"column_name\": \"money_source\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Ngu\\u1ed3n ti\\u1ec1n ng\\u01b0\\u1eddi d\\u00f9ng s\\u1eed d\\u1ee5ng cho giao d\\u1ecbchNgu\\u1ed3n ti\\u1ec1n user s\\u1eed d\\u1ee5ng cho giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"momo\", \"bank_link\", \"TTT\", \"pay_later\", \"group fund\", \"napas\", \"others\", \"visa debit\", \"direct debit\", \"visa credit\", \"visa ao ccm\"]}, {\"column_name\": \"typeid\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Th\\u1ebb qu\\u00e0/m\\u00e3 nh\\u1eadp s\\u1eed d\\u1ee5ng cho khuy\\u1ebfn m\\u00e3iTh\\u1ebb qu\\u00e0/m\\u00e3 nh\\u1eadp s\\u1eed d\\u1ee5ng cho promotion\", \"structs\": [], \"example_data\": [\"cashback\", \"220428_data_new_10k\", \"2201_data_new_10k\"]}, {\"column_name\": \"voucher_cost\", \"mode\": \"NULLABLE\", \"data_type\": \"FLOAT\", \"description\": \"Chi ph\\u00ed c\\u1ee7a voucher\", \"structs\": [], \"example_data\": [\"0\", \"10000\", \"3000\"]}, {\"column_name\": \"telco_source\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Entry point t\\u1eeb miniapp c\\u1ee7a giao d\\u1ecbchEntry point t\\u1eeb miniapp c\\u1ee7a giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"tabbar_home\", \"tabbar_home_byphone\", \"transaction_result\"]}, {\"column_name\": \"serviceid\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"ID d\\u1ecbch v\\u1ee5service id \", \"structs\": [], \"example_data\": [\"topup_data_viettel\", \"topup_data_mobi\", \"topup_combo_viettel\"]}, {\"column_name\": \"telco_source_raw\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Ngu\\u1ed3n vi\\u1ec5n th\\u00f4ng g\\u1ed1c c\\u1ee7a giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"tabbar_home_revamp_payX\", \"tabbar_home\", \"tabbar_home_revamp\"]}, {\"column_name\": \"suffix\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Entry point n\\u1ed9i b\\u1ed9 c\\u1ee7a giao d\\u1ecbch (ex: button screen,...)internal entry point c\\u1ee7a giao d\\u1ecbch (ex: button screen,...)\", \"structs\": [], \"example_data\": [\"block_recomend_ai\", \"block_recommend\", \"block_recommend_both\"]}, {\"column_name\": \"user_raw\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Ng\\u01b0\\u1eddi d\\u00f9ng g\\u1ed1c\", \"structs\": [], \"example_data\": [\"43803706\", \"86561789\", \"86365594\"]}, {\"column_name\": \"ttt_user_segment\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Segment ng\\u01b0\\u1eddi d\\u00f9ng TTT\", \"structs\": [], \"example_data\": [\"churn_TTT\", \"non_TTT\", \"2.Retain\", \"3.Reactive\", \"1.New\"]}, {\"column_name\": \"voucher_type_by_gmv\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Lo\\u1ea1i voucher theo GMV\", \"structs\": [], \"example_data\": [\"ONLY ORGANIC\", \"GMV MORE ORGANIC\", \"ONLY VOUCHER\", \"GMV MORE VOUCHER\"]}, {\"column_name\": \"voucher_type_by_trans\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Lo\\u1ea1i voucher theo giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"ONLY ORGANIC\", \"TRANS MORE ORGANIC\", \"ONLY VOUCHER\", \"TRANS MORE VOUCHER\"]}, {\"column_name\": \"previous_voucher_type_by_trans\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Lo\\u1ea1i voucher theo giao d\\u1ecbch tr\\u01b0\\u1edbc \\u0111\\u00f3\", \"structs\": [], \"example_data\": [\"ONLY ORGANIC\", \"GMV MORE ORGANIC\", \"ONLY VOUCHER\", \"GMV MORE VOUCHER\"]}, {\"column_name\": \"previous_voucher_type_by_gmv\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Lo\\u1ea1i voucher theo GMV tr\\u01b0\\u1edbc \\u0111\\u00f3\", \"structs\": [], \"example_data\": [\"ONLY ORGANIC\", \"GMV MORE ORGANIC\", \"ONLY VOUCHER\", \"GMV MORE VOUCHER\"]}, {\"column_name\": \"acquire_user_channel\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"K\\u00eanh thu h\\u00fat ng\\u01b0\\u1eddi d\\u00f9ng\", \"structs\": [], \"example_data\": [\"organic\", \"BU\", \"other teams\"]}, {\"column_name\": \"promotion_cost_type\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Lo\\u1ea1i chi ph\\u00ed khuy\\u1ebfn m\\u00e3i\", \"structs\": [], \"example_data\": [\"organic\", \"BU\", \"other teams\"]}, {\"column_name\": \"partner\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"\\u0110\\u1ed1i t\\u00e1c li\\u00ean quan \\u0111\\u1ebfn giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"no data\", \"mathe\", \"sim\", \"others\", \"46615498\", \"69610933\", \"39788609\", \"101586536\", \"92581692\", \"49349749\", \"946212\", \"57068105\", \"80837920\", \"86556317\", \"47958790\", \"80949878\", \"79624758\", \"85260684\", \"82867712\", \"72344265\", \"87035302\", \"59187356\", \"3568160\", \"60890219\", \"57868547\", \"28854222\", \"9282630\", \"25142783\", \"70536230\", \"47023723\"]}, {\"column_name\": \"partner_type\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Lo\\u1ea1i \\u0111\\u1ed1i t\\u00e1c\", \"structs\": [], \"example_data\": [\"only_owner\", \"owner_partner\", \"only_partner\", \"mathe_owner\", \"mathe_owner_partner\", \"only_mathe\", \"mathe_partner\", \"only_sim\", \"owner_sim\", \"owner_partner_sim\", \"partner_sim\", \"others_owner_partner\", \"mathe_owner_partner_sim\", \"mathe_owner_sim\", \"others_partner\", \"others_owner\", \"mathe_partner_sim\", \"mathe_sim\", \"only_others\", \"mathe_others_owner_partner\", \"mathe_others_partner\", \"others_owner_partner_sim\", \"others_owner_sim\", \"others_sim\", \"mathe_others\"]}, {\"column_name\": \"partner_momo_user\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Ng\\u01b0\\u1eddi d\\u00f9ng MoMo c\\u1ee7a \\u0111\\u1ed1i t\\u00e1c\", \"structs\": [], \"example_data\": [\"owner\", \"partner\", \"momo user\", \"no data\", \"non momo user\", \"mathe\", \"sim\", \"others\"]}]}",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "d603c5c0-b5be-429f-acf9-94928dc3c686",
+        "memory": "giao dịch thành công: statusid = 2",
+        "hash": null,
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-05-13T14:20:25.903653",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "cd8e3b4e-34b4-4e4e-b044-579bec9cb08b",
+        "memory": "TTT: Túi Thần Tài",
+        "hash": null,
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-05-13T14:20:47.215151",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "9b11f599-6b43-4b19-b0b4-5b37789eb9e3",
+        "memory": "Khi xử lý vấn đề liên quan tới MAU, dùng COUNT(DISTINCT user_payment) thay vì COUNT(DISTINCT user_raw)",
+        "hash": "fb9d6280047ac975c4542ae7a52f1b77",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-07-30T23:29:12.950802-07:00",
+        "updated_at": "2025-07-30T23:53:11.218592-07:00",
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "f9268214-8636-4047-aa4a-45fdc2ffb342",
+        "memory": "Cột `source_of_fund` không tồn tại trong bảng `project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS`, sử dụng `money_source` thay thế",
+        "hash": "b2bcc8403bac39bed63af1eb2156a656",
+        "metadata": null,
+        "created_at": "2026-01-06T20:09:33.059981-08:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "de1f7c1b-e3ae-40a7-a789-ed548c8f539f",
+        "memory": "Khi xử lý yêu cầu MAU theo nhóm tuổi của dịch vụ Data 4G/5G, không sử dụng điều kiện service = 'COMBO'",
+        "hash": "00a4b4d1c40da31206ef0edfad0378ed",
+        "metadata": null,
+        "created_at": "2025-12-22T23:04:30.821530-08:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "810d5c15-2c1f-41c6-817e-7b6df204853c",
+        "memory": "Tỷ lệ giữ chân của gói cước A = số user mua gói cước A tháng T và tháng T-1/MAU gói cước A tháng T-1. Tỷ lệ giữ chân xác định theo từng tháng.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2026-01-15T15:06:24.666904",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "f89d1309-ab3d-423b-be18-fa2bbae09a7d",
+        "memory": "MAU: phải thêm điều kiện statusid = 2",
+        "hash": null,
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-05-13T14:20:29.045497",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "5e2344b6-2d32-4ccc-876f-c18346351287",
+        "memory": "cùng kỳ: extract(day from date) of month_active = extract(day from date) of last month",
+        "hash": null,
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-05-13T14:20:56.503749",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "e1061182-1d3a-4aaf-9eef-a0ded2e9bd25",
+        "memory": "Khi xử lý MAU từ tháng 07/2024 đến tháng 12/2024, cần sử dụng date_trunc(date, month) cho cột month_active và count(distinct user_payment) cho cột user",
+        "hash": "4a47b4e14881707ba152d72f5eab0134",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-07-30T22:02:04.815818-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "dd238b19-3891-464f-9890-2a2fd845999b",
+        "memory": "Doanh thu trung bình trên mỗi người dùng chỉ tính những người sử dụng đồng thời gói 30 ngày và ngắn ngày trong cùng một tháng",
+        "hash": "ee3acbac89cc047fef3d21018d2ad8eb",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-08-12T00:52:31.209506-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "96a30ca7-683b-4e8e-a1de-f7904dea5ba9",
+        "memory": "Nếu user hỏi về gói 5G thì hỏi thêm về nhà mạng. List gói cước 5G đã cung cấp chỉ áp dụng cho nhà mạng Viettel.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-11T15:55:25.973387",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "a717ef37-ff0e-4152-bc93-039abc191d85",
+        "memory": "Khi tính MAU cho user Data 4G/5G nhóm 18-22, cần sử dụng khoảng thời gian từ 01-01-2024 đến 28-08-2025 thay vì chỉ từ 01-08-2024 đến 28-08-2024",
+        "hash": "6710423a02ff42552e7970b940762843",
+        "metadata": null,
+        "created_at": "2025-09-29T00:58:34.809665-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "a66ca4f7-899d-4c03-8e75-0aed0a57dceb",
+        "memory": "Tỷ lệ giữ chân của gói cước A = số user mua gói cước A tháng T và tháng T-1/MAU gói cước A tháng T-1",
+        "hash": "b2d9a0ba5b10d75dd98d26ac723851a8",
+        "metadata": null,
+        "created_at": "2025-10-28T07:51:11.506648-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "672131a7-dbab-45df-8d18-562107db9e8e",
+        "memory": "VTS = ví trả sau = pay_later",
+        "hash": "ada95691d5e2f9f51661547f072dadc4",
+        "metadata": null,
+        "created_at": "2026-01-06T20:11:36.401156-08:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "7c8248cd-508b-4110-aeb4-8396ec7bd3d9",
+        "memory": "Khi xử lý cột 'expire', sử dụng safe_cast(t1.expire as float64) để tránh lỗi kiểu dữ liệu",
+        "hash": "d6b7f9b885fa4d0dab8e6d917d3734a0",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-07-28T23:59:22.308527-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "86587767-070c-4c90-8f9d-7a4daf6b5a98",
+        "memory": "Gói 30 ngày: expire = 30",
+        "hash": "5f8cf1f469622cb50ab22d2b4fdbe8fb",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-08-12T00:52:31.173329-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "01e3c565-c4d3-4c78-8981-ba6fc741b719",
+        "memory": "Khi user sử dụng agent, thì thay bằng cột service_code",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-11T16:13:31.825248",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "dcd13e96-e9bc-48f0-be16-6799ff9419d3",
+        "memory": "Các gói cước 5G bao gồm: 5G135, 5G150, 5G160B, 5G180B, 5G230B, 5G280B, 5G330B, 5G380B, 5G480B, 5GLQ190, 5GLQ210, TET5G, 5GMXH200, 5GMXH230, 3T5G135, 3T5G150, 3T5G160B, 3T5G180B, 3T5G480B, 3T5GLQ190, 3T5GLQ210, 5G135N, 3T5G135N, 5G150N, 3T5G150N, 5G13KS, 5G36KS, 5G85KS, 5GMAX",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-11T15:53:49.789176",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "b5933eb9-22cc-44e6-9ded-05a6720a09d0",
+        "memory": "Khi tính MAU cho nhóm tuổi 18-22, cần sử dụng điều kiện group_age = '[2]. 18 - 22 y/o'",
+        "hash": "8feb173651da703a239d639e1e05608e",
+        "metadata": null,
+        "created_at": "2025-09-29T00:54:16.591922-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "e5ec29af-9fb3-40e7-99a8-8dce8ede89ad",
+        "memory": "Tất cả các truy vấn từ bảng `project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS` phải luôn có điều kiện statusid = 2 (giao dịch thành công) trừ khi được yêu cầu khác.",
+        "hash": "066758554f7307de8eeecd8c73975a68",
+        "metadata": null,
+        "created_at": "2025-12-26T16:23:30.250963",
+        "updated_at": "2025-12-29T01:35:51.078822-08:00",
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "91b38c1e-3b17-47ab-b3f0-c3eab6d16392",
+        "memory": "Nếu user không đề cập gì hết, thì có nghĩa là chỉ cần phát sinh giao dịch thành công ở group_service Data.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2026-02-03T12:21:59.369312",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "631d54da-4884-4e56-a9b6-a7eb4a58d03a",
+        "memory": "user: user_payment or reference",
+        "hash": null,
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-05-13T14:20:34.739789",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "5d7fcc06-789e-408c-a545-a620eaeb6435",
+        "memory": "giftid: typeid",
+        "hash": null,
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-05-13T14:20:41.539151",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "193056ae-93ee-4ece-bb3c-21605991da45",
+        "memory": "Khi tính MAU, sử dụng COUNT(DISTINCT user_payment) thay vì COUNT(DISTINCT id)",
+        "hash": "b5fa43abf0a3fd69a7d57bb30e32be68",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-07-30T19:46:01.604834-07:00",
+        "updated_at": "2025-07-30T23:29:12.617515-07:00",
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "1fc0a7f3-c86d-4641-91a7-b50e21d2d309",
+        "memory": "statusid không cần dấu ngoặc đơn khi giá trị là số",
+        "hash": "274a7021b9ea71208cb80d578695e201",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-07-31T00:20:27.577827-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "a57b6e07-5a07-49d1-9afc-156989fec26e",
+        "memory": "SIM số đẹp MobiFone tương ứng với SIM SO DEP MOBIFONE trong cột merchant",
+        "hash": "250f1bf14ce47176cee12689921cb174",
+        "metadata": null,
+        "created_at": "2025-09-11T01:35:59.904504-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "e6063dc7-53cb-451b-bffd-ea82c60a321b",
+        "memory": "Khi lấy MAU của dịch vụ Data 4G/5G, cần sử dụng COUNT(DISTINCT user_payment) để tính MAU",
+        "hash": "62cc17d3250fdf6027707a051b4e3a3b",
+        "metadata": null,
+        "created_at": "2025-12-22T23:38:51.466491-08:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "abb72db5-1450-46a4-bdcf-fb0047103291",
+        "memory": "Tỷ lệ giữ chân của gói cước A = số user mua gói cước A tháng T và tháng T-1/MAU gói cước A tháng T-1. Tỷ lệ giữ chân xác định theo từng tháng.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2026-01-15T12:01:49.781009",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "347d8109-b989-41aa-9c51-72a7465dcde4",
+        "memory": "Khi user hỏi về 'gói cước', ưu tiên sử dụng cột `goi_cuoc` thay vì `service_code`.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-12-30T13:24:36.569815",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "4adb587a-8d11-4a91-b550-f9da035cd7b2",
+        "memory": "retention cohort month on month là việc user active lần đầu tiên vào tháng đó (nên dựa vào giá trị new_user trong cột user_segment vì data quá khứ không đủ). Sau đó kiểm tra tỷ lệ active ở các tháng tiếp theo cho tới thời điểm hiện tại",
+        "hash": "ed1af2c7f72d17431ff2e56ce8208457",
+        "metadata": null,
+        "created_at": "2025-12-30T13:33:15.303883",
+        "updated_at": "2026-02-03T02:52:47.202875-08:00",
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "9513068c-27fd-4212-8361-bd76c8691139",
+        "memory": "Cột `statusid` là một số nguyên, không phải chuỗi",
+        "hash": "ee1854d5843fb99a1833f3e75cca8930",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-07-30T19:42:53.269714-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "735d8cc4-67df-49b5-90cd-7e47445567ea",
+        "memory": "Khi tính doanh thu trung bình trên mỗi người dùng cho từng loại gói (30 ngày và ngắn ngày), chỉ tính những người sử dụng đồng thời cả hai loại gói trong cùng một tháng, cần sử dụng cột month_active và đảm bảo rằng num_package_type = 2",
+        "hash": "188477fe09d85a682363e4979e4352b4",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-08-12T00:47:59.419995-07:00",
+        "updated_at": "2025-08-12T00:56:49.508670-07:00",
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "5904538f-3e0a-48f6-a4b7-1c2f6d7f8ee1",
+        "memory": "Cần đảm bảo rằng expire và user_payment không null khi tính toán",
+        "hash": "195e21e68f7a3bfd57c18ff4fe781b35",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-08-12T00:47:59.512193-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "0720ccf1-03d2-459c-ae96-3961b79bd695",
+        "memory": "Gói ngắn ngày: expire < 30",
+        "hash": "3e15a3efef03875c7751e2ee118459ba",
+        "metadata": {
+          "user_name": "Data"
+        },
+        "created_at": "2025-08-12T00:52:31.138212-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "f6ca1f6f-639a-4f4d-8ca8-08279323eef3",
+        "memory": "Tỷ lệ giữ chân xác định theo từng tháng",
+        "hash": "3b9f36fe5a406935658b5948fddcb81c",
+        "metadata": null,
+        "created_at": "2025-10-28T07:51:11.839963-07:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "f3cc0fb7-d5c1-4c30-a274-11423bf93c0c",
+        "memory": "Khi truy vấn dữ liệu cho gói cước, sử dụng cột goi_cuoc thay vì service_code",
+        "hash": "0b8529a5ef65ef436045d981ca27edea",
+        "metadata": null,
+        "created_at": "2025-12-29T22:43:17.583458-08:00",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "33fa40ab-d36b-4c28-8830-9d5e3d7ba42e",
+        "memory": "Tỷ lệ giữ chân của gói cước A = số user mua gói cước A tháng T và tháng T-1/MAU gói cước A tháng T-1. Tỷ lệ giữ chân xác định theo từng tháng.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2026-01-15T11:36:52.787246",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "2c868757-de94-4936-bda5-e1f12fedfdd0",
+        "memory": "để lấy được new user cần lấy giao dịch tại thời điểm đầu tiên, như vậy đừng ràng thời gian trong quá trình xác định new user. Nhưng vì bảng data không có đủ các giao dịch trong quá khứ, nên có thể dựa vào ew_user trong cột user_segment để xác định chính xác các user nào là new user",
+        "hash": "c060816ec285076decfbd51e518b6b5e",
+        "metadata": null,
+        "created_at": "2026-02-02T20:29:02.239477-08:00",
+        "updated_at": "2026-02-03T02:33:22.489080-08:00",
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      },
+      {
+        "id": "da8bb106-44eb-4841-b67b-3070936e5997",
+        "memory": "Khi user yêu cầu retention cohort:\n- Active user được định nghĩa là user có phát sinh giao dịch thành công (statusid = 2).\n- Nếu không đề cập tháng bắt đầu, mặc định là tháng 1/2025.\n- Nếu không đề cập tháng kết thúc, mặc định là tháng hiện tại.\n- Nếu không đề cập dịch vụ/sản phẩm cụ thể, cần hỏi lại user muốn tính cho dịch vụ/sản phẩm nào.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2026-02-03T18:00:58.707511",
+        "updated_at": null,
+        "user_id": "c210420f-d014-4463-bcb9-c9e4a38c0963"
+      }
+    ]
+  }
+}

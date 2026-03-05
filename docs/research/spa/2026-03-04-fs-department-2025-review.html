@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FS Department 2025 Review</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f5f5f5; color:#333; }
+.header { background: linear-gradient(135deg, #ae2070, #7b1650); color:white; padding:24px 32px; position:sticky; top:0; z-index:100; }
+.header h1 { font-size:24px; font-weight:700; }
+.header .subtitle { font-size:14px; opacity:0.85; margin-top:4px; }
+.tabs { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
+.tab { padding:8px 16px; border-radius:20px; cursor:pointer; font-size:13px; font-weight:500; background:rgba(255,255,255,0.15); color:white; border:none; transition:all 0.2s; }
+.tab.active, .tab:hover { background:white; color:#ae2070; }
+.container { max-width:1200px; margin:0 auto; padding:24px; }
+.kpi-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px; }
+.kpi { background:white; border-radius:12px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.kpi .label { font-size:12px; color:#888; text-transform:uppercase; letter-spacing:0.5px; }
+.kpi .value { font-size:28px; font-weight:700; color:#ae2070; margin:4px 0; }
+.kpi .change { font-size:13px; }
+.kpi .change.positive { color:#2ecc71; }
+.kpi .change.negative { color:#e74c3c; }
+.chart-card { background:white; border-radius:12px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08); margin-bottom:24px; }
+.chart-card h3 { font-size:16px; margin-bottom:16px; color:#333; }
+.chart-row { display:grid; grid-template-columns: 1fr 1fr; gap:24px; }
+@media (max-width:768px) { .chart-row { grid-template-columns:1fr; } }
+.section { display:none; }
+.section.active { display:block; }
+.insight-box { background:#fff3f8; border-left:4px solid #ae2070; padding:16px; border-radius:0 8px 8px 0; margin-bottom:16px; font-size:14px; line-height:1.6; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+table th { background:#f8f8f8; padding:10px 12px; text-align:left; font-weight:600; border-bottom:2px solid #eee; }
+table td { padding:8px 12px; border-bottom:1px solid #f0f0f0; }
+table tr:hover { background:#fafafa; }
+.table-card { background:white; border-radius:12px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08); margin-bottom:24px; overflow-x:auto; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>FS Department 2025 Annual Review</h1>
+  <div class="subtitle">Financial Services | Data Period: Jan - Dec 2025 | Source: BigQuery</div>
+  <div class="tabs">
+    <button class="tab active" onclick="showSection('overview')">Overview</button>
+    <button class="tab" onclick="showSection('paylater')">Paylater</button>
+    <button class="tab" onclick="showSection('ttt')">TTT</button>
+    <button class="tab" onclick="showSection('vaynhanh')">Vay Nhanh</button>
+    <button class="tab" onclick="showSection('insurtech')">InsurTech</button>
+    <button class="tab" onclick="showSection('clo')">CLO</button>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- OVERVIEW -->
+<div id="overview" class="section active">
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Paylater MAU (Dec)</div>
+      <div class="value">1.44M</div>
+      <div class="change positive">+45.3% YTD</div>
+    </div>
+    <div class="kpi">
+      <div class="label">TTT MAU (Dec)</div>
+      <div class="value">3.70M</div>
+      <div class="change positive">+7.3% YTD</div>
+    </div>
+    <div class="kpi">
+      <div class="label">TTT AUM (Dec)</div>
+      <div class="value">11.30T</div>
+      <div class="change positive">+23.1% YTD</div>
+    </div>
+    <div class="kpi">
+      <div class="label">VN Monthly Disbursed (Dec)</div>
+      <div class="value">3.13T</div>
+      <div class="change positive">+169% YTD</div>
+    </div>
+    <div class="kpi">
+      <div class="label">InsurTech Annual Revenue</div>
+      <div class="value">33.3B</div>
+      <div class="change positive">Distribution only</div>
+    </div>
+    <div class="kpi">
+      <div class="label">CLO Annual Revenue</div>
+      <div class="value">57.4B</div>
+      <div class="change positive">+2.4x YTD</div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Key Takeaway:</strong> Lending (Paylater + Vay Nhanh) is the growth engine — combined 26T VND disbursed in 2025. TTT is the steady cash cow with 11.3T AUM. CLO quietly doubled. InsurTech needs strategic marketing push beyond motorcycle renewal seasons.
+  </div>
+
+  <div class="chart-card">
+    <h3>All Products MAU Trend 2025</h3>
+    <canvas id="overviewMauChart" height="100"></canvas>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Vay Nhanh Disbursement Volume (B VND)</h3>
+      <canvas id="overviewVnChart" height="120"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Revenue Comparison (B VND/month)</h3>
+      <canvas id="overviewRevChart" height="120"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- PAYLATER -->
+<div id="paylater" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Jan MAU</div><div class="value">989K</div></div>
+    <div class="kpi"><div class="label">Dec MAU</div><div class="value">1.44M</div></div>
+    <div class="kpi"><div class="label">Full-Year Growth</div><div class="value">+45.3%</div><div class="change positive">Consistent monthly growth</div></div>
+    <div class="kpi"><div class="label">Avg Monthly Growth</div><div class="value">+3.5%</div><div class="change positive">Compounding</div></div>
+  </div>
+  <div class="insight-box">
+    <strong>Insight:</strong> Paylater is MoMo's most consistent growth product in 2025. Never had a down month except Feb (Tet effect). The 45% annual growth comes from steady ~3.5% MoM compounding — not spikes. Revenue model: management fees (~30K/month per active borrower) + penalty fees. At 1.44M MAU, gross monthly fee revenue ~70B VND.
+  </div>
+  <div class="chart-card">
+    <h3>Paylater MAU Trend 2025</h3>
+    <canvas id="plMauChart" height="100"></canvas>
+  </div>
+  <div class="table-card">
+    <h3>Monthly Data</h3>
+    <table>
+      <tr><th>Month</th><th>MAU</th><th>MoM</th></tr>
+      <tr><td>Jan</td><td>988,551</td><td>—</td></tr>
+      <tr><td>Feb</td><td>970,991</td><td style="color:#e74c3c">-1.8%</td></tr>
+      <tr><td>Mar</td><td>1,042,956</td><td style="color:#2ecc71">+7.4%</td></tr>
+      <tr><td>Apr</td><td>1,071,670</td><td style="color:#2ecc71">+2.8%</td></tr>
+      <tr><td>May</td><td>1,108,131</td><td style="color:#2ecc71">+3.4%</td></tr>
+      <tr><td>Jun</td><td>1,165,868</td><td style="color:#2ecc71">+5.2%</td></tr>
+      <tr><td>Jul</td><td>1,211,056</td><td style="color:#2ecc71">+3.9%</td></tr>
+      <tr><td>Aug</td><td>1,257,140</td><td style="color:#2ecc71">+3.8%</td></tr>
+      <tr><td>Sep</td><td>1,275,682</td><td style="color:#2ecc71">+1.5%</td></tr>
+      <tr><td>Oct</td><td>1,314,094</td><td style="color:#2ecc71">+3.0%</td></tr>
+      <tr><td>Nov</td><td>1,377,918</td><td style="color:#2ecc71">+4.9%</td></tr>
+      <tr><td>Dec</td><td>1,436,606</td><td style="color:#2ecc71">+4.3%</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- TTT -->
+<div id="ttt" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Peak MAU (Jul)</div><div class="value">3.64M</div></div>
+    <div class="kpi"><div class="label">Dec MAU</div><div class="value">3.70M</div></div>
+    <div class="kpi"><div class="label">AUM Growth</div><div class="value">+23.1%</div><div class="change positive">9.18T → 11.30T</div></div>
+    <div class="kpi"><div class="label">Dec AUM</div><div class="value">11.30T</div><div class="change positive">VND</div></div>
+  </div>
+  <div class="insight-box">
+    <strong>Insight:</strong> TTT has MoMo's largest user base (3.7M MAU) but modest MAU growth (+7.3%). The real story is AUM: +23% growth driven by existing users depositing more (cohort deepening). Q1 dip is normal — post-Tet withdrawals. AUM generates ~20B/month net spread income for MoMo.
+  </div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>TTT MAU Trend</h3>
+      <canvas id="tttMauChart" height="150"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>TTT AUM (Trillion VND)</h3>
+      <canvas id="tttAumChart" height="150"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- VAY NHANH -->
+<div id="vaynhanh" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Total 2025 Loans</div><div class="value">1.56M</div></div>
+    <div class="kpi"><div class="label">Total Disbursed</div><div class="value">24.6T</div><div class="change positive">VND</div></div>
+    <div class="kpi"><div class="label">Dec Monthly Disbursed</div><div class="value">3.13T</div><div class="change positive">+169% vs Jan</div></div>
+    <div class="kpi"><div class="label">Dec Unique Borrowers</div><div class="value">148K</div><div class="change positive">+64% vs Jan</div></div>
+  </div>
+  <div class="insight-box">
+    <strong>Insight:</strong> Vay Nhanh had a massive 2025. The June inflection point is notable — both loan volume AND average loan size jumped, suggesting credit limit expansion or new higher-value products. Average loan size went from ~12M (H1) to ~17-18M (H2). Lender mix: VIET_CREDIT dominant, with MCREDIT + AMBER + new MBV (joined Nov 2025).
+  </div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Monthly Disbursement Value (B VND)</h3>
+      <canvas id="vnDisbChart" height="150"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Loan Count & Avg Loan Size</h3>
+      <canvas id="vnCountChart" height="150"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- INSURTECH -->
+<div id="insurtech" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Total 2025 Orders</div><div class="value">1.06M</div></div>
+    <div class="kpi"><div class="label">Total Premium</div><div class="value">88.1B</div><div class="change positive">VND</div></div>
+    <div class="kpi"><div class="label">Total Revenue</div><div class="value">33.3B</div><div class="change positive">VND</div></div>
+    <div class="kpi"><div class="label">Avg Take Rate</div><div class="value">37.8%</div></div>
+  </div>
+  <div class="insight-box">
+    <strong>Insight:</strong> InsurTech is highly seasonal. January = massive motorcycle renewal peak (208K orders). December = second peak (107K). Mid-year average ~75K orders/month. September is the structural annual trough. Travel and PA Bus products are 100% organic — zero marketing investment, a massive untapped opportunity. Vehicle insurance drives the seasonal pattern.
+  </div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Monthly Orders</h3>
+      <canvas id="insOrderChart" height="150"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Revenue (B VND)</h3>
+      <canvas id="insRevChart" height="150"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- CLO -->
+<div id="clo" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Total 2025 Disbursements</div><div class="value">55K</div></div>
+    <div class="kpi"><div class="label">Total Disbursed</div><div class="value">1.49T</div><div class="change positive">VND</div></div>
+    <div class="kpi"><div class="label">Total Revenue</div><div class="value">57.4B</div><div class="change positive">VND</div></div>
+    <div class="kpi"><div class="label">Growth (Jan→Dec)</div><div class="value">+2.4x</div><div class="change positive">Revenue</div></div>
+  </div>
+  <div class="insight-box">
+    <strong>Insight:</strong> CLO is small but growing fast. Jan started at 2K disbursements, peaked at 6.7K in Oct. Revenue grew 2.4x. Key development: SHB (state bank) joined in Nov 2025, diversifying away from Home Credit (was 100%, now 62%). Avg loan size ~27M VND. Take rate ~3.9% of disbursement value.
+  </div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Monthly Disbursements</h3>
+      <canvas id="cloDisbChart" height="150"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Revenue (B VND)</h3>
+      <canvas id="cloRevChart" height="150"></canvas>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const pink = '#ae2070';
+const blue = '#3498db';
+const green = '#2ecc71';
+const orange = '#f39c12';
+const purple = '#9b59b6';
+
+// Data
+const plMau = [988551,970991,1042956,1071670,1108131,1165868,1211056,1257140,1275682,1314094,1377918,1436606];
+const tttMau = [3451799,3169135,3016780,2945105,3148806,3283752,3605577,3636406,3626626,3569998,3567449,3703327];
+const tttAum = [9.18,9.43,9.50,9.89,10.10,10.38,10.47,10.72,10.85,10.90,11.12,11.30];
+const vnLoans = [97133,80321,106443,107022,114026,138044,134019,141213,143833,166452,157993,173946];
+const vnDisb = [1163,966,1268,1335,1455,2173,2134,2238,2458,2949,2911,3129];
+const insOrders = [208188,90413,65472,77160,72924,68968,75537,81116,66393,73323,73487,107351];
+const insRev = [8.83,2.84,1.94,2.10,2.02,1.97,2.01,2.04,1.80,2.09,2.39,3.29];
+const cloDisb = [2028,3901,4608,4489,4747,4869,4180,4191,5739,6665,4741,4865];
+const cloRev = [1.98,4.06,4.79,4.80,5.00,5.17,4.41,4.53,5.84,6.93,5.08,4.83];
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function makeChart(id, type, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      plugins: { legend: { position:'top', labels:{font:{size:12}} } },
+      scales: {
+        y: { beginAtZero: opts.beginAtZero !== false, ticks: { callback: v => opts.suffix ? v + opts.suffix : (opts.format === 'k' ? (v/1000).toFixed(0)+'K' : (opts.format === 'm' ? (v/1e6).toFixed(1)+'M' : v)) } }
+      },
+      ...opts.extra
+    }
+  });
+}
+
+// Overview charts
+makeChart('overviewMauChart', 'line', months, [
+  { label:'Paylater MAU', data:plMau, borderColor:pink, backgroundColor:pink+'22', tension:0.3, fill:false },
+  { label:'TTT MAU', data:tttMau, borderColor:blue, backgroundColor:blue+'22', tension:0.3, fill:false }
+], { format:'m' });
+
+makeChart('overviewVnChart', 'bar', months, [
+  { label:'Disbursed (B VND)', data:vnDisb, backgroundColor:green+'cc' }
+]);
+
+makeChart('overviewRevChart', 'line', months, [
+  { label:'InsurTech', data:insRev, borderColor:orange, tension:0.3, fill:false },
+  { label:'CLO', data:cloRev, borderColor:purple, tension:0.3, fill:false }
+]);
+
+// Paylater
+makeChart('plMauChart', 'line', months, [
+  { label:'MAU', data:plMau, borderColor:pink, backgroundColor:pink+'22', tension:0.3, fill:true }
+], { format:'m' });
+
+// TTT
+makeChart('tttMauChart', 'line', months, [
+  { label:'MAU', data:tttMau, borderColor:blue, backgroundColor:blue+'22', tension:0.3, fill:true }
+], { format:'m' });
+
+makeChart('tttAumChart', 'bar', months, [
+  { label:'AUM (T VND)', data:tttAum, backgroundColor:blue+'cc' }
+]);
+
+// Vay Nhanh
+makeChart('vnDisbChart', 'bar', months, [
+  { label:'Disbursed (B VND)', data:vnDisb, backgroundColor:green+'cc' }
+]);
+
+const vnAvgLoan = vnDisb.map((d,i) => Math.round(d*1e9/vnLoans[i]/1e6*10)/10);
+makeChart('vnCountChart', 'bar', months, [
+  { label:'Loan Count', data:vnLoans, backgroundColor:green+'66', yAxisID:'y' },
+  { label:'Avg Loan (M VND)', data:vnAvgLoan, type:'line', borderColor:orange, tension:0.3, yAxisID:'y1' }
+], { extra: { scales: { y:{position:'left', ticks:{callback:v=>(v/1000).toFixed(0)+'K'}}, y1:{position:'right', grid:{drawOnChartArea:false}} } } });
+
+// InsurTech
+makeChart('insOrderChart', 'bar', months, [
+  { label:'Orders', data:insOrders, backgroundColor:orange+'cc' }
+], { format:'k' });
+
+makeChart('insRevChart', 'bar', months, [
+  { label:'Revenue (B VND)', data:insRev, backgroundColor:orange+'cc' }
+]);
+
+// CLO
+makeChart('cloDisbChart', 'bar', months, [
+  { label:'Disbursements', data:cloDisb, backgroundColor:purple+'cc' }
+]);
+
+makeChart('cloRevChart', 'bar', months, [
+  { label:'Revenue (B VND)', data:cloRev, backgroundColor:purple+'cc' }
+]);
+</script>
+
+</body>
+</html>

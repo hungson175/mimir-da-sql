@@ -1,13 +1,86 @@
 # MEDIA - AD Platform
 
 **Domain ID:** `bf6c7cb8-75d4-493a-894c-ffd71d729cb1`
-**Last refreshed:** 2026-03-03
 
 ## Description
 Domain này phục vụ cho việc quản lý, tổng hợp và phân tích dữ liệu Media Marketing, bao gồm dữ liệu hiệu suất quảng cáo từ các kênh như Facebook, Google, TikTok, Apple Search Ads, Moloco,…
 
-## Schema DDL
-```sql
-###Dataset name: MEDIA - AD Platform
- ## Table momovn-growth-analytics.REPORT_MEDIA.MEDIA_FACT_AD_AGG has information : {"table_name": "momovn-growth-analytics.REPORT_MEDIA.MEDIA_FACT_AD_AGG", "table_description": "B\u1ea3ng fact ch\u1ee9a d\u1eef li\u1ec7u th\u1ed1ng k\u00ea qu\u1ea3ng c\u00e1o t\u00edch l\u0169y, d\u00f9ng \u0111\u1ec3 theo d\u00f5i v\u00e0 ph\u00e2n t\u00edch hi\u1ec7u su\u1ea5t c\u1ee7a c\u00e1c chi\u1ebfn d\u1ecbch qu\u1ea3ng c\u00e1o tr\u00ean nhi\u1ec1u k\u00eanh kh\u00e1c nhau.\n- Theo d\u00f5i chi ph\u00ed, l\u01b0\u1ee3ng hi\u1ec3n th\u1ecb v\u00e0 s\u1ed1 l\u1ea7n nh\u1ea5p chu\u1ed9t c\u1ee7a qu\u1ea3ng c\u00e1o theo t\u1eebng ng\u00e0y.\n- Ph\u00e2n t\u00edch chi ti\u1ebft c\u00e1c \u0111\u1ecbnh d\u1ea1ng qu\u1ea3ng c\u00e1o, k\u00eanh v\u00e0 m\u1ee5c ti\u00eau c\u1ee7a chi\u1ebfn d\u1ecbch.\n- \u0110\u00e1nh gi\u00e1 c\u00e1c m\u1ee9c \u0111\u1ed9 xem video v\u00e0 c\u00e1c ch\u1ec9 s\u1ed1 chuy\u1ec3n \u0111\u1ed5i c\u1ee7a qu\u1ea3ng c\u00e1o.", "table_columns": [{"column_name": "date", "mode": "NULLABLE", "data_type": "DATE", "description": "Ng\u00e0y th\u1ef1c hi\u1ec7n chi\u1ebfn d\u1ecbch qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["2026-01-21", "2026-01-23", "2026-01-22"]}, {"column_name": "month", "mode": "NULLABLE", "data_type": "DATE", "description": "Th\u00e1ng th\u1ef1c hi\u1ec7n chi\u1ebfn d\u1ecbch qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["2026-01-01", "2025-12-01", "2025-11-01"]}, {"column_name": "adset_id", "mode": "NULLABLE", "data_type": "STRING", "description": "M\u00e3 \u0111\u1ecbnh danh c\u1ee7a nh\u00f3m qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["tEGbKbf3NZho4TIC", "O0A2uRUi7AfQz2nU", "zVsNVk2RQtM8Q6V8"]}, {"column_name": "adset_name", "mode": "NULLABLE", "data_type": "STRING", "description": "T\u00ean c\u1ee7a nh\u00f3m qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["adgroup_default_ios", "adgroup_default_android", "mix"]}, {"column_name": "ad_id", "mode": "NULLABLE", "data_type": "STRING", "description": "M\u00e3 \u0111\u1ecbnh danh c\u1ee7a qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["tEGbKbf3NZho4TIC", "O0A2uRUi7AfQz2nU", "zVsNVk2RQtM8Q6V8"]}, {"column_name": "ad_name", "mode": "NULLABLE", "data_type": "STRING", "description": "T\u00ean qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["adgroup_default_ios", "adgroup_default_android", "unknown"]}, {"column_name": "campaign_id", "mode": "NULLABLE", "data_type": "STRING", "description": "M\u00e3 \u0111\u1ecbnh danh c\u1ee7a chi\u1ebfn d\u1ecbch.", "structs": [], "example_data": ["UClCYV2NYQsVFcbN", "xzRJ2xa13UjskPHh", "dZajtQQ8qNcYxRsq"]}, {"column_name": "campaign_name", "mode": "NULLABLE", "data_type": "STRING", "description": "T\u00ean chi\u1ebfn d\u1ecbch.", "structs": [], "example_data": ["Momo Android CPA campaign targeting Registration_PR.41855", "Moloco_All_INS_GMC301_NON-mass_N.NTMM-Hellomomo_T.S_C.20250903_PR.", "Momo Android CPA campaign targeting Registration"]}, {"column_name": "account_id", "mode": "NULLABLE", "data_type": "STRING", "description": "M\u00e3 \u0111\u1ecbnh danh c\u1ee7a t\u00e0i kho\u1ea3n.", "structs": [], "example_data": ["FQznmNyWDWz60jLL", "7052226950055723010", "489990065003734"]}, {"column_name": "account_name", "mode": "NULLABLE", "data_type": "STRING", "description": "T\u00ean c\u1ee7a t\u00e0i kho\u1ea3n.", "structs": [], "example_data": ["Momo", "momo marketing", "momo daily life service bc"]}, {"column_name": "campaign", "mode": "NULLABLE", "data_type": "STRING", "description": "Chi\u1ebfn d\u1ecbch li\u00ean quan.", "structs": [], "example_data": ["Ntmm-Hellomomo", "Ntmm-Mega25", "Lottery", "Googleplay", "Data-Awo", "Paylater-Push", "Appstore-Awareness", "Pos-Goroitiennong", "Hoantienmuasam", "Lacxi2024-Launching", "Gtbb", "Soundbox", "Vaynhanh", "Trust-A365", "Tiktokcoin", "Soundbox-Awareness", "Rebrand-Trothutaichinhai", "Trust-Churn60", "Data-Typem", "Cccd", "Trust-A60", "Simchinhchu", "Qlct", "Vtti-Billpay", "Pos-Consideration", "Qlcttypem", "Paylater-Why", "Ntmm-Pns", "Napthengay", "Quy"]}, {"column_name": "cam", "mode": "NULLABLE", "data_type": "STRING", "description": "Th\u00f4ng tin c\u1ee7a chi\u1ebfn d\u1ecbch (r\u00fat g\u1ecdn).", "structs": [], "example_data": ["Ntmm", "Lottery", "Data", "Trust", "Googleplay", "Paylater", "Pos", "Gtbb", "Soundbox", "Appstore", "Rebrand", "Vtti", "Hoantienmuasam", "Quy", "Lacxi2024", "Vaynhanh", "Sc25", "Airtime", "Tiktokcoin", "Lx25", "Ekyc", "Vietqr", "Qlcttypem", "Vay", "Copytransfer", "Napthengay", "Cccd", "Simchinhchu", "Qlct", "Megaqr"]}, {"column_name": "segment", "mode": "NULLABLE", "data_type": "STRING", "description": "Ph\u00e2n kh\u00fac \u0111\u1ed1i t\u01b0\u1ee3ng.", "structs": [], "example_data": ["non-mass", "momouser", "momouser-whitelistuser", "non-new", "momouser-a90", "momouser-a30", "non-all", "momouser-mass", "momouser-new", "momouser-churn", "non-a90", "momouser-retain", "momouser-nonbind", "momouser-lookalike", "momouser-all", "momouser-a60", "nonmomouser", "momouser-nonservice", "momouser-binded", "non", "S", "mass-purchase-exact", "momousers", "momouser-a180", "momouser-a90-momo", "mass-napxu-generic-exact", "mass-mass", "momouser-churngan", "mass-product-exact", "mass"]}, {"column_name": "ad_code", "mode": "NULLABLE", "data_type": "STRING", "description": "M\u00e3 code c\u1ee7a qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["ad01", "ad02", "ad03"]}, {"column_name": "ad_format", "mode": "NULLABLE", "data_type": "STRING", "description": "\u0110\u1ecbnh d\u1ea1ng c\u1ee7a qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["null", "Video", "Image", "Mix", "Carousel", "Collection", "Page post"]}, {"column_name": "campaign_type", "mode": "NULLABLE", "data_type": "STRING", "description": "Lo\u1ea1i chi\u1ebfn d\u1ecbch.", "structs": [], "example_data": ["S", "XL", "M", "S5", "L", "non-mass"]}, {"column_name": "channel", "mode": "NULLABLE", "data_type": "STRING", "description": "K\u00eanh truy\u1ec1n th\u00f4ng \u0111\u01b0\u1ee3c s\u1eed d\u1ee5ng.", "structs": [], "example_data": ["Moloco", "Facebook", "Tiktok", "Google", "ASA"]}, {"column_name": "objective", "mode": "NULLABLE", "data_type": "STRING", "description": "M\u1ee5c ti\u00eau c\u1ee7a chi\u1ebfn d\u1ecbch qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["Install", "Others", "Awareness", "Traffic", "Conversion", "View", "Engagement", "Lead"]}, {"column_name": "bu", "mode": "NULLABLE", "data_type": "STRING", "description": "\u0110\u01a1n v\u1ecb kinh doanh li\u00ean quan \u0111\u1ebfn chi\u1ebfn d\u1ecbch.", "structs": [], "example_data": ["Gmc", "Dls", "Bmc", "Uti", "P2p", "Fs", "Mds", "Hr"]}, {"column_name": "usecase", "mode": "NULLABLE", "data_type": "STRING", "description": "Tr\u01b0\u1eddng h\u1ee3p s\u1eed d\u1ee5ng chi\u1ebfn d\u1ecbch.", "structs": [], "example_data": ["Growth - Gtbb/Hlmm", "Gmc - Crm", "Uti - Data", "Bmc - Overall", "Dls - Digital Entertainment - Lottery", "Bmc - Branding", "Fs - Credittech - Paylater", "Dls - Application Store - Googleplay", "Gmc - Overall", "Dls - Application Store - Appstore", "Dls - Sme Offline", "Sp - Overall", "Sp - Qlct", "Dls - Marketplace", "Sp - Social Payment", "Uti - Billpay", "Fs - Old", "Mds - Ota", "Fs - Credittech - Cash Loan", "Uti - Vtti", "Sp - Aio Qr Receiver", "Dls - Digital Entertainment - Tiktokcoin", "Dls - Vietqr", "Sp - W2w", "Dls - Offline", "Fs - Overall", "Fs - Investtech \u2013 Brokerage", "Dls - Game", "Uti - Airtime", "Sp - W2b"]}, {"column_name": "vertical", "mode": "NULLABLE", "data_type": "STRING", "description": "Ng\u00e0nh d\u1ecdc li\u00ean quan \u0111\u1ebfn chi\u1ebfn d\u1ecbch.", "structs": [], "example_data": ["Platform", "Payment", "Financial Services", "Mds"]}, {"column_name": "cost", "mode": "NULLABLE", "data_type": "FLOAT", "description": "Chi ph\u00ed c\u1ee7a chi\u1ebfn d\u1ecbch qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "0.42352199999999995", "0.475605"]}, {"column_name": "impression", "mode": "NULLABLE", "data_type": "FLOAT", "description": "L\u01b0\u1ee3ng hi\u1ec3n th\u1ecb c\u1ee7a qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["1", "2", "3"]}, {"column_name": "click", "mode": "NULLABLE", "data_type": "FLOAT", "description": "S\u1ed1 l\u1ea7n nh\u1ea5p v\u00e0o qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["1", "0", "2"]}, {"column_name": "outbound_click", "mode": "NULLABLE", "data_type": "FLOAT", "description": "S\u1ed1 l\u1ea7n nh\u1ea5p ra ngo\u00e0i trang web.", "structs": [], "example_data": ["1", "0", "2"]}, {"column_name": "view", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u1ea7n xem qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "1", "2"]}, {"column_name": "view_2s", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u1ea7n xem qu\u1ea3ng c\u00e1o trong 2 gi\u00e2y.", "structs": [], "example_data": ["0", "1", "3"]}, {"column_name": "view_6s", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u1ea7n xem qu\u1ea3ng c\u00e1o trong 6 gi\u00e2y.", "structs": [], "example_data": ["0", "1", "2"]}, {"column_name": "focus_view_15s", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u01b0\u1ee3t xem t\u1eadp trung v\u00e0o qu\u1ea3ng c\u00e1o trong 15 gi\u00e2y.", "structs": [], "example_data": ["0", "336", "3915"]}, {"column_name": "trueview", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u01b0\u1ee3t xem th\u1ef1c s\u1ef1 c\u1ee7a qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "253", "4812"]}, {"column_name": "thruplays", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u1ea7n xem tr\u1ecdn v\u1eb9n c\u1ee7a video qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0"]}, {"column_name": "video_views_p25", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u01b0\u1ee3t xem \u0111\u1ea1t 25% video qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "1", "2"]}, {"column_name": "video_views_p50", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u01b0\u1ee3t xem \u0111\u1ea1t 50% video qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "1", "2"]}, {"column_name": "video_views_p75", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u01b0\u1ee3t xem \u0111\u1ea1t 75% video qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "1", "2"]}, {"column_name": "video_views_p100", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u01b0\u1ee3t xem \u0111\u1ea1t 100% video qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "1", "2"]}, {"column_name": "conversion", "mode": "NULLABLE", "data_type": "INTEGER", "description": "S\u1ed1 l\u01b0\u1ee3ng chuy\u1ec3n \u0111\u1ed5i t\u1eeb qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "1", "2"]}, {"column_name": "app_install", "mode": "NULLABLE", "data_type": "FLOAT", "description": "S\u1ed1 l\u01b0\u1ee3t c\u00e0i \u0111\u1eb7t \u1ee9ng d\u1ee5ng t\u1eeb qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "1", "2"]}, {"column_name": "engagement", "mode": "NULLABLE", "data_type": "INTEGER", "description": "M\u1ee9c \u0111\u1ed9 t\u01b0\u01a1ng t\u00e1c v\u1edbi qu\u1ea3ng c\u00e1o.", "structs": [], "example_data": ["0", "1", "2"]}]}
-```
+## Tables
+
+### `momovn-growth-analytics.REPORT_MEDIA.MEDIA_FACT_AD_AGG`
+> Bảng fact chứa dữ liệu thống kê quảng cáo tích lũy, dùng để theo dõi và phân tích hiệu suất của các chiến dịch quảng cáo trên nhiều kênh khác nhau.
+- Theo dõi chi phí, lượng hiển thị và số lần nhấp chuột của quảng cáo theo từng ngày.
+- Phân tích chi tiết các định dạng quảng cáo, kênh và mục tiêu của chiến dịch.
+- Đánh giá các mức độ xem video và các chỉ số chuyển đổi của quảng cáo.
+
+| Column | Type | Description | Example |
+|--------|------|-------------|---------|
+| `date` | DATE | Ngày thực hiện chiến dịch quảng cáo. | 2026-01-21, 2026-01-23, 2026-01-22 |
+| `month` | DATE | Tháng thực hiện chiến dịch quảng cáo. | 2026-01-01, 2025-12-01, 2025-11-01 |
+| `adset_id` | STRING | Mã định danh của nhóm quảng cáo. | tEGbKbf3NZho4TIC, O0A2uRUi7AfQz2nU, zVsNVk2RQtM8Q6V8 |
+| `adset_name` | STRING | Tên của nhóm quảng cáo. | adgroup_default_ios, adgroup_default_android, mix |
+| `ad_id` | STRING | Mã định danh của quảng cáo. | tEGbKbf3NZho4TIC, O0A2uRUi7AfQz2nU, zVsNVk2RQtM8Q6V8 |
+| `ad_name` | STRING | Tên quảng cáo. | adgroup_default_ios, adgroup_default_android, unknown |
+| `campaign_id` | STRING | Mã định danh của chiến dịch. | UClCYV2NYQsVFcbN, xzRJ2xa13UjskPHh, dZajtQQ8qNcYxRsq |
+| `campaign_name` | STRING | Tên chiến dịch. | Momo Android CPA campaign targeting Registration_PR.41855, Moloco_All_INS_GMC301_NON-mass_N.NTMM-Hellomomo_T.S_C.20250903_PR., Momo Android CPA campaign targeting Registration |
+| `account_id` | STRING | Mã định danh của tài khoản. | FQznmNyWDWz60jLL, 7052226950055723010, 489990065003734 |
+| `account_name` | STRING | Tên của tài khoản. | Momo, momo marketing, momo daily life service bc |
+| `campaign` | STRING | Chiến dịch liên quan. | Ntmm-Hellomomo, Ntmm-Mega25, Lottery |
+| `cam` | STRING | Thông tin của chiến dịch (rút gọn). | Ntmm, Lottery, Data |
+| `segment` | STRING | Phân khúc đối tượng. | non-mass, momouser, momouser-whitelistuser |
+| `ad_code` | STRING | Mã code của quảng cáo. | ad01, ad02, ad03 |
+| `ad_format` | STRING | Định dạng của quảng cáo. | null, Video, Image |
+| `campaign_type` | STRING | Loại chiến dịch. | S, XL, M |
+| `channel` | STRING | Kênh truyền thông được sử dụng. | Moloco, Facebook, Tiktok |
+| `objective` | STRING | Mục tiêu của chiến dịch quảng cáo. | Install, Others, Awareness |
+| `bu` | STRING | Đơn vị kinh doanh liên quan đến chiến dịch. | Gmc, Dls, Bmc |
+| `usecase` | STRING | Trường hợp sử dụng chiến dịch. | Growth - Gtbb/Hlmm, Gmc - Crm, Uti - Data |
+| `vertical` | STRING | Ngành dọc liên quan đến chiến dịch. | Platform, Payment, Financial Services |
+| `cost` | FLOAT | Chi phí của chiến dịch quảng cáo. | 0, 0.42352199999999995, 0.475605 |
+| `impression` | FLOAT | Lượng hiển thị của quảng cáo. | 1, 2, 3 |
+| `click` | FLOAT | Số lần nhấp vào quảng cáo. | 1, 0, 2 |
+| `outbound_click` | FLOAT | Số lần nhấp ra ngoài trang web. | 1, 0, 2 |
+| `view` | INTEGER | Số lần xem quảng cáo. | 0, 1, 2 |
+| `view_2s` | INTEGER | Số lần xem quảng cáo trong 2 giây. | 0, 1, 3 |
+| `view_6s` | INTEGER | Số lần xem quảng cáo trong 6 giây. | 0, 1, 2 |
+| `focus_view_15s` | INTEGER | Số lượt xem tập trung vào quảng cáo trong 15 giây. | 0, 336, 3915 |
+| `trueview` | INTEGER | Số lượt xem thực sự của quảng cáo. | 0, 253, 4812 |
+| `thruplays` | INTEGER | Số lần xem trọn vẹn của video quảng cáo. | 0 |
+| `video_views_p25` | INTEGER | Số lượt xem đạt 25% video quảng cáo. | 0, 1, 2 |
+| `video_views_p50` | INTEGER | Số lượt xem đạt 50% video quảng cáo. | 0, 1, 2 |
+| `video_views_p75` | INTEGER | Số lượt xem đạt 75% video quảng cáo. | 0, 1, 2 |
+| `video_views_p100` | INTEGER | Số lượt xem đạt 100% video quảng cáo. | 0, 1, 2 |
+| `conversion` | INTEGER | Số lượng chuyển đổi từ quảng cáo. | 0, 1, 2 |
+| `app_install` | FLOAT | Số lượt cài đặt ứng dụng từ quảng cáo. | 0, 1, 2 |
+| `engagement` | INTEGER | Mức độ tương tác với quảng cáo. | 0, 1, 2 |
+
+## Memory
+*4 entries — user-trained knowledge*
+
+1. Khi tính các chỉ số hiệu suất quảng cáo (CPM, CPC, CPI, CPV, CPA,…), bắt buộc phải xác định đúng Objective của chiến dịch trước khi tính.
+Mỗi Objective sẽ có metric chính (primary metric) khác nhau, do đó công thức cost metric phải được tính dựa trên metric tương ứng, không được dùng chung một mẫu cho tất cả chiến dịch.
+Objective = Awareness:
+CPM = cost / impression × 1000
+Objective = Traffic:
+CPC = cost/ outbound_click
+Objective = View:
+CPV = cost/ view
+Objective = Install:
+CPI = cost/ app_install
+Objective = Engagement:
+CPE = cost/ engagement
+Objective = Conversion:
+CPA = cost/ conversion _2026-01-27_
+2. Khi phân tích một chiến dịch, hãy bắt đầu phân tích theo cấu trúc phân cấp từ trên xuống dưới: channel -> segment -> ad_format -> ad_code -> objective -> các chỉ số hiệu suất (CPM, CPC, CPI, CPV, CPA, CPE). _2026-01-27_
+3. Khi tính các chỉ số hiệu suất quảng cáo (CPM, CPC, CPI, CPV, CPA, CPE), bắt buộc phải xác định đúng Objective của chiến dịch trước khi tính. Mỗi Objective sẽ có metric chính (primary metric) khác nhau, do đó công thức cost metric phải được tính dựa trên metric tương ứng, không được dùng chung một mẫu cho tất cả chiến dịch.
+- Objective = Awareness: CPM = cost / impression × 1000
+- Objective = Traffic: CPC = cost / outbound_click
+- Objective = View: CPV = cost / view
+- Objective = Install: CPI = cost / app_install
+- Objective = Engagement: CPE = cost / engagement
+- Objective = Conversion: CPA = cost / conversion _2026-01-27_
+4. view_2s: Số lượt xem quảng cáo trong 2 giây (chỉ có ở facebook và tiktok)
+view_6s: Số lượt xem quảng cáo trong 6 giây (chỉ có ở tiktok)
+thruplays: Số lượt phát qua của video quảng cáo (chỉ có ở Facebook)
+trueview: Số lượt xem thực tế của quảng cáo (chỉ có ở Google)
+focus_view_15s: Số lượt xem tập trung vào quảng cáo trong 15 giây (chỉ có ở Tiktok) _2026-01-27_

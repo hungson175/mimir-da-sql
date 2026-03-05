@@ -1,0 +1,32 @@
+{
+  "error_code": 200,
+  "data": {
+    "id": "e9363d1c-6486-4072-8dc5-8d06260e9c7f",
+    "name": "BU MDS: Promotion - Campaign Performance",
+    "description": "Ghi nhận các tương tác của user với promotion campaign và gift (impression, click). Data được aggregate theo ngày, touchpoint của Promotion, campaign_id và gift_type_id",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "d0ef2c9d-ff35-4223-a544-51e3f200eea9",
+        "memory": "Bounce user được định nghĩa là người dùng đã thấy voucher nhưng không thực hiện bất kỳ tương tác nào",
+        "hash": "7adb4c4b634d0b5b4dd4c278aa32bb8a",
+        "metadata": null,
+        "created_at": "2025-09-02T21:42:40.508539-07:00",
+        "updated_at": null,
+        "user_id": "e9363d1c-6486-4072-8dc5-8d06260e9c7f"
+      },
+      {
+        "id": "48e779f2-0146-45bb-a411-29e2fd5fb52c",
+        "memory": "Khi phân tích theo một cấp độ touchpoint_level cụ thể (ví dụ: touchpoint_level = 2), cần bao gồm các cột touchpoint_level trước đó (ví dụ: touchpoint_level_1) trong truy vấn.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-08-28T13:52:20.250547",
+        "updated_at": null,
+        "user_id": "e9363d1c-6486-4072-8dc5-8d06260e9c7f"
+      }
+    ]
+  },
+  "error_message": ""
+}

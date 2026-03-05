@@ -1,0 +1,398 @@
+{
+  "domain_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435",
+  "name": "BU MDS: OTA",
+  "metadata": {
+    "id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435",
+    "name": "BU MDS: OTA",
+    "description": "Record information about:\n(1): User behaviors across airline & non-air booking funnel (search → view → payment)\n(2): Revenue tracking & performance by provider, route type, booking window, segment, holiday type",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: OTA \n \n## Table information : {\"table_name\":\"momovn-prod.REPORT.2022_HUY_EVENTS_LANDINGPAGE_V2_PIVOTED_UNION\",\"table_desc\":\"Bảng này tổng hợp các sự kiện người dùng từ trang đích landingpage qua nhiều phiên bản. Dữ liệu trong bảng có thể được sử dụng để phân tích hành vi người dùng, xác định hiệu quả của các tính năng và kiểm soát doanh thu từ các sự kiện trên ứng dụng.\\n - Xác định và phân tích sự kiện người dùng dựa trên các thông số như thời gian, thiết bị và phiên bản ứng dụng.\\n - Kiểm tra doanh thu và lượng giao dịch thành công, thất bại từ các sự kiện.\\n - Theo dõi và đo lường hiệu quả chuyển đổi từ các khối và điểm gắn trên ứng dụng.\",\"column_desc\":[{\"column_name\":\"EVENT_DATE\",\"description\":\"Ngày diễn ra sự kiện.\",\"example_data\":[\"2021-10-20\",\"2022-07-20\",\"2022-10-10\"]},{\"column_name\":\"EVENT_TIME\",\"description\":\"Thời gian chi tiết diễn ra sự kiện.\",\"example_data\":[\"2023-11-09 16:42:03.552\",\"2023-11-09 07:24:29.218\",\"2023-11-09 14:08:45.493\"]},{\"column_name\":\"USER_ID\",\"description\":\"Mã định danh của người dùng thực hiện sự kiện.\",\"example_data\":[\"52486046\",\"52835360\",\"38322143\"]},{\"column_name\":\"DEVICE_OS\",\"description\":\"Hệ điều hành của thiết bị người dùng.\",\"example_data\":[\"Android\",\"ANDROID\",\"IOS\",\"iOS\"]},{\"column_name\":\"APP_VERSION\",\"description\":\"Phiên bản ứng dụng mà người dùng đang sử dụng.\",\"example_data\":[\"3.0.0-rc4\",\"4.2.2-beta.10\",\"4.2.25-beta.4\"]},{\"column_name\":\"SESSION_ID\",\"description\":\"Mã định danh của phiên làm việc.\",\"example_data\":[\"69529956_1679284950\",\"33007378_1679249913\",\"55383968_1679290237\"]},{\"column_name\":\"EVENT_NAME\",\"description\":\"Tên của sự kiện diễn ra.\",\"example_data\":[\"feature_trans_history\",\"service_screen_interacted\",\"service_search_result_clicked\",\"service_image_clicked\",\"service_search_clicked\",\"trans_success\",\"service_product_continued\",\"service_search_result_viewed\",\"service_hotel_agoda\",\"service_field_inputed\",\"service_hotel_agoda_details\",\"service_screen_displayed\",\"service_image_swiped\",\"trans_confirm\",\"service_hotel_merge\",\"service_service_clicked\",\"trans_success_be\",\"service_screen_viewed\",\"service_product_viewed\",\"service_hotel_agoda_guest\",\"trans_fail_be\",\"session_start\",\"service_transport_airlines\",\"service_button_continued\",\"service_product_button_clicked\",\"service_transport_road\",\"service_field_clicked\",\"service_block_viewed\",\"service_hotel_agoda_result\",\"trans_result_payment_multibill\",\"trans_fail\",\"service_search_inputed\",\"service_icon_clicked\",\"service_tab_clicked\",\"service_transport_landing_page\",\"service_pocket\",\"service_purchase_clicked\",\"service_component_inputed\",\"sevice_screenshot\",\"service_component_displayed\",\"ops_request_be\",\"miniapp_load\",\"trans_confirm_screen\",\"service_product_clicked\",\"service_block_swiped\",\"service_component_clicked\",\"service_filter_clicked\",\"service_category_clicked\",\"service_transport_rail\",\"service_button_clicked\"]},{\"column_name\":\"SCREEN_DEFINE\",\"description\":\"Định nghĩa màn hình nơi sự kiện diễn ra.\",\"example_data\":[\"bus_home\",\"man_hinh_danh_sach_khach_san\",\"flight_information\",\"return_filter\",\"hotel_amenities\",\"mh_thong_tin_phong\",\"sof_selection2\",\"SeatMapScreen\",\"sof_selection1\",\"Trans BE\",\"null\",\"seat_departure\",\"acillary_select_covid_test\",\"bus_departure_loading\",\"hotellist\",\"trip_information\",\"promo\",\"ancillary_select_meal\",\"MerchantImageScreen\",\"Buses\",\"roominfo\",\"manage_recent_search\",\"ancillary\",\"Experience\",\"pocket\",\"mh_thong_tin_dat_phong\",\"home\",\"payment_information\",\"pickup_and_dropoff_point_return\",\"trip_detail\",\"listing screen\",\"bus_departure_seatmap\",\"Hourly Hotel\",\"train_departure_listing\",\"destination\",\"calendar\",\"train_pocket_history\",\"choose_date\",\"listing_filter\",\"hotel_main\",\"arrival_listing\",\"departure_date\",\"departure_listing\",\"dldl\",\"pickup_and_dropoff_point_departure /pickup_and_dropoff_point_return \",\"departure / arrival\",\"pickup_and_dropoff_point_departure / pickup_and_dropoff_point_return\",\"bus_departure_filter\",\"DateScreen\",\"free_ancillary\"]},{\"column_name\":\"TYPE_KEY\",\"description\":\"Loại khóa của sự kiện.\",\"example_data\":[\"230815_dls_ota_native_train_all_mshock_15k_min300k\",\"e_s12_aw_500k_241211_giam_100pt40k_oq4sp\",\"220524_ota_hourlyhotel_btl_69k\"]},{\"column_name\":\"BLOCK\",\"description\":\"Khối liên quan đến sự kiện.\",\"example_data\":[\"MOMO Đề Xuất\",\"ƯU ĐÃI ĐẶC BIỆT\",\"hotel_widget_location\",\"#HOT GỢI Ý\",\"booking_experiences_vinwonders\",\"booking_hotel_agoda\",\"vietjet\",\"pre_trip_widget\",\"booking_experiences_sunworld\",\"booking_train_vnr\",\"travel_port_1g\",\"Vi vu quốc tế\",\"vna\",\"KHÁM PHÁ THÊM\",\"booking_vexere\",\"HOT HOTEL\",\"bamboo\",\"SIÊU SALE 12.12 - Giảm đến 1,2 TRIỆU\",\"destination\",\"recent_step\",\"ota_train_vnr\",\"FLASH SALES\",\"ota_bus_distribusion\",\"ota_airline_vna\",\"ota_airline_hpl_bav\",\"m4becommiotominiapp\",\"vietjet_flik\",\"booking_experiences_kkday\",\"SPECIAL OFFER\",\"khach_san_gia_tot\",\"MOMO SUGGESTION\",\"MOMO GỢI Ý\",\"ota_bus_futa\",\"recent_search\",\"MoMo Choice giảm đến 1 triệu\",\"popular_service\",\"airline.hpl\",\"booking_experiences_sontien\",\"MOMO ĐỀ XUẤT\",\"SUPER SALE 12.12 - Discounts up to 1,2 MILLION VND\",\"footer\",\"booking_experiences_ezcloud\",\"popular\",\"TOP ĐƯỢC BÌNH CHỌN\",\"booking_hotel_expedia\",\"MOMO Choice\",\"NEW HOTEL\",\"KHÁCH SẠN NỔI BẬT\",\"guidebook\",\"Giảm đến 50% Black Friday\"]},{\"column_name\":\"MOUNT_POINT\",\"description\":\"Điểm gắn nơi sự kiện xảy ra.\",\"example_data\":[\"37718360188\",\"37719100632\",\"37712361084\"]},{\"column_name\":\"n_block\",\"description\":\"Khối mới liên quan đến sự kiện.\",\"example_data\":[\"recent_step\",\"popular_service\",\"guidebook\",\"recommend_service\"]},{\"column_name\":\"n_button_name\",\"description\":\"Tên nút mới trong sự kiện.\",\"example_data\":[\"faq\",\"price\",\"napas_vnr_paybill_new\",\"hotline_gold\",\"seat_btn\",\"Stelia Beach Resort\",\"delete_history\",\"checkbox_lunar\",\"choose_ticket\",\"invoice\",\"platinum_vietnam_airlines_lotusmiles\",\"chia_se\",\"view_detail\",\"2024_donate_ota\",\"account\",\"Thừa Thiên - Huế\",\"Anantara Hoi An Resort\",\"change_hotelinfo\",\"hold_coutdown\",\"Mai Tuan Chanh Mon A Hotel\",\"Hotel Nikko Saigon\",\"Diamond Stars Ben Tre Hotel\",\"Đóng\",\"other\",\"Khách sạn Aristo Saigon\",\"activate_now\",\"change_special_request\",\"filter_hotel\",\"save_special_request\",\"checked_baggage\",\"4\",\"favorite_collection\",\"fare_class\",\"Đà Nẵng\",\"toggle_passbook\",\"Melia Hanoi\",\"business_lounge\",\"Nha Trang\",\"experience_booking\",\"InterContinental Danang Sun Peninsula Resort by IHG\",\"Park Hyatt Saigon\",\"Jardin Du Mekong Homestay\",\"ins_comprehensive_travel\",\"cancel\",\"Sky Gem Central Hotel\",\"trip_information\",\"travelsim\",\"confirm_policy\",\"trip_infomation\",\"vbi_international_travel\"]},{\"column_name\":\"n_component_name\",\"description\":\"Tên thành phần mới trong sự kiện.\",\"example_data\":[\"quick_filter_seat_type\",\"block\",\"int\",\"student_pass\",\"ticket_share\",\"expand_ancillary_outbound\",\"bus_sorting\",\"box_trip_info\",\"boutique_collection\",\"insurance\",\"hotel_widget_location\",\"resuming_booking\",\"sorting\",\"favorite_collection\",\"snackbar\",\"change_special_request\",\"dom\",\"contact_info\",\"change_hotelinfo\",\"pre_trip_widget\",\"bus_ticket\",\"ticket_price_decrease_popup\",\"trip_information\",\"remind_paxname\",\"button_pay_now_paylater\",\"transit_note\",\"ticket_price_increase_popup\",\"search_recently\",\"activate_paylater_in_airline\",\"option_room\",\"vc_bundled_voucher_bs\",\"trip_infomation\",\"buyer info\",\"pu_screenshot\",\"air_noti\",\"request_check_saved_bill\",\"add_special_request\",\"ancillary\",\"popular_destination\",\"home\",\"student_pass_bts\",\"hotel\",\"departure_info\",\"bottom_sheet\",\"installment_bottomsheet\",\"update_new_ticket\",\"Cancelled_booking_successfully_toast\",\"cross_sell_banner\",\"new_collection\",\"choose_date\"]},{\"column_name\":\"n_destination\",\"description\":\"Điểm đến mới của sự kiện.\",\"example_data\":[\"Phan Thiết\",\"Đà Nẵng\",\"Vũng Tàu\",\"Hội An\",\"Đà Lạt\",\"Hạ Long\",\"Sa Pa\",\"Ninh Bình\",\"Phú Quốc\"]},{\"column_name\":\"n_entry_point\",\"description\":\"Điểm vào mới của sự kiện.\",\"example_data\":[\"landing_page_ota\"]},{\"column_name\":\"n_feature_10\",\"description\":\"Tính năng thứ 10 trong sự kiện mới.\",\"example_data\":[]},{\"column_name\":\"n_feature_8\",\"description\":\"Tính năng thứ 8 trong sự kiện mới.\",\"example_data\":[]},{\"column_name\":\"n_position\",\"description\":\"Vị trí mới trong sự kiện.\",\"example_data\":[\"6\",\"8\",\"6.0\"]},{\"column_name\":\"n_ref_id\",\"description\":\"ID tham chiếu mới trong sự kiện.\",\"example_data\":[]},{\"column_name\":\"n_screen_name\",\"description\":\"Tên màn hình mới trong sự kiện.\",\"example_data\":[\"bus_home\",\"man_hinh_danh_sach_khach_san\",\"return_filter\",\"hotel_amenities\",\"flight_information\",\"bus_departure_loading\",\"mh_thong_tin_phong\",\"sof_selection2\",\"ancillary_select_meal\",\"MerchantImageScreen\",\"null\",\"SeatMapScreen\",\"trip_information\",\"sof_selection1\",\"seat_departure\",\"acillary_select_covid_test\",\"manage_recent_search\",\"Experience\",\"hotellist\",\"ancillary\",\"home\",\"payment_information\",\"promo\",\"Buses\",\"train_departure_listing\",\"train_pocket_history\",\"mh_thong_tin_dat_phong\",\"roominfo\",\"hotel_main\",\"listing_filter\",\"pickup_and_dropoff_point_return\",\"arrival_listing\",\"trip_detail\",\"bus_departure_seatmap\",\"Hourly Hotel\",\"pocket\",\"departure_date\",\"choose_date\",\"listing screen\",\"onboarding\",\"departure / arrival\",\"pickup_and_dropoff_point_departure /pickup_and_dropoff_point_return \",\"departure_listing\",\"dldl\",\"calendar\",\"destination\",\"pickup_and_dropoff_point_departure / pickup_and_dropoff_point_return\",\"bus_departure_filter\",\"booking_guide\",\"choose_room_guest\"]},{\"column_name\":\"n_service\",\"description\":\"Dịch vụ mới liên quan đến sự kiện.\",\"example_data\":[\"landing_page_ota\"]},{\"column_name\":\"n_service_id\",\"description\":\"ID dịch vụ mới liên quan đến sự kiện.\",\"example_data\":[\"transport_airlines\",\"transport_bus\",\"booking_experiences_vinwonders\",\"go2joy\",\"booking_airline\",\"booking_train\",\"booking_hotel\",\"m4becommiotominiapp\",\"ota_hotel\",\"booking_bus\",\"transport_train\"]},{\"column_name\":\"n_service_name\",\"description\":\"Tên dịch vụ mới liên quan đến sự kiện.\",\"example_data\":[\"landing_page_ota\",\"ota_landing_page\",\"topbar_paymentcode\",\"topbar_scancode\"]},{\"column_name\":\"n_time_load\",\"description\":\"Thời gian tải mới của sự kiện.\",\"example_data\":[\"280\",\"459\",\"1148\"]},{\"column_name\":\"n_trans_confirm\",\"description\":\"Xác nhận giao dịch mới trong sự kiện.\",\"example_data\":[\"72578770_1679310469\",\"65443201_1679301264\",\"36916612_1679304985\"]},{\"column_name\":\"n_trans_confirm_screen\",\"description\":\"Màn hình xác nhận giao dịch mới trong sự kiện.\",\"example_data\":[\"67565171_1679264301\",\"43408455_1679272678\",\"54631593_1679325093\"]},{\"column_name\":\"n_trans_fail\",\"description\":\"Giao dịch thất bại mới trong sự kiện.\",\"example_data\":[\"57927799_1659539667\",\"19391790_1600214624\",\"51072305_1647266598\"]},{\"column_name\":\"n_trans_success\",\"description\":\"Giao dịch thành công mới trong sự kiện.\",\"example_data\":[\"42306021_1679295261\",\"42599303_1679307257\",\"43204877_1679314077\"]},{\"column_name\":\"SUB_CATE\",\"description\":\"Phân loại phụ của sự kiện.\",\"example_data\":[\"01. AIRLINE\",\"09. LANDINGPAGE_OTA\",\"02. TRAIN\",\"03. BUS\",\"04. HOTEL\",\"07. HOTEL HOURLY\",\"05. EXPERIENCE\"]},{\"column_name\":\"TYPE_USER\",\"description\":\"Loại người dùng thực hiện sự kiện.\",\"example_data\":[\"DIRECT\",\"LDP\"]},{\"column_name\":\"EVENT_TIME_CHECK\",\"description\":\"Thời gian kiểm tra sự kiện.\",\"example_data\":[\"2020-07-28 07:02:39.017079\",\"2020-07-28 11:26:07.243008\",\"2020-07-28 12:05:39.271015\"]},{\"column_name\":\"ID\",\"description\":\"Mã định danh của sự kiện.\",\"example_data\":[\"37729025773\",\"37740484959\",\"37727853161\"]},{\"column_name\":\"TOTAL_AMOUNT\",\"description\":\"Tổng số tiền liên quan đến sự kiện.\",\"example_data\":[\"827000\",\"1783000\",\"3856000\"]},{\"column_name\":\"REVENUE\",\"description\":\"Doanh thu từ sự kiện.\",\"example_data\":[\"7499.9999999999991\",\"22516.363636363636\",\"17775.81818181818\"]},{\"column_name\":\"REVENUE_AFTER_REFUND\",\"description\":\"Doanh thu sau khi hoàn tiền từ sự kiện.\",\"example_data\":[\"13480.363636363636\",\"21818.181818181813\",\"22017.272727272728\"]},{\"column_name\":\"CONTRIBUTION_SOURCE\",\"description\":\"Nguồn đóng góp của sự kiện.\",\"example_data\":[\"home\",\"LDP\"]},{\"column_name\":\"new_to_cate_datetime\",\"description\":\"Thời gian mới phân loại sự kiện theo danh mục.\",\"example_data\":[\"2023-01-28 18:53:00\",\"2022-11-04 10:22:20\",\"2022-05-13 09:34:26\"]},{\"column_name\":\"is_existing_user\",\"description\":\"0: không phải người dùng hiện có, 1: là người dùng hiện có.\",\"example_data\":[\"0\",\"1\"]}]}\n## Table information : {\"table_name\":\"momovn-prod.REPORT.ota_dwd_ota_user_funnel_traffic_source_daily\",\"table_desc\":\"Bảng này lưu trữ dữ liệu về hành vi người dùng theo từng bước trong quy trình đặt dịch vụ OTA (Online Travel Agency) hàng ngày, bao gồm các nguồn lưu lượng truy cập. Các thông tin có thể thu thập từ bảng này bao gồm: theo dõi liệu người dùng đã tải trang chủ, thực hiện tìm kiếm, hoặc tải thông tin thanh toán hay chưa; xác định liệu người dùng đã nhập thông tin hành khách hay đã thực hiện giao dịch; phân tích các nguồn lưu lượng truy cập dẫn đến sự kiện.\",\"column_desc\":[{\"column_name\":\"event_date\",\"description\":\"Ngày diễn ra sự kiện\",\"children\":[],\"example_data\":[\"2025-06-03\",\"2025-02-17\",\"2024-12-14\"]},{\"column_name\":\"user_id\",\"description\":\"Mã định danh người dùng duy nhất\",\"children\":[],\"example_data\":[\"79546140\",\"20277440\",\"44447911\"]},{\"column_name\":\"sub_cate\",\"description\":\"Danh mục phụ của dịch vụ hoặc sự kiện\",\"children\":[],\"example_data\":[\"03. BUS\",\"02. TRAIN\",\"01. AIRLINE\",\"04. HOTEL\"]},{\"column_name\":\"has_load_home\",\"description\":\"Biểu thị liệu người dùng đã tải trang chủ hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"has_search\",\"description\":\"Biểu thị liệu người dùng đã thực hiện tìm kiếm hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"has_load_listing\",\"description\":\"Biểu thị liệu người dùng đã tải trang danh sách sản phẩm/dịch vụ hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"has_load_seat_departure_OR_fare_group_OR_hotel_info\",\"description\":\"Biểu thị liệu người dùng đã tải trang chọn chỗ ngồi, nhóm giá vé hoặc thông tin khách sạn hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"has_passenger_info\",\"description\":\"Biểu thị liệu người dùng đã nhập thông tin hành khách hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"has_ancillary\",\"description\":\"Biểu thị liệu người dùng đã chọn các dịch vụ bổ sung hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"has_load_payment_info\",\"description\":\"Biểu thị liệu người dùng đã tải thông tin thanh toán hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"has_load_ttat\",\"description\":\"Biểu thị liệu người dùng đã tải trang TTAT (Thời gian thực hiện hành động) hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"has_transaction\",\"description\":\"Biểu thị liệu người dùng đã thực hiện giao dịch hay chưa (1 nếu có, 0 nếu không)\",\"children\":[],\"example_data\":[\"1\",\"0\"]},{\"column_name\":\"transaction\",\"description\":\"Trạng thái của giao dịch (có thể là mã số hoặc boolean)\",\"children\":[],\"example_data\":[\"16\",\"4\",\"17\"]},{\"column_name\":\"traffic_source_event\",\"description\":\"Nguồn lưu lượng truy cập dẫn đến sự kiện này\",\"children\":[],\"example_data\":[\"official_account\",\"offline_hub\",\"hdss_v2\",\"rewards_lotusmiles\",\"slot_08\",\"guide_payment_service_sendo\",\"folder_tra_sau\",\"chatbot\",\"vna\",\"ins_marketplace\",\"transfer_p2p_send_lucky_money\",\"expedia\",\"tabbar_chat\",\"user_profile_ota\",\"earlybirdlx2024\",\"agency_cashout\",\"water_hcm\",\"ekyc_confirm_information\",\"bkhn_school_fee\",\"wheel_90\",\"transaction_result_revamp\",\"credit_bnpl_bill_info\",\"bank_sacom\",\"miniapp.fw3kDtFJDR1pZuoLfw0E.starbucks\",\"credit_paylater_new_installment_management\",\"tabbar_transaction\",\"fund_detail\",\"brand_backtowork_2025\",\"onlinepanel_entry\",\"payment_screen\",\"bv_nhi_ha_noi\",\"source_info\",\"guide_payment_service_google\",\"hourly_hotel\",\"my_qrcode\",\"evnspc_lamdong\",\"topup_data_mobi\",\"market_deal_brand_detail\",\"helpcenter_common_problems\",\"p2p_send_gift\",\"brand_valentine_2025\",\"mobilecombo\",\"folder_hoc_phi\",\"bamboo\",\"wheel_69\",\"airline_landing_page\",\"105\",\"credit_collection_vietcredit\",\"edit_alias_name\",\"undefined\"]}]}",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "10558bf7-9ed6-4d22-8bea-6c42899cd4d2",
+        "memory": "Khi tính tổng số vé, sử dụng SUM(total_ticket) thay vì COUNT(DISTINCT pnr_booking_code)",
+        "hash": "6edc976ce349a96f9277d1a39710fb2d",
+        "metadata": null,
+        "created_at": "2025-09-18T04:10:31.613040-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "c0e1b0b8-a2a7-4898-8dd6-ba9a4dab6b77",
+        "memory": "RETAINED USER = người dùng đã dùng dịch vụ vào tháng trước và tiếp tục dùng trong tháng này",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2026-01-15T11:36:35.863937",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "c8e3a7fa-d2c8-4cef-b8d1-80103fc72782",
+        "memory": "Luôn sử dụng cột user_payment trong bảng momovn-prod.REPORT.2023_TAN_OTA_COMPREHENSIVE_ALL_WITH_INCENTIVE để tính các chỉ số MAU/ active user/ user đã mua/ user thanh toán",
+        "hash": "f45a473bbc099f340ffb6ed46ca81a96",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T23:16:41.053970-07:00",
+        "updated_at": "2025-07-01T23:17:43.883781-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "b3effb96-37c0-4257-87b1-2c4313741d72",
+        "memory": "Để tính số MAU của máy bay quốc tế, dùng COUNT(DISTINCT USER_PAYMENT)",
+        "hash": "c6cecdcbd6e3a627ae3e599279b38c4a",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T23:20:33.624901-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "a36caf3d-e1d7-404a-98f3-a3a2a6622eb2",
+        "memory": "NEWUSER_MOMO và NEWUSER_OTA chứa ID người dùng thay vì cờ 0 hoặc 1",
+        "hash": "05d331e66ccf58f7dad8c0379b261b4a",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-29T00:48:18.137241-07:00",
+        "updated_at": "2025-07-29T01:45:28.775135-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "d44cc0c0-81e1-4b1c-b01f-56704626eb76",
+        "memory": "Khi hỏi số lượng người dùng mới của MoMo, luôn dùng cột NEWUSER_MOMO_EXCL_CASHIN_OUT",
+        "hash": "933a2ffa65e06c17c4f4d08e6ca033e2",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-29T02:02:54.294797-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "9cf5e663-dfdd-4805-9913-987a7132fbee",
+        "memory": "MONEYSOURCE: 1=MOMO, 2=NHLK - Ngân hàng liên kết, 3=NAPAS, 4=VISA_DEBIT, 5=VISA_CREDIT, 6=GOLDEN_POCKET - Túi thần tài, 7=PAYLATER - Ví trả sau, 8=CASHBACK, 9=CCM_VIRTUAL_CREDIT_CARD, 10=BNPL, 11=Newton, 12=Direct Debit, 13=Quy Nhom",
+        "hash": null,
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-08-01T17:11:00.270216",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "caaf2eaf-5a0e-4f3f-bb75-1e5d9500abe0",
+        "memory": "Dùng cột date trong bảng momovn-prod.REPORT.2023_TAN_OTA_COMPREHENSIVE_ALL_WITH_INCENTIVE để tính MAU",
+        "hash": "180c359ff0a18220a0b6a9961f9b5b5d",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-08-04T06:53:19.498164-07:00",
+        "updated_at": "2025-10-26T21:48:29.298852-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "ea2d93e5-7de1-42c9-878b-4e9c64ae1439",
+        "memory": "Khi tính doanh thu, cần thêm điều kiện STATUSID = 2",
+        "hash": "e632686ba83da7750ddade16310c23c2",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T03:57:45.916171-07:00",
+        "updated_at": "2025-07-01T20:39:51.653205-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "bbc76526-bd98-449d-84b8-d2887473f8a4",
+        "memory": "Dùng data thuộc bảng momovn-prod.REPORT.2023_TAN_OTA_COMPREHENSIVE_ALL_WITH_INCENTIVE",
+        "hash": "ad416371bbd1fcac19f2f0690bccdfe0",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T23:14:27.163515-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "339b028b-c849-4ead-9589-a0c937fdd13e",
+        "memory": "Nếu đề cập đến native hay app momo, filter platform = 'App Momo'",
+        "hash": "b92185160f9ef8b5449c89f35a8acdf0",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-02T00:00:11.153631-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "cd6bab4d-b026-4de1-85ab-e9f2eecb3e2b",
+        "memory": "Khi tính trung bình số chuyến bay trong tháng 07, cần xác định platform là 'App Momo' hay 'Partner'",
+        "hash": "7545e3d13556330b792ce5f0726f5b99",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-25T01:07:58.620165-07:00",
+        "updated_at": "2025-07-25T01:10:37.048382-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "7c57a50d-596c-425d-840b-afcd4486c907",
+        "memory": "Nếu cột NEWUSER_OTA có giá trị (không phải NULL), người dùng đó là người dùng mới của dịch vụ OTA",
+        "hash": "84f7eec5b3533d576ee08982de9dbebb",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-29T00:48:18.236986-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "3f559227-6371-4d83-9b18-a681edcfab72",
+        "memory": "STATUSID = 2 đại diện cho giao dịch thành công",
+        "hash": "468d8bf694a647573dc8feb0686700ee",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-29T01:45:28.882523-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "4eeb352b-2239-4b7f-8a03-153abd27b6ce",
+        "memory": "Tính phần trăm người dùng quay lại bằng cách lấy số lượng người dùng tìm kiếm trong cả tháng 4 và tháng 5 chia cho tổng số người dùng tìm kiếm trong tháng 4, không phải tháng 5",
+        "hash": "f07fadb2ca8ec70df85cd096033b8c98",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-31T04:02:54.443030-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "9da539a0-df8d-4145-8522-f6359672ae0f",
+        "memory": "Cột ngày tháng chính xác trong bảng momovn-prod.REPORT.2023_TAN_OTA_COMPREHENSIVE_ALL_WITH_INCENTIVE là DATE, không phải EVENT_DATE",
+        "hash": "8f6cfb9dba45d78254c9c8324a9a4aa8",
+        "metadata": null,
+        "created_at": "2025-10-26T21:48:29.636087-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "324d30ce-6741-43ed-8469-e8504976d4c0",
+        "memory": "Trong bảng momovn-prod.REPORT.2023_TAN_OTA_COMPREHENSIVE_ALL_WITH_INCENTIVE, các group_sub_cate được mã hóa như sau:\n- Train = '02. LAND TRANSPORT' (bao gồm cả Bus và Train)\n- Bus = '02. LAND TRANSPORT' (bao gồm cả Bus và Train)  \n- Hotel = '03. HOTEL'\n- Experience = '04. ETP & OTHERS'",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2026-01-02T10:17:16.974505",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "1e75c99c-867e-481b-82c7-820d074863dd",
+        "memory": "MONEYSOURCE: 1=MOMO, 2=NHLK - Ngân hàng liên kết, 3=NAPAS, 4=VISA_DEBIT, 5=VISA_CREDIT, 6=GOLDEN_POCKET - Túi thần tài, 7=PAYLATER - Ví trả sau, 8=CASHBACK, 9=CCM_VIRTUAL_CREDIT_CARD, 10=BNPL, 11=Newton, 12=Direct Debit, 13=Quy Nhom",
+        "hash": "2dcd0c0b6a08fdba8d01827d3a0ef20f",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T23:34:27.405127-07:00",
+        "updated_at": "2025-07-01T23:45:28.781243-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "5390d94a-1f26-4eb0-82d4-95fa03f3c288",
+        "memory": "CR được tính bằng công thức: count(distinct case WHEN EVENT_DATE <= date'2022-05-25' and c_trans_success is not null then USER_ID when EVENT_DATE > date'2022-05-25' and EVENT_NAME = 'trans_success_be' THEN USER_ID end)/count(distinct USER_ID) trong bảng momovn-prod.REPORT.2022_HUY_EVENTS_LANDINGPAGE_V2_PIVOTED_UNION",
+        "hash": "eadbc23fbdcd1d25974544291e7e8512",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T20:59:53.831672-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "517c6ab5-bbb9-4bdb-992e-23fca49fcd62",
+        "memory": "Statusid = 6 để lọc các giao dịch thất bại",
+        "hash": "81e5ae6da6518af7ab4d28c36cf61bc7",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T03:03:37.282906-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "3dd3bab1-e9b9-40ca-b830-cc7bb007b2dd",
+        "memory": "Khi tính trung bình số chuyến bay tháng 07, cần lọc dữ liệu với PLATFORM = 'App Momo' và SUB_CATE = '01. AIRLINE'",
+        "hash": "40a972f3cefb15318deee72ccf1b36f8",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-25T01:10:37.386302-07:00",
+        "updated_at": "2025-07-25T01:11:43.951693-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "aee7c145-2d5a-4f7c-81de-f34c820b520b",
+        "memory": "Retention được tính bằng số lượng người dùng cùng tồn tại ở tháng trước và tháng hiện tại, sau đó chia cho số lượng người dùng tháng trước đó",
+        "hash": "a29566f8bd29e7353f8fff85a35374ad",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-27T20:53:57.670382-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "99cede20-5585-4344-aa3c-3643e3bf687b",
+        "memory": "Khi tính trung bình số chuyến bay, dùng cột flight_no thay vì pnr_booking_code",
+        "hash": "a95273aaf8b92d33b804d56c2c28b77e",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-25T00:49:29.535609-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "2cf50554-ffdf-482f-a2e7-4597dab910f3",
+        "memory": "Phân loại khu vực Bắc và Nam dựa trên vĩ tuyến 17: từ vĩ tuyến 17 về phía Bắc là Bắc, về phía Nam là Nam",
+        "hash": "ea3ff37e81e48f4b109049f9a60c4c85",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-27T20:57:56.417128-07:00",
+        "updated_at": "2025-07-27T20:58:31.279561-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "57540530-10d3-42c0-a62a-ea24340ebd83",
+        "memory": "Nếu cột NEWUSER_MOMO có giá trị (không phải NULL), người dùng đó là người dùng mới của MoMo",
+        "hash": "445b9844d27f1c17735d4dbbab9c6330",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-29T00:48:18.204570-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "3da883bd-7e80-4cad-ae67-5ab9f737979c",
+        "memory": "Luôn thêm statusid = 2 để lọc ra những giao dịch thành công",
+        "hash": "3cca1fe656ffba0ad39b34a79de2f1d7",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T03:03:37.253162-07:00",
+        "updated_at": "2025-07-29T00:48:17.060107-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "0e23ef6d-e974-4f79-b00b-b2fc080ed0aa",
+        "memory": "Khi xử lý dữ liệu Vietnam Airlines luồng Inapp, sử dụng SERVICE_ID_MBI in ('ota_airline_vna', 'airline.hpl') thay vì SERVICE_CODE = 'm4becomvnaweb'",
+        "hash": "61c375e1a7d001675c00e2a8baad0a02",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-31T23:56:19.882694-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "988cf0b9-64a9-4752-a0ba-a51d731e98f0",
+        "memory": "Khi đề cập đến vé máy bay quốc tế thì filter flight_region <> 'VN'",
+        "hash": "82d277e80bd267270e2d0856634b2a58",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T23:14:27.068186-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "3a02a106-25d6-46ef-bdba-8639c311927e",
+        "memory": "Nếu đề cập đến payment gateway, pmt hay cổng thanh toán, filter platform = 'Partner'",
+        "hash": "19a865aa75450f1be9c01ce2fb02bf10",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-02T00:00:11.258198-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "ff70cd07-2adf-438b-8730-34229be45624",
+        "memory": "Không dùng cột INITIATOR để tính toán metrics liên quan đến user",
+        "hash": "6888cdd510928859ccac10e38957e4be",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T23:18:51.358824-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "b131c762-4f86-40ca-8c64-c437912fa3e2",
+        "memory": "Khi user đề cập đến từ 'bay', phải filter sub_cate = '01. AIRLINE'",
+        "hash": "bd15b0d172801ccdb5bc385c39cc6f2a",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-01T23:14:27.012337-07:00",
+        "updated_at": "2025-07-25T01:08:34.170458-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "768c87b4-0eed-4b85-82be-232219518864",
+        "memory": "SERVICE_CODE 'm4bthaiairasia' maps to MERCHANT 'AIRASIA'. SERVICE_CODE 'm4becomvnaweb' maps to MERCHANT 'VN AIRLINES'.",
+        "hash": "3196a2fac7092944aadc7c7879baa717",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-10T14:45:30.271960",
+        "updated_at": "2025-07-31T23:56:19.472930-07:00",
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "eac0cb93-40fb-4e06-b87a-c087d15edc16",
+        "memory": "Phân loại địa điểm theo miền Bắc, Trung, Nam dựa trên danh sách các tỉnh/thành",
+        "hash": "54ef2933b8d48dfe79631535faf86bd1",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-07-31T01:04:50.615996-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "8f06eb5d-aa6e-4461-a654-ad88ca873c4e",
+        "memory": "Khi xử lý vấn đề liên quan tới danh sách người dùng mua vé bay từ SGN, dùng departure_ư_code cho cột departure_station_code",
+        "hash": "d22422c5184820b2e343d2af76e86369",
+        "metadata": {
+          "user_name": "OTA"
+        },
+        "created_at": "2025-08-19T22:14:13.534205-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "0e478672-6b56-42ac-abbd-1ab6555a3314",
+        "memory": "Khi đề cập đến vé máy bay quốc tế thì filter flight_region <> 'VN'",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-10-16T11:40:46.703738",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      },
+      {
+        "id": "b47a2633-3448-42a8-b8a6-c1b374eb8b26",
+        "memory": "Bảng momovn-prod.REPORT.2023_TAN_OTA_COMPREHENSIVE_ALL_WITH_INCENTIVE cần được liệt kê khi list tất cả bảng và schema của domain",
+        "hash": "58d85f8a054caaa3156d3d32fca8b487",
+        "metadata": null,
+        "created_at": "2025-10-26T21:50:41.323562-07:00",
+        "updated_at": null,
+        "user_id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435"
+      }
+    ]
+  }
+}

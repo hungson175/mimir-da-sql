@@ -1,0 +1,13 @@
+{
+  "domain_id": "4ece5632-02ec-4d9d-9ea9-70ed5d6cc1ed",
+  "name": "BU Payment: SME OFFLINE OPS",
+  "metadata": {
+    "id": "4ece5632-02ec-4d9d-9ea9-70ed5d6cc1ed",
+    "name": "BU Payment: SME OFFLINE OPS",
+    "description": "Domain này để tạo các product AI cho 1 số task adhoc offline",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  }
+}

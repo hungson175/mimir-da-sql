@@ -1,0 +1,856 @@
+{
+  "domain_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da",
+  "name": "BU Payment: DLS ONLINE",
+  "metadata": {
+    "id": "ca851de3-b3cb-42bf-96d6-979acde0a7da",
+    "name": "BU Payment: DLS ONLINE",
+    "description": "Chi tiết giao dịch Daily Life Service (DLS) online sử dụng trên MoMo kể từ năm 2024",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: BU-Payment: DLS ONLINE \n ## Table information : {\"table_name\":\"momovn-prod.BU_ECOM.DLS_ONLINE_NFC_INFO\",\"table_desc\":\"\",\"column_desc\":[{\"column_name\":\"MONTH\",\"description\":\"\"},{\"column_name\":\"first_NFC_date\",\"description\":\"ngày NFC đầu tiên\"},{\"column_name\":\"CATE\",\"description\":\"luôn viết hoa\"},{\"column_name\":\"USER_ID\",\"description\":\"\"},{\"column_name\":\"NFC_USER\",\"description\":\"NFC_user is not null then NFC else Non_NFC\"},{\"column_name\":\"NFC_TYPE\",\"description\":\"not_nfc là chưa NFC, còn lại là đã NFC\"},{\"column_name\":\"device_os\",\"description\":\"DEVICES user đang dùng\"},{\"column_name\":\"usecase_type\",\"description\":\"1 usecase, 2 usecase, 3 usecase, 4 usecase\"},{\"column_name\":\"GMV\",\"description\":\"\"},{\"column_name\":\"REVENUE\",\"description\":\"\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_ECOM.TOKEN_TRANS_NUM_MERCHANT_CATE_BINDING\",\"table_desc\":\"<p>Bảng lưu trữ thông tin về số lượng Merchant (Đối tác) và Cate (Danh mục dịch vụ) mà mỗi người dùng đang liên kết. </p>\",\"column_desc\":[{\"column_name\":\"month\",\"description\":\"<p>Tháng</p>\"},{\"column_name\":\"agent_id\",\"description\":\"<p>Mã người dùng</p>\"},{\"column_name\":\"merchant\",\"description\":\"<p>Tên đối tác/dịch vụ (Luôn viết hoa)</p>\"},{\"column_name\":\"cate\",\"description\":\"<p>Danh mục dịch vụ (Luôn viết hoa)</p>\"},{\"column_name\":\"num_merchant\",\"description\":\"\"},{\"column_name\":\"num_usecase\",\"description\":\"\"},{\"column_name\":\"merchant_type\",\"description\":\"<p>Số Merchant (Đối tác/Dịch vụ) mà người dùng đang liên kết, phân loại theo 4 mục: 1 MC (liên kết 1 merchant), 2 MC (liên kết 2 merchants), 3 MC (liên kết 3 merchants), FROM 4 MC (liên kết từ 4 merchants trở lên).</p>\"},{\"column_name\":\"usecase_type\",\"description\":\"<p>Số CATE (danh mục dịch vụ) mà người dùng đang liên kết, phân loại theo 4 mục: 1 USECASE (liên kết với 1 CATE), 2 USECASE (liên kết với 2 CATE), 3 USECASE (liên kết với 3 CATE), FROM 4 USECASE (liên kết với 4 CATE hoặc nhiều hơn).</p>\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_ECOM.DLS_GIFT_V3_VER2\",\"table_desc\":\"\\nBảng này chứa thông tin về các quà tặng trong hệ thống MoMo, bao gồm mã quà, tên quà, giá trị quà, và các thông tin liên quan đến giao dịch và người dùng. \\n- Theo dõi và quản lý thông tin quà tặng được phát hành và sử dụng.\\n- Phân tích hiệu quả của các chương trình khuyến mãi thông qua các loại quà tặng.\\n- Đánh giá và tối ưu hóa các chiến dịch quà tặng dựa trên dữ liệu giao dịch và người dùng.\",\"column_desc\":[{\"column_name\":\"GIFT_ID\",\"description\":\"<p>Mã định danh của quà tặng.<br></p>\"},{\"column_name\":\"GIFT_NAME\",\"description\":\"<p>Tên của quà tặng.<br></p>\"},{\"column_name\":\"GIFT_AMOUNT\",\"description\":\"<p>Giá trị của quà tặng.<br></p>\"},{\"column_name\":\"AGENT_NAME\",\"description\":\"<p>Tên của ví Momo.<br></p>\"},{\"column_name\":\"PROMO_TYPE\",\"description\":\"<p>Loại chương trình khuyến mãi.<br></p>\"},{\"column_name\":\"USER_ID\",\"description\":\"ID của user, SAFE_CAST(USER_ID AS INT64) khi map với USER_ID của bảng Transaction\"},{\"column_name\":\"START_DATE\",\"description\":\"ngày thả voucher\"},{\"column_name\":\"END_DATE\",\"description\":\"ngày hết hạn voucher\"},{\"column_name\":\"STATUS\",\"description\":\"\"},{\"column_name\":\"TRAN_DATE\",\"description\":\"ngày giao dịch có sử dụng voucher\"},{\"column_name\":\"TRAN_ID\",\"description\":\"transaction id của giao dịch sử dụng voucher, nếu null tức là voucher không được sử dụng\"},{\"column_name\":\"GMV\",\"description\":\"giá trị giao dịch sử dụng voucher\"},{\"column_name\":\"VC_AMOUNT\",\"description\":\"giá trị voucher giảm\"},{\"column_name\":\"CB_AMOUNT\",\"description\":\"\"},{\"column_name\":\"ERROR\",\"description\":\"\"},{\"column_name\":\"CATE\",\"description\":\"\"},{\"column_name\":\"SUB_CATE\",\"description\":\"\"},{\"column_name\":\"MERCHANT\",\"description\":\"\"},{\"column_name\":\"SUB_MERCHANT\",\"description\":\"\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_ECOM.CAISHEN_CASH_BACK_TRANSACTION\",\"table_desc\":\"<p>Bảng lưu trữ thông tin về các giao dịch hoàn tiền của dịch vụ Hoàn tiền mua sắm - CAISHEN</p>\",\"column_desc\":[{\"column_name\":\"dt\",\"description\":\"<p>Ngày user được hoàn tiền (trở thành MAU) của Hoàn tiền Mua sắm.</p><p>Khi cần tìm các chỉ số của MAU, hoặc lấy riêng status = 'CASHBACKED' trong một khoảng thời gian cụ thể thì lấy theo cột này.</p>\"},{\"column_name\":\"name\",\"description\":\"<p>Tên Merchant/Brand của đơn hàng. Ví dụ: shopee.</p><p>Khi lấy thông tin của cột này cần UPPER hoặc LOWER để đảm bảo tính chính xác</p>\"},{\"column_name\":\"cash_back_type\",\"description\":\"<p>Đơn hoàn tiền nhanh (FLASH_CASH_BACK) hoặc hoàn thường (NORMAL_CASH_BACK)</p>\"},{\"column_name\":\"status\",\"description\":\"<p>Trạng thái của đơn hàng, hiện tại bao gồm 4 trạng thái:</p><ul class=\\\"om-list-disc\\\"><li class=\\\"om-leading-normal\\\"><p>WAITING_TO_CONFIRM: Đơn hàng đã được đặt và đang chờ xác nhận, có thể thay đổi trạng thái trong tương lai. </p></li></ul><p></p>\"},{\"column_name\":\"order_id\",\"description\":\"<p>Mã đơn hàng</p>\"},{\"column_name\":\"cash_back_amount\",\"description\":\"<p>Số tiền hoàn user được nhận</p>\"},{\"column_name\":\"user_id\",\"description\":\"<p>Mã người dùng</p>\"},{\"column_name\":\"date_update\",\"description\":\"<p>Ngày đặt đơn, khi tính các chỉ số MOU và MEU thì lấy theo cột này.</p>\"},{\"column_name\":\"datetime_update\",\"description\":\"<p>Ngày và giờ đặt đơn, khi tính các chỉ số chi tiết theo khung giờ hay chính xác về thời gian thì lấy theo cột này.</p>\"},{\"column_name\":\"GMV\",\"description\":\"<p>Giá trị của đơn hàng.</p>\"},{\"column_name\":\"is_brand_bonus\",\"description\":\"<p>Có phải hãng hoàn tiền thêm hay không</p>\"},{\"column_name\":\"partner\",\"description\":\"<p>Đối tác</p>\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_ECOM.TOKEN_TRANS\",\"table_desc\":\"<p>Bảng lưu trữ thông tin về các giao dịch sử dụng token hàng ngày.</p><p></p>\",\"column_desc\":[{\"column_name\":\"date_act\",\"description\":\"<p>Ngày giao dịch</p>\"},{\"column_name\":\"datetime_act\",\"description\":\"<p>Ngày giờ giao dịch</p>\"},{\"column_name\":\"request_id\",\"description\":\"\"},{\"column_name\":\"core_tran_id\",\"description\":\"\"},{\"column_name\":\"core_result_code\",\"description\":\"\"},{\"column_name\":\"core_result_description\",\"description\":\"\"},{\"column_name\":\"agent_id\",\"description\":\"<p>Mã người dùng thực hiện giao dịch</p>\"},{\"column_name\":\"partner_code\",\"description\":\"<p>Mã đối tác</p>\"},{\"column_name\":\"merchant\",\"description\":\"<p>Tên đối tác/dịch vụ (Sử dụng LOWER(MERCHANT) hoặc UPPER(MERCHANT) khi truy vấn vì tên đối tác có tên viết hoa có tên viết thường) </p>\"},{\"column_name\":\"cate\",\"description\":\"<p>Danh mục dịch vụ (Luôn viết hoa)</p>\"},{\"column_name\":\"sub_cate\",\"description\":\"\"},{\"column_name\":\"bu_name\",\"description\":\"\"},{\"column_name\":\"total_amount\",\"description\":\"\"},{\"column_name\":\"discount_amount\",\"description\":\"\"},{\"column_name\":\"money_source\",\"description\":\"\"},{\"column_name\":\"money_source_name\",\"description\":\"<p>Tên nguồn tiền giao dịch, bao gồm: MoMo Wallet (Ví MoMo), Banklink (Liên kết ngân hàng), Túi Thần Tài, Paylater (Ví Trả Sau),....</p>\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2\",\"table_desc\":\"\",\"column_desc\":[{\"column_name\":\"MONTH\",\"description\":\"\"},{\"column_name\":\"USER_ID\",\"description\":\"số điện thoại user được mã hóa\"},{\"column_name\":\"CATE\",\"description\":\"luôn viết hoa\"},{\"column_name\":\"MERCHANT\",\"description\":\"luôn viết hoa\"},{\"column_name\":\"USECASE_TYPE\",\"description\":\"1 usecase, 2 usecase, 3 usecase, 4 usecase \"},{\"column_name\":\"MC_TYPE\",\"description\":\"MC = merchant, gồm 1 merchant, 2 merchant, 3 merchant, 4 merchant trở lên\"}]}\n## Table information : {\"table_name\":\"momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1\",\"table_desc\":\"\",\"column_desc\":[{\"column_name\":\"DATE\",\"description\":\"Ngày giao dịch \"},{\"column_name\":\"DATETIME\",\"description\":\"Ngày giờ giao dịch\"},{\"column_name\":\"MONTH\",\"description\":\"\"},{\"column_name\":\"USER_ID\",\"description\":\"user có giao dịch \"},{\"column_name\":\"ORDER_ID\",\"description\":\"transaction \"},{\"column_name\":\"TRANS_TYPE\",\"description\":\"\"},{\"column_name\":\"ALL_IN_ONE\",\"description\":\"giao dịch qua QR AIO \"},{\"column_name\":\"REQ_TYPE\",\"description\":\"token,app in app, web in app\"},{\"column_name\":\"PARTNER_CODE\",\"description\":\"\"},{\"column_name\":\"STORE_ID\",\"description\":\"\"},{\"column_name\":\"MONEY_SOURCE\",\"description\":\"\"},{\"column_name\":\"MONEY_SOURCE_NAME\",\"description\":\"bao gồm các giá trị như MoMo wallet, Túi thần tài, Paylater(Ví trả sau), Banklink(Ngân hàng liên kết),...\"},{\"column_name\":\"SERVICE_CODE\",\"description\":\"agent dịch vụ \"},{\"column_name\":\"BU_NAME\",\"description\":\"\"},{\"column_name\":\"BU_GROUP_CODE_L1\",\"description\":\"\"},{\"column_name\":\"BU_GROUP_CODE_L2\",\"description\":\"\"},{\"column_name\":\"GROUP_CODE_L1\",\"description\":\"\"},{\"column_name\":\"CATE\",\"description\":\"luôn viết hoa\"},{\"column_name\":\"SUB_CATE\",\"description\":\"\"},{\"column_name\":\"MERCHANT\",\"description\":\"luôn viết hoa\"},{\"column_name\":\"SUB_MERCHANT\",\"description\":\"\"},{\"column_name\":\"GMV\",\"description\":\"\"},{\"column_name\":\"TOTAL_REV\",\"description\":\"\"},{\"column_name\":\"REFUND_REV\",\"description\":\"\"},{\"column_name\":\"NET_REV\",\"description\":\"\"},{\"column_name\":\"PROMO_AMOUNT\",\"description\":\"\"},{\"column_name\":\"REFUND_AMOUNT\",\"description\":\"\"},{\"column_name\":\"CASHBACK_AMOUNT\",\"description\":\"\"},{\"column_name\":\"CASHBACK_AGENTID\",\"description\":\"\"},{\"column_name\":\"GENDER\",\"description\":\"\"},{\"column_name\":\"AGE\",\"description\":\"\"},{\"column_name\":\"AGE_GROUP\",\"description\":\"\"},{\"column_name\":\"CITY\",\"description\":\"\"},{\"column_name\":\"REGION\",\"description\":\"\"},{\"column_name\":\"IS_KYC\",\"description\":\"đây là KYC, ko phải định danh bằng CCCD găn chip\"},{\"column_name\":\"IS_FACE_MATCHING\",\"description\":\"\"},{\"column_name\":\"CHEATING\",\"description\":\"cheat user \"},{\"column_name\":\"QD2345_CHECK\",\"description\":\"\"},{\"column_name\":\"NFC_TYPE\",\"description\":\"\"}]}",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "eb6090ad-cabc-4549-904f-f2a523784d41",
+        "memory": "TPU: number of transactions per user ",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:44.372168",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "901e96dc-2983-4a36-b186-74c30c00103b",
+        "memory": "TIKTOKSHOP: Khi hỏi là merchant tiktokshop hoặc TIKTOKSHOP thì lấy merchant = 'TIKTOK', cate = 'MARKETPLACE'\n",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:44.660022",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "3cfc58eb-1e27-440b-a3f7-2e9430e9aaba",
+        "memory": "app store: CATE = \"APPLICATION STORE\"",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:48.638338",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "028c9c00-c667-4e64-b911-aac56efb0249",
+        "memory": "dịch vụ Transport: CATE = \"LOGISTICS\"\nAND UPPER(SERVICE_CODE) LIKE \"%TRANSPORT%\"",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:52.408405",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "55211eac-dfb5-4a9d-a680-69fee38c62d9",
+        "memory": "Reactive User: user thanh toán lifetime trước tháng T-1, không thanh toán tháng T-1, quay lại thanh toán tháng T. Chỉ count lần đầu user quay lại",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-07-29T17:06:40.928807",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "d60d0d50-edbc-4de8-b2c2-dc309d89ddb3",
+        "memory": "Khi xử lý giao dịch với MERCHANT, sử dụng 'sieu thi aeon' thay vì 'aeon'",
+        "hash": "414c8ce5888bcff1a5b03bc2ad232a53",
+        "metadata": null,
+        "created_at": "2025-08-24T21:37:51.964652-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "cff68cfa-bcce-44bd-bcac-a22ea4fcb8b6",
+        "memory": "Reactivated user của TikTok shop là người dùng từng sử dụng TikTok Shop nhưng tháng T-1 không sử dụng TikTok Shop và tháng T quay lại sử dụng, không count trùng lặp nếu như tháng T tiếp tục sử dụng nhiều lần",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-08-26T11:25:10.498639",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "357f74f7-548b-4ffd-baaf-871114009f43",
+        "memory": "Khi tính MAU cho Token Payment, cần lọc CORE_RESULT_CODE = 0",
+        "hash": "0b9d04392ac56bd2ef3744d4637f96e8",
+        "metadata": null,
+        "created_at": "2025-09-04T19:43:22.691224-07:00",
+        "updated_at": "2025-09-05T02:09:05.441739-07:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "572ec848-2147-4553-8533-ae8c5dbd79df",
+        "memory": "MERCHANT phải là 'MÃ THẺ GOOGLE PLAY' khi truy vấn GMV và Transaction cho Mã Thẻ Google",
+        "hash": "5e3dac720e426f3610e75af13cc40118",
+        "metadata": null,
+        "created_at": "2025-09-11T01:19:23.916431-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "bec13047-ae2d-4723-93dd-0dc4c48b34e8",
+        "memory": "Khi xử lý giao dịch với Spotify, sử dụng LOWER(MERCHANT) LIKE '%spotify%' thay vì LOWER(MERCHANT) = 'spotify'",
+        "hash": "7b687cefc9aa76a4ca833b8a9138e9d7",
+        "metadata": null,
+        "created_at": "2025-09-03T03:35:50.467124-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "c510488a-7e7a-41e2-b8d9-10fabb68d596",
+        "memory": "Reactive user của merchant là user đã thanh toán merchant đó trước tháng T-1, không thanh toán tháng T-1 nhưng quay lại thanh toán tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-10T10:09:52.985042",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "e8e69fb3-6829-432c-a4bb-0d870f2f790a",
+        "memory": "Ưu đãi hoàn 10K cho bạn mới: Đây là một chương trình khuyến mãi dành cho người dùng mới của dịch vụ Hoàn tiền mua sắm, trong đó người dùng mới sẽ nhận được ưu đãi hoàn 10.000 VNĐ.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-12-10T15:34:09.691644",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "09ec6760-4728-499c-ac18-983b0ae43c6a",
+        "memory": "Đối với nguồn tiền Ví Trả Sau, chỉ cần query 'Paylater'",
+        "hash": "9d31d8b313c031346412391175343ff9",
+        "metadata": null,
+        "created_at": "2025-11-26T02:54:35.943412-08:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "10549912-ce62-46da-b3df-891246a7820b",
+        "memory": "Khi kiểm tra số user thanh toán dịch vụ Logistics từ ngày 1/11/2025 đến 18/11/2025, chỉ lấy những user đã thanh toán dịch vụ Logistics trong tháng 9/2025 nhưng không thanh toán dịch vụ trong suốt tháng 10/2025, cần sử dụng LEFT JOIN để loại trừ user đã thanh toán trong tháng 10/2025",
+        "hash": "0c87d9665369e88c17944cc1df9e2be6",
+        "metadata": null,
+        "created_at": "2025-12-21T23:04:56.833545-08:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "10430752-2bcd-44fd-92b7-213808269200",
+        "memory": "nguồn tiền NHLK: money_source = 2",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:43.802296",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "fe3d9dcd-0b7d-4bfa-8faa-0eade60835e3",
+        "memory": "hard, heavy: SQL: USER_SEGMENT = '1. Heavy'\nDefinition: Nhóm có GMV > 50tr/tháng",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:44.085123",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "b2adbf30-d9c8-416c-8b01-89561a807425",
+        "memory": "tài xế: CASE\n    WHEN SERVICE_CODE IN ( 'govietbike', 'm4becomgocar_app') THEN 'Tài xế Gojek'\n    WHEN SERVICE_CODE IN ( 'disburse.lalamove_disburse', 'm4becomlalamove') THEN 'Tài xế Lalamove'\n    WHEN SERVICE_CODE IN ( 'billpaygrab', 'billpaygrabbike') THEN 'Tài xế Grab'\n    WHEN (SERVICE_CODE ='aha20151225001' AND  STORE_ID IN ('aha_supplier_topup', 'aha_supplier_transferCOD'))\n        OR SERVICE_CODE IN ('m4becomahamove_taixe', 'disburse.ahamove_disburse_v2') THEN 'Tài xế Ahamove'\n    ELSE 'Không phải tài xế'\nEND AS TAIXE",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:49.202575",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "906ff3ae-108f-422a-918b-910e59fb526a",
+        "memory": "số lượng user NFC: NFC thì cột NFC_TYPE IN ('FIRST_NFC','CURRENT_NFC')\nChưa NFC thì lấy cột: NFC_TYPE = 'NOT_NFC'",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:51.564796",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "f9ab1e86-bdfd-476e-9d16-abd9b9f0dabb",
+        "memory": "Trong cột `CATE` có các dữ liệu sau:\nSME OFFLINE\nLOGISTICS\nAPPLICATION STORE\nMARKETPLACE\nRETAIL\nADS PAYMENT\nDIGITAL CONTENT\nFNB\nGAME\nOTT\nINSURANCE\nDEVICE FINANCING\nTrong cột `MERCHANT` có các dữ liệu sau:\nGRAB-ENDUSER\nTIKTOK\nAPPLE\nBE GROUP\nGOOGLE\nGSM\nFACEBOOK\nVIETLOTT SMS\nMWG - BACH HOA XANH\nCIRCLE K\nTIKTOK LIVE\nJOLLIBEE\nGS25\n7-ELEVEN\nFUNTEK\nMINISTOP\nHIGHLANDS COFFEE\nVÍ MOMO GOOGLE VN\nFAMILYMART\nLAZADA\nSPOTIFY\nNETFLIX\nKINGFOOD\nAHAMOVE\nV/MC/JCB GOOGLE VN\nLALAMOVE\nHỒNG TRÀ NGÔ GIA\nMM MEGA MARKET\nCO.OPMART\nCOOP FOOD\n(nhiều merchant khác nữa)\n----\nKhi được hỏi liên quan một loại dịch vụ, merchant thì hãy sử dụng các giá trị trên, nếu thấy tương tự thôi thì nhớ confirm lại user. Nếu bị hỏi tới một dịch vụ hay merchant quá lạ thì phải hỏi lại, không thì nhờ user feedback cách làm đúng tránh truy vấn không ra dữ liệu nào",
+        "hash": "7b9fc1b56cf7eaf684d8c890d6a57199",
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:36.159800",
+        "updated_at": "2025-05-28T01:45:07.532641-07:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "78c27508-1f77-4f13-aff5-080d0e4bec69",
+        "memory": "Reactive User tháng T (theo cate Logistics) là người dùng đã từng thanh toán bất kỳ merchant của cate Logistics với trước tháng T-1, không phát sinh thanh toán với cate Logistics trong tháng T-1, và quay lại thanh toán với cate Logistics trong tháng T. Reactive user by merchant là khi người dùng quay lại thanh toán với cate Logistics với merchant nào thì chỉ tính cho merchant đó, không tính reactive trùng lặp cho bất kỳ merchant nào khác mà họ có thể thanh toán sau đó.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-15T14:04:07.364697",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "d116ee8a-bc47-4b8f-9ea6-2cb660b7e1d0",
+        "memory": "Reactive User tháng T (theo merchant Tiktok Shop) là người dùng đã từng thanh toán tiktok shop với trước tháng T-1, không phát sinh thanh toán Tiktok shop trong tháng T-1, và quay lại thanh toán với Tiktok shop trong tháng T. Không tính reactive trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T11:06:47.399815",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "d0df6b5d-0ab8-4af3-909d-cf722ab2775a",
+        "memory": "RETAINED USER = người dùng đã dùng dịch vụ Marketplace vào tháng T-1 và tháng T tiếp tục quay lại sử dụng Marketplace. Không tính retain trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T11:39:44.447780",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "bf9df2d8-15b1-43bb-b1b0-3557017b55b2",
+        "memory": "Khi xử lý giao dịch online, không sử dụng CORE_RESULT_CODE = 0",
+        "hash": "7040242afbb305bf6a2c980449eb76ae",
+        "metadata": null,
+        "created_at": "2025-09-05T01:45:53.833264-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "824b1bda-db73-4096-af9d-c1ef2051ea3d",
+        "memory": "New user (người dùng lần đầu) is a user who has their first token transaction in the specified month.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-03T13:54:27.161373",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "67b46bec-a1ea-4f78-9407-e961bc747b17",
+        "memory": "Retain user TikTok Shop là user sử dụng TikTok Shop ở tháng T và tháng T+1 tiếp tục sử dụng dịch vụ của TikTok Shop, không count trùng lặp nếu user tiếp tục sử dụng giao dịch tiếp theo trong tháng T+1",
+        "hash": "23dfae770e78636c3f8df81820998a08",
+        "metadata": null,
+        "created_at": "2025-09-15T16:54:03.126673",
+        "updated_at": "2025-09-15T04:05:47.373504-07:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "ba25ceb2-c1ab-41e8-9d56-5bc0d87c635e",
+        "memory": "New to cate Marketplace là số lượng user lần đầu sử dụng market place trong tháng T, không count lặp lại nếu tiếp tục sử dụng trong tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-10-08T11:44:38.719476",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "ea3d10c6-392e-4efb-9829-7fbf9c7d8d7f",
+        "memory": "Khi hỏi TikTok Shop hoặc TikTok đối với giao dịch Hoàn Tiền Mua Sắm (HTMS) thì chọn name là 'tiktok shop' ở bảng cash_back_transaction",
+        "hash": "091c9564ad6d09e54e64284ddb54faa2",
+        "metadata": null,
+        "created_at": "2025-11-30T20:01:52.311883-08:00",
+        "updated_at": "2025-12-01T20:24:22.110904-08:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "RMskgpcBv5PT6yUjzZk5",
+        "memory": "RETAINED USER = người dùng đã dùng dịch vụ vào tháng trước và tiếp tục dùng trong tháng này",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-06-18T15:25:39.304465",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "6edca2e4-e44e-4ac3-938b-9a0bba71f60d",
+        "memory": "'xanh SM', 'GSM', 'xanh' tương ứng với merchant = 'GSM' trong data",
+        "hash": "181d387dcf7963d82b513e5687bfa2bf",
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T00:32:36.517514-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "d0de1080-5ea7-48d2-87f2-5840d00b3717",
+        "memory": "NTMC = New To Merchant (người dùng thực hiện giao dịch đầu tiên với merchant trong kỳ báo cáo)",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-07-29T17:05:38.699100",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "d8b1f2e4-2a88-4912-8ab8-36bb117c00e6",
+        "memory": "ads payment: CATE = \"ADS PAYMENT\"",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:40.467446",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "6dcce52c-cdd0-4f45-932e-0bf2ce635e12",
+        "memory": "GRAB-ENDUSER: MERCHANT = \"GRAB-ENDUSER\"",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:52.973344",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "e31c938f-3888-4274-b0d2-8058fc49fa2b",
+        "memory": "Churn user của tháng T là lifetime user thanh toán trước tháng T-1, không quay lại thanh toán trong tháng T",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-15T15:38:17.230460",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "bc7863c9-a9c0-4de7-a058-32ab212b7037",
+        "memory": "SPU: spending per user",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-18T12:13:45.188401",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "6dc3fb92-9f10-43ba-b88e-7c2c36ec2492",
+        "memory": "RETAINED USER = người dùng đã sử dụng dịch vụ TikTok Shop trong tháng T-1 và tháng T quay lại sử dụng dịch vụ TTS. Không tính retain trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T10:49:59.329717",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "ca6333eb-e069-4888-9698-1c916da2ffe3",
+        "memory": "NTMC = New To Merchant (người dùng thực hiện giao dịch đầu tiên với merchant trong kỳ báo cáo). new to merchant của tiktok shop là nhóm người dùng lần đầu sử dụng dịch vụ TikTok Shop trong tháng T và không tính new to merchant trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-08-21T13:57:12.080852",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "85364062-0a2d-4315-bb90-bb267db6eea2",
+        "memory": "Reactive User tháng T (theo cate) là người dùng đã từng thanh toán cate đó trước tháng T-1, không thanh toán cate đó trong tháng T-1, và quay lại thanh toán cate đó trong tháng T.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-15T15:03:50.289776",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "5feef0e9-5e7e-441d-beac-6259fad767f0",
+        "memory": "Reactive cate là user thanh toán cate trước tháng T-1, không quay lại thanh toán tháng T-1, thanh toán tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-17T13:54:29.271978",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "cccbf33c-a3f7-46f6-840e-659937bc0538",
+        "memory": "Retained user của merchant là user đã thanh toán merchant đó tháng T-1 và quay lại thanh toán tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-10T10:09:48.061504",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "3d2d2b1b-de7f-4c4f-9cf2-982bb28f19d9",
+        "memory": "Khi join bảng CAISHEN_CASH_BACK_TRANSACTION với bảng BU_ECOM.DLS_ALL_TRANS_V3_1, phải join điều kiện user_id bằng nhau và payment_transaction_id trong bảng CAISHEN_CASH_BACK_TRANSACTION với order_id bảng BU_ECOM.DLS_ALL_TRANS_V3_1",
+        "hash": "3c9fc749d33af16c8536f6d51cf342e4",
+        "metadata": null,
+        "created_at": "2025-11-26T02:54:35.362110-08:00",
+        "updated_at": "2025-12-01T20:38:48.949772-08:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "deecd37f-4647-49d4-ba59-3a9854add4d5",
+        "memory": "Tránh sử dụng NULL trong toán tử NOT IN - NULL trong truy vấn con NOT IN trả về NULL. Sử dụng NOT EXISTS hoặc LEFT JOIN với kiểm tra IS NULL để xử lý NULL an toàn hơn",
+        "hash": "22a65f272dbb0fcc03b58e446a60b407",
+        "metadata": null,
+        "created_at": "2025-12-24T20:04:29.980975-08:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "15093d6b-ced4-4912-899f-11ed92ed9953",
+        "memory": "Cột AGE_GROUP lưu trữ nhóm tuổi dưới dạng chuỗi văn bản theo một định dạng cụ thể. Ví dụ, giá trị '[2].18-22' đại diện cho nhóm người dùng có độ tuổi từ 18 đến 22. Khi truy vấn, cần sử dụng chính xác định dạng này (ví dụ: AGE_GROUP = '[2].18-22' ).",
+        "hash": "8f9e0e802f0fa4d8f669487af6fa8a26",
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T00:34:15.105641-07:00",
+        "updated_at": "2025-05-28T00:08:17.251504-07:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "6f5bf85a-5d03-4a39-843c-7e6ee78b2c50",
+        "memory": "medium: SQL: USER_SEGMENT = '2. Medium'\nDefinition: Nhóm có GMV > 3-50tr/tháng",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:40.979243",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "a56f89df-d055-4f0f-a623-493555e51cac",
+        "memory": "youtube premium: Để lấy được giao dịch này cần sử dụng cột SUB_MERCHANT như sau:\nSUB_MERCHANT IN (\"APPLE YOUTUBE PREMIUM\"', \"GOOGLE YOUTUBE PREMIUM\")",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:52.125890",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "8fc377aa-9aad-42d6-ad6e-f3c540542eaf",
+        "memory": "tiktok ads: MERCHANT = \"TIKTOK\"\nAND CATE = \"ADS PAYMENT\"",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:52.691152",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "46ad596a-deae-4762-a9f3-47eeb1a383a4",
+        "memory": "usecase: Usecase: số cate user sử dụng 1 tháng, tính trong PAYMENT và TRANSFER",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:56.221510",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "a11ce6ca-407c-471e-a80d-5fb818a82101",
+        "memory": "RETAINED USER = người dùng đã sử dụng dịch vụ TikTok Shop trong tháng T-1 và tháng T quay lại sử dụng dịch vụ TTS. Không tính retain trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T10:53:54.646915",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "27aa0eb3-785b-4f66-9855-144b5b959781",
+        "memory": "NTMC = New To Merchant (người dùng thực hiện giao dịch đầu tiên với merchant trong kỳ báo cáo)",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-11T10:45:05.476506",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "592e0a15-0d9b-49fb-9df9-85ed5b9b5520",
+        "memory": "NTMC = New To Merchant (người dùng thực hiện giao dịch đầu tiên với merchant trong kỳ báo cáo). new to merchant của tiktok shop là nhóm người dùng lần đầu sử dụng dịch vụ TikTok Shop trong tháng T và không tính new to merchant trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T10:41:28.248850",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "8d908dab-e092-4dee-975d-3ebbf289adfe",
+        "memory": "Reactive User tháng T (theo cate Marketplace) là người dùng đã từng thanh toán bất kỳ merchant của cate Marketplace với trước tháng T-1, không phát sinh thanh toán với cate Marketplace trong tháng T-1, và quay lại thanh toán với cate Marketplace trong tháng T. Không tính reactive trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T11:04:31.625180",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "0d88b436-ddad-48fc-9254-71c694acb18a",
+        "memory": "Reactive User tháng T (theo cate Marketplace) là người dùng đã từng thanh toán bất kỳ merchant của cate Marketplace với trước tháng T-1, không phát sinh thanh toán với cate Marketplace trong tháng T-1, và quay lại thanh toán với cate Marketplace trong tháng T. Không tính reactive trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T10:58:20.268487",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "4037a17c-bd8d-4af2-87be-76457cf0db0c",
+        "memory": "retention rate = user có thanh toán tháng T-1 và quay lại thanh toán trong tháng T",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-14T11:05:28.402512",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "6d1c4270-e5e1-49bb-a0b9-ae60d6bd27e1",
+        "memory": "Reactive User tháng T (theo cate Marketplace) là người dùng đã từng thanh toán bất kỳ merchant của cate Marketplace với trước tháng T-1, không phát sinh thanh toán với cate Marketplace trong tháng T-1, và quay lại thanh toán với cate Marketplace trong tháng T. Không tính reactive trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T11:27:32.434518",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "f392a4c4-6659-4510-86c7-fb5fb82b3b10",
+        "memory": "RETAINED USER = người dùng đã sử dụng dịch vụ TikTok Shop trong tháng T-1 và tháng T quay lại sử dụng dịch vụ TTS. Không tính retain trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-08-26T10:46:29.365365",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "671e0d6d-aeea-453a-9fc3-1ff2a7727d13",
+        "memory": "Cột ngày giao dịch trong bảng `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` là `DATE`",
+        "hash": "73e8f07824a61b60260e3adbc336ff6f",
+        "metadata": null,
+        "created_at": "2025-09-05T03:31:31.618869-07:00",
+        "updated_at": "2025-09-05T03:38:44.705641-07:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "640df732-1932-4efa-bcb6-abd77aa5e9ad",
+        "memory": "NTMC = New To Merchant (người dùng thực hiện giao dịch đầu tiên với merchant trong kỳ báo cáo). new to merchant của tiktok shop là nhóm người dùng lần đầu sử dụng dịch vụ TikTok Shop trong tháng T và không tính new to merchant trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-10T09:22:48.630357",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "625b5bf9-bfb0-4d30-aac6-9a714bf6dfa1",
+        "memory": "New to merchant ở tháng T là user lần đầu thanh toán merchant đó trong tháng T. Retained user với merchant là user đã thanh toán merchant đó tháng T-1 và quay lại thanh toán merchant đó tháng T. Reactive user với merchant là user đã thanh toán merchant đó trước tháng T-1, không thanh toán tháng T-1 và quay lại thanh toán merchant đó tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-10T13:47:57.294613",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "c249fbf4-b38d-4980-982b-0015972897c7",
+        "memory": "Retain user TikTok Shop là user sử dụng TikTok Shop ở tháng T và tháng T+1 tiếp tục sử dụng dịch vụ của TikTok Shop, không count trùng lặp nếu user tiếp tục sử dụng giao dịch tiếp theo trong tháng T+1",
+        "hash": "23dfae770e78636c3f8df81820998a08",
+        "metadata": null,
+        "created_at": "2025-09-15T17:49:23.774364",
+        "updated_at": "2025-09-15T04:05:47.049266-07:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "d653fb28-7f25-4b4b-b041-fc3d6b4f12e7",
+        "memory": "Reactive user của TikTok shop là người dùng từng sử dụng TikTok Shop nhưng tháng T-1 không sử dụng TikTok Shop và tháng T quay lại sử dụng, không count trùng lặp nếu như tháng T tiếp tục sử dụng nhiều lần",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-15T17:54:59.057569",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "c3666808-b233-4a6e-805d-a6d7a0aaf6a4",
+        "memory": "Retained cate là user thanh toán cate tháng T-1, quay lại thanh toán tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-17T13:54:24.271912",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "30e5ad7d-3cee-42df-aa5d-3bdc7498e6aa",
+        "memory": "NTMC = user lần đầu dùng merchant trong tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-17T13:54:20.625602",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "2f35f274-4e23-4f97-b5fa-8cca8ebf71f4",
+        "memory": "Khi count các giao dịch Ads Payment, chỉ sử dụng các SERVICE_CODE sau: m4becomadyen_facebook, m4becomboku_facebook, m4becombytedance_promote_payin, m4becombytedance_ads_payin, googleasia, m4btopbrandecom_googlemomoewallet_19041",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-10-21T15:23:54.004277",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "8a31cdb8-3c31-41a5-b0e2-85be1062a940",
+        "memory": "User Ads Payment tiers:\nMốc 1: chi tiêu ads payment từ 0 đến dưới 30 triệu/tháng\nMốc 2: chi tiêu ads payment từ 30 đến dưới 90 triệu/tháng\nMốc 3: chi tiêu ads payment từ 90 triệu/tháng trở lên",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-10-21T15:22:47.453967",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "40682de8-c64f-41fe-978a-d9177e374e72",
+        "memory": "tiktok: \n# Tiktok Shop\nWHERE MERCHANT = \"TIKTOK\"\n  AND CATE = \"MARKETPLACE\"\n# Tiktok Live\nWHERE MERCHANT = \"TIKTOK LIVE\"\n# Tiktok Ads\nWHERE MERCHANT = \"TIKTOK\"\n  AND CATE = \"ADS PAYMENT\"\n",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:40.185735",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "afc8fbc6-9ecd-4b2c-9227-4eab7f33f4b2",
+        "memory": "MAU: tức là số lượng user",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:46.933411",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "35d5a784-3c08-4959-b59f-82ca9355506d",
+        "memory": "merchant ads: MERCHANT = {MERCHANT_NAME}\nAND CATE = \"ADS PAYMENT\"",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:56.794492",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "74308d0e-f1dc-41ac-a087-261782b2f3a8",
+        "memory": "NFC: NFC nghĩa là xác thực sinh trắc học. Để lấy status NFC của người dùng thì sẽ sử dụng\n-Table: momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1\n-Column: NFC_TYPE\n-Value: \n+NOT_NFC: Tháng đó người dùng chưa NFC\n+CURRENT_NFC: Tháng đó người dùng đã từng NFC\n+FIRST_NFC: Tháng đó là tháng đầu tiên người dùng NFC",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:59.487363",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "025d6378-9f1d-41db-97de-3d6484373d11",
+        "memory": "facebook ads: MERCHANT = \"FACEBOOK\"\nAND CATE = \"ADS PAYMENT\"",
+        "hash": "16dac51e3e7e72bf702f8f185d0b6eba",
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-05-13T14:20:48.921819",
+        "updated_at": "2025-05-28T01:41:39.147125-07:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "a61de15d-4c59-4d0f-8e82-410774e97590",
+        "memory": "User type:\nlight user: User có GMV trong tháng < 3tr/ tháng -\nmedium user: User có GMV từ 3tr đến 50tr/ tháng -\nhardcore user: User có GMV trên 50tr/ tháng -\nNhờ hỏi thanh toán này là khoản nào hay toàn bộ\n",
+        "hash": "6efd372e6ee06ff362057794d3c23020",
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-07-18T15:25:16.336295",
+        "updated_at": "2025-07-20T20:23:28.538097-07:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "87b72e82-fdff-420a-91f7-5980d67c7895",
+        "memory": "RETAINED USER = người dùng đã dùng dịch vụ vào tháng trước và tiếp tục dùng trong tháng này",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-07-30T11:22:33.915369",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "5aa46610-e42b-46c1-b2fe-1c22f5601a24",
+        "memory": "RETAINED USER = người dùng đã dùng dịch vụ vào tháng trước và tiếp tục dùng trong tháng này",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-11T17:40:31.446741",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "e17a468c-7d05-4c8c-8c05-ea29dec2bb37",
+        "memory": "NTC = New To Category (người dùng thực hiện giao dịch đầu tiên với một danh mục dịch vụ trong kỳ báo cáo)",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-11T10:46:24.670687",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "91775e9e-449f-4744-9bf0-1bc12f1a3d52",
+        "memory": "Reactive User tháng T (theo cate Marketplace) là người dùng đã từng thanh toán bất kỳ merchant của cate Marketplace với trước tháng T-1, không phát sinh thanh toán với cate Marketplace trong tháng T-1, và quay lại thanh toán với cate Marketplace trong tháng T. Không tính reactive trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": {
+          "user_name": "DLS ONLINE"
+        },
+        "created_at": "2025-08-19T10:31:37.402395",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "8f88dcd8-dcb0-4305-8ea6-a09419e5414f",
+        "memory": "New user của Ads payment ở tháng T là nhóm người dùng lần đầu sử dụng dịch vụ ads payment vào tháng T, không tính lặp lại nếu người dùng tiếp tục sử dụng dịch vụ vào tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-05T14:45:16.972804",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "6ac9048e-ab62-48ee-b55f-eeba46b24cb7",
+        "memory": "MERCHANT 'tch' tương ứng với 'the coffee house'",
+        "hash": "f0179dde36443e7f285c00d312ef7b81",
+        "metadata": null,
+        "created_at": "2025-08-24T21:29:23.468248-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "e9f7b181-0495-4487-a582-cc31bb089982",
+        "memory": "Khi xử lý MERCHANT, sử dụng LIKE '%value%' thay vì = 'value'",
+        "hash": "2af83515a95004311cc768055178eb32",
+        "metadata": null,
+        "created_at": "2025-09-03T03:29:35.641873-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "c727ed56-65bf-4d0e-8489-3611091df3d6",
+        "memory": "NTMC = New To Merchant (người dùng thực hiện giao dịch đầu tiên với merchant trong kỳ báo cáo).",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-10T10:09:39.884616",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "3560a2fd-4db2-4715-b424-66e03c640d30",
+        "memory": "Khi truy vấn giao dịch token, cần lọc CORE_RESULT_CODE = 0",
+        "hash": "c02f5b4a03328bfe04bcf58851df9ac2",
+        "metadata": null,
+        "created_at": "2025-09-08T19:37:45.647687-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "24807ea0-a795-459a-ab03-a1247a0d8d5b",
+        "memory": "NTMC = New To Merchant (người dùng thực hiện giao dịch đầu tiên với merchant trong kỳ báo cáo). new to merchant của tiktok shop là nhóm người dùng lần đầu sử dụng dịch vụ TikTok Shop trong tháng T và không tính new to merchant trùng lặp nếu họ có thể thanh toán sau đó trong tháng T.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-08-21T10:18:17.528844",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "7156b6f2-4f79-460b-9393-2a1d1a69a56f",
+        "memory": "Khi join bảng DLS_GIFT_V3_VER2 và DLS_ALL_TRANS_V3_1, sử dụng điều kiện t1.TRAN_ID = t2.ORDER_ID",
+        "hash": "af7b7bd010da687eddd1bc462d27bb6a",
+        "metadata": null,
+        "created_at": "2025-10-13T00:23:05.575604-07:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "0ce8e9af-7b85-4dd5-90fb-3368e83b5f86",
+        "memory": "New to cate Marketplace là số lượng user lần đầu sử dụng market place trong tháng T, không count lặp lại nếu tiếp tục sử dụng trong tháng T",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2025-09-12T18:08:34.425772",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "86a4f2dc-f652-4470-87df-6203fb8b81c1",
+        "memory": "Khi truy vấn số lượng người dùng Hoàn tiền Mua sắm, sử dụng cột date_update thay vì dt",
+        "hash": "365c41424d8bcb5f475973db41186a95",
+        "metadata": null,
+        "created_at": "2025-11-26T02:50:34.168538-08:00",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "e1ec3cc2-5111-4c45-b7ce-10f7b7d91777",
+        "memory": "Reactive user của Grab là người dùng đã từng giao dịch với Grab trước tháng T-1, không giao dịch với Grab trong tháng T-1, và quay lại giao dịch với Grab trong tháng T.",
+        "hash": null,
+        "metadata": null,
+        "created_at": "2026-01-26T16:34:37.751772",
+        "updated_at": null,
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      },
+      {
+        "id": "9297ee65-da37-45d2-b56b-69fe89229b04",
+        "memory": "Để lấy đơn hàng đầu tiên của HTMS, cần lấy order_id đầu tiên theo ngày đặt đơn và xét order_id đó của merchant nào",
+        "hash": "c5eee6a1ce85d331c49bae333afcff41",
+        "metadata": null,
+        "created_at": "2026-03-03T20:35:49.039363-08:00",
+        "updated_at": "2026-03-03T20:40:23.650585-08:00",
+        "user_id": "ca851de3-b3cb-42bf-96d6-979acde0a7da"
+      }
+    ]
+  }
+}

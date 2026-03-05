@@ -1,0 +1,587 @@
+[
+  {
+    "id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e",
+    "name": "BU FS: CreditTech Paylater",
+    "description": "Data của sản phẩm Ví Trả Sau/Paylater. ",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "7172ddb9-dc48-40d4-bff7-1aa74f6ff435",
+    "name": "BU MDS: OTA",
+    "description": "Record information about:\n(1): User behaviors across airline & non-air booking funnel (search → view → payment)\n(2): Revenue tracking & performance by provider, route type, booking window, segment, holiday type",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "68f8f83f-cd21-4efc-9743-5c238b325818",
+    "name": "BU Payment: OFFLINE M4B ENGAGEMENT",
+    "description": "A DATASET containing processed information about offline payment",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "0affe82b-83ee-47f6-81e3-8a44e74db5f3",
+    "name": "MiMir Performance",
+    "description": "Dữ liệu người dùng MiMir - Dữ liệu & AI Chatbot",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "800bf3e8-a8ba-45c3-90d8-5f54bdaba156",
+    "name": "BU FS: InsurTech - Insurance",
+    "description": "Lưu trữ dữ liệu của FS_InsurTech với những sản phẩm tương ứng dưới đây:\n1) Traffic Flow đổ vào InsurTech\n2) Tất cả dữ liệu về giao dịch của Distribution.\n3) Tất cả dữ liệu về giao dịch của Collection.\n4) Tất cả dữ liệu về giao dịch+ funnel của Bảo Hiểm Y Tế.\n5) Tất cả dữ liệu về First Source, Last Source và tổng số lượng đơn thành công tương ứng của mỗi sp, spdetail của Distribution - FS_InsurTech với điều kiện ngày vào First Source cũng là ngày ra đơn thành công.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "5cd09ae2-90b8-4102-a717-0ae6f649ff69",
+    "name": "BU FS: FI Solutions",
+    "description": "Data về traffic và giải ngân của sản phẩm CLO và giao dịch thanh toán khoản vay, thanh toán thẻ tín dụng",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "67150ae4-a5a7-47b0-88a1-5a75e6635988",
+    "name": "BU Payment: P2P REVENUE",
+    "description": "Tất cả các giao dịch để tính revenue cho p2p",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "8676e18c-ed5e-401e-8e78-fc08b26a69ad",
+    "name": "User Trust: Security Product - Report Scam ",
+    "description": "This domain stores app-collected user scam reports—incidents in or outside MoMo—with basic context (scenario, channel), loss signals, review status, ... linked to the reporting MoMo user and, when applicable, related MoMo transactions, to support case handling and power Check-Scam features.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "63409031-024f-465a-8ac7-da361d19f5f4",
+    "name": "Customer Experience: CS",
+    "description": "The dataset records information about user suggestions received through custommer service and chatbot ",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "ca851de3-b3cb-42bf-96d6-979acde0a7da",
+    "name": "BU Payment: DLS ONLINE",
+    "description": "Chi tiết giao dịch Daily Life Service (DLS) online sử dụng trên MoMo kể từ năm 2024",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "3a52651b-b3a6-4865-8a11-7b06ea99be24",
+    "name": "BU Payment: P2P QUYNHOM",
+    "description": "Domain này bao gồm những thông tin sau của sản phẩm QUỸ (NHÓM)\n(1) transaction details: Lịch sử giao dịch trong quỹ\n(2) fund creation information: Thông tin quỹ được tạo\n(3) ending balance: Số dư quỹ\n(4) active users MoMo: User có ít nhất 1 giao dịch trong bảng iDeA_TRANS_CORE\n(4) event tracking: Product event thao tác trên miniapp quỹ nhóm\n(5) promotion gift: Số user được nhận gift, redeem gift",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "fdc4e81a-0f8e-4412-b5b4-1602705daae6",
+    "name": "BU Payment: Telco Funnel",
+    "description": "Funnel cơ bản của user Airtime và Data.\nFunnel cơ bản của user SIM.\nChỉ sử dụng khi tính về event, traffic, không dùng để tính retention rate.\n",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "838c1168-492d-4751-995d-d356dd8b9a42",
+    "name": "BU Payment: P2P OVERALL",
+    "description": "Hiện tại đang available data về\n- Nguồn tiền (SOF) của user W2W/W2B\n- User Type của user P2P\n- Receiver của sender P2P",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "350f9466-757c-4292-af88-5e7e16e65d6a",
+    "name": "CDO: User Consent",
+    "description": "Dữ liệu user đồng ý chia sẻ dữ liệu cá nhân với MoMo",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "4ece5632-02ec-4d9d-9ea9-70ed5d6cc1ed",
+    "name": "BU Payment: SME OFFLINE OPS",
+    "description": "Domain này để tạo các product AI cho 1 số task adhoc offline",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "3220e3ea-a817-4cad-a795-6221771b5956",
+    "name": "BU MDS: Business Page",
+    "description": "The dataset records all information about features in BP, including: (1) information about BP (2) Merchant engagement (3) User engagement",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "a8e52ce3-b404-42fe-afff-30201ea2897e",
+    "name": "ITC: MiniApp Performance",
+    "description": "Lấy các chỉ số của từng Miniapp trong MoMo",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "2892bd4e-f624-4d5e-b9b3-1477c5fd9a44",
+    "name": "Fraud",
+    "description": "Thông tin về Fraud",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "05cf9a74-c3c0-4b95-923c-71c8d42ed8aa",
+    "name": "BU Payment: P2P AIO_QR",
+    "description": "Records all transaction of P2P AIO_QR",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "72fbb966-0b9b-4205-a433-b14fca48597d",
+    "name": "BU Payment: EPS-TOPBRAND",
+    "description": "Domain này tập trung vào user và merchant thuộc Topband (Phòng ban là EPS: Enterprise project solution).\nMomo đóng vai trò là bên cung cấp giải pháp thanh toán cho Topbrand merchant offline, khi user đến thanh toán tại merchant có thể thanh toán đa dạng qua nhiều hình như: scan pos, scan QR, NFC, ....\nTopband bao gồm các merchant lớn có doanh thu hàng lớn, có nhiều chi nhánh và cửa hàng. Momo sẽ có thu phí trên từng giao dịch nên sẽ thu được doanh thu trên từng giao dịch đó (revenue).\n",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "16f33834-123a-4fef-aaeb-7e71da9346d6",
+    "name": "GMC: GTBB",
+    "description": "Scheme giới thiệu bạn bè ở momo",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "7994ad65-873f-4c9d-9c90-f49377367892",
+    "name": "ITC: STRONGHOLD - Device Info",
+    "description": "This data model captures device information of MoMo users, extracted during specific events at various touchpoints within the MoMo app, such as login, relogin, and refresh token. The tables are designed to support in-depth analysis of user devices, uncover insights, and extract features for AI/ML models.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "28214cde-da94-48ef-9039-00fa6f448da7",
+    "name": "BU Payment: Billpay - Business metrics",
+    "description": "Records all business information of Billpay services (including mau, transaction details, user demographics, etc.)",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "3165cb58-8f0a-4c7d-96e6-ae0b189ff572",
+    "name": "BU Payment: Airtime",
+    "description": "records all transaction (exclude blacklist user), demographic, user segment of Airtime Service since 2021",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "c210420f-d014-4463-bcb9-c9e4a38c0963",
+    "name": "BU Payment: Data",
+    "description": "All detailed transaction of service Data since 2021",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "fa0fb3af-d3d9-4459-9a82-fb7c6eafab11",
+    "name": "BU FS: Túi Thần Tài",
+    "description": "Trả lời cho toàn bộ câu hỏi về Business metric của Túi Thần Tài và Traffic vào TTT và Túi+ kèm Entry Point và Thao tác Event tracking tại miniapp ",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "750780b7-b20f-46b6-ab05-2a4241b591c6",
+    "name": "BU MDS: Notification for Platform",
+    "description": "BU MDS: Notification for Platform - Chỉ dành cho core team noti platform! A/c BU hay PO cell team vui lòng request ở BU MDS: Notification for BU!\n\nBảng Notification chỉ tổng hợp số lượng notiid giống dạng event, không theo user do bảng user quá nặng không load nổi nên tất cả câu hỏi có chữ \"user\", \"người dùng\" đều trả kết quả null\nMetric chính sẽ là  delivery outapp, Impression inapp, Click inapp, click outapp, CTR inapp, CTR outapp",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "c80e0c61-0d52-4fd6-a2e5-9d2892da7955",
+    "name": "BU FS: Financial Hub",
+    "description": "The dataset records information about Financial Hub miniapp, including:\n(1) traffic login TTTC (Trung tâm tài chính) and QLTK (Quản lý tài khoản)\n(2) Entrypoint user login FinHub (TTTC & QLTK) and from FinHub navigate to other miniapps\n(3) List user retain monthly and weekly (retain FinHub overall and retain each miniapp TTTC and QLTK individually)\n(4) Action click/ engage: Number user have action (impress/ engage) with FinHub by component",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "f1f9aae9-0343-40c9-8e1b-db35889ac849",
+    "name": "GMC: Manual Account Termination",
+    "description": "Domain chuyên về performance của luồng Hủy ví thủ công (\"Đây không phải là tôi\") ",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "be488435-9b4d-4449-92ba-7cb7fad81012",
+    "name": "BU MDS: Rewards - MEU",
+    "description": "Các thông tin của Rewards liên quan đến số user tương tác với các touchpoint của Rewards; tương tác với Rewards Hub; funnel chung hoặc theo gift_type_id từ Impression > Click > Burn Coin > Redeem Voucher",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "4f353121-0b27-437a-9746-e4b8897ad03b",
+    "name": "User Trust: Security Product - Check Scam",
+    "description": "Consolidates scam report data from multiple sources (both inside and outside MoMo), including MoMo users, social media, government agencies, and more. \nProvides information on various types of scam-related entities such as MoMo wallet accounts, bank accounts, websites, and others.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "03f0b56d-7b56-49d8-9073-6bb94e564fe2",
+    "name": "BU Payment: SME OFFLINE PAYMENT",
+    "description": "A DATASET containing processed information about merchant payment and merchant profile",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "f9ccec9b-d24b-47b8-9e81-1805aa865726",
+    "name": "BU Payment: Billpay - Business metrics (Non Sensitive)",
+    "description": "Records all business information of Billpay services (including mau, transaction details, user demographics, etc.)",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "5d47c7cc-f998-41c5-ab4c-5caa4b441743",
+    "name": "BU Payment: M4B HUB",
+    "description": "Domain này chứa data engagement của merchant vào M4B (Sẽ bao gồm các touch point khác thuộc M4B quản lý)",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "dd5f63eb-9981-4d0b-ba85-bd73ce80f52f",
+    "name": "BU MDS: Donation",
+    "description": "Donation là nền tảng gây quỹ từ thiện tích hợp trong ví điện tử. Người dùng có thể quyên góp tiền hoặc heo vàng cho các dự án xã hội (trẻ em, người già, giáo dục, y tế, v.v) thông qua nhiều hình thức như chuyển tiền trực tiếp, quyên góp bằng item heo đất nhận được khi chơi game, quét mã QR, hoặc mua hàng gây quỹ.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "9d86b9d9-bf1e-4bab-8e11-86279716984a",
+    "name": "BU MDS: Promotion - Platform Performance (Project team only)",
+    "description": "Data từ delivery -> redeem, và engagement trên Promotion Platform. Các metric liên quan đến cost và gmv, user engagement của Promotion (toàn MoMo). Note: chỉ có data delivery redeem của voucher code mềm (không bao gồm voucher code cứng)",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "e5beb7b6-4273-47ff-9755-a5bcf8d51b97",
+    "name": "BU Payment: Transaction MoMo",
+    "description": "Lưu trữ thông tin cơ bản các giao dịch của ví điện tử MoMo ",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "20e405eb-5b2b-4a23-bacc-35196c4e707d",
+    "name": "Customer Experience: CEE USER SUGGESTIONS",
+    "description": "The dataset records information about user suggestions received through Feedback Feature in all CS channel",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "7102da6a-2fdc-4475-a3bf-b66be5bca419",
+    "name": "BU FS: Bank Partnership",
+    "description": "Thông tin dữ liệu về các dịch vụ liên quan tới ngân hàng (nạp/ rút/ liên kết/ direct debit/ w2b/ ...)",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "0c367c81-99d6-4b01-90e2-e7bab0b77677",
+    "name": "BU Payment: SUPPLIER TRACKING",
+    "description": "Theo dõi performance của các nhà cung cấp Telco",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "cf246f90-8aba-44e5-be6e-d02ddb22b9c1",
+    "name": "ITC MLBIZ: CREDITTECH",
+    "description": "Data các sản phẩm Lending ",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "526c040d-6956-4cb9-8919-87828de05cfc",
+    "name": "BU Payment: P2P W2B",
+    "description": "records all transaction of P2P W2B",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "af241589-f5be-4b97-8928-fe0823c8dc75",
+    "name": "BU Growth Platform: Expense Management",
+    "description": "Phân tích về sản phẩm Quản Lý Chi tiêu bao gồm:\n- Các thông tin về người dùng\n- Các thông tin về event của sản phẩm\n- Các thông tin về các tính năng của sản phẩm",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "c123d8bc-9569-4dfd-955f-69d587062069",
+    "name": "BU MDS: Thổ Địa MoMo",
+    "description": "The dataset records information about 4 core features of TĐMM, including (1) login (2) engage (3) review (4) delivery",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "ef8cc111-d13a-4b0b-a1fd-8cccb065fc74",
+    "name": "BU FS: Chứng khoán CV",
+    "description": "Hỏi về thông tin đăng ký tài khoản, giao dịch chứng khoán và traffic user.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "9066c2ad-5109-4fa9-abc0-06d85c6eed7e",
+    "name": "Chatbot Moni",
+    "description": "Chatbot trả lời các câu hỏi liên quan đến sản phẩm Moni bao gồm user, hội thoại và event tracking",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "fa727a68-0970-4e47-b52b-ed5b5cb7451d",
+    "name": "[PAYMENT PLATFORM] Electronic Data Capture",
+    "description": "Bảng fact lưu trữ toàn bộ giao dịch thanh toán qua thiết bị EDC (Electronic Data Capture) tại các merchant.\n- Phân tích hiệu suất hoạt động của EDC theo merchant, store, partner_code.\n- Tính toán GMV, tỷ lệ giao dịch thành công, lý do lỗi theo từng ngân hàng, loại thẻ.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "bb231763-b11c-45c6-9b0d-eb6d24588e3d",
+    "name": "BU FS: Vay Nhanh",
+    "description": "Data liên quan đến giải ngân, traffic Vaynhanh",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "e9363d1c-6486-4072-8dc5-8d06260e9c7f",
+    "name": "BU MDS: Promotion - Campaign Performance",
+    "description": "Ghi nhận các tương tác của user với promotion campaign và gift (impression, click). Data được aggregate theo ngày, touchpoint của Promotion, campaign_id và gift_type_id",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "7e533485-3f9d-45d1-b97c-82eb59aa3d01",
+    "name": "ITC MLBIZ: Explanation Agent",
+    "description": "",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "076f32ab-ad98-46fc-9998-1dd58de7134a",
+    "name": "BU FS: CreditTech – Merchant Financing",
+    "description": "Data của sản phẩm Vay nhanh cho nhà bán hàng, bao gồm các step accessed/submitted/disbursed",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "bcae6a77-3995-49e5-85ca-36b1ed664c13",
+    "name": "BU MDS: Notification for BU",
+    "description": "Bảng Notification chỉ tổng hợp số lượng notiid giống dạng event, không theo user do bảng user quá nặng không load nổi nên tất cả câu hỏi có chữ \"user\", \"người dùng\" đều trả kết quả null\nMetric chính sẽ là  delivery outapp, Impression inapp, Click inapp, click outapp, CTR inapp, CTR outapp\nPhải input đúng tên campaign name, templateid mới trả ra kết quả",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "be004a0c-5e7c-442d-ab51-a7026eed5433",
+    "name": "BU Payment: Data (Non Sensitive)",
+    "description": "All detailed transaction of service Data since 2021",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "a7a4abe7-ba98-48dd-b9f0-8d0752c75910",
+    "name": "BU Payment: P2P SOCIAL",
+    "description": "Dữ liệu liên quan các sản phẩm Social của P2P",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "51216294-46c7-4058-8ba2-aa53f7409fe6",
+    "name": "CDO: Data Ownership",
+    "description": "Thông tin về data contract, data owner, những bảng đã được lên contract và data quality của những bảng đã được lên contract.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "63e7a2bc-2f9d-4b8f-9a1d-03c5ea7e16e8",
+    "name": "BU Payment: Airtime (Non Sensitive)",
+    "description": "records all transaction (exclude blacklist user), demographic, user segment of Airtime Service since 2021",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "f3d8838b-5f96-4f78-8c39-2b146978dbd8",
+    "name": "BU Payment: P2P W2W",
+    "description": "Records all transaction of P2P W2W",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "6471b001-623f-4ce2-a6a5-5bf63b2cf928",
+    "name": "BU MDS: Journey",
+    "description": "Thông tin về journey camp chạy, gồm CVR enter, goal, ctr noti, ctr adv\nCách tạo journey ở đây https://docs.google.com/presentation/d/17Ql0pm8iCq9zsmCTsyaMLMpms7G_fTdIsal2-VOTkVc/edit?slide=id.g2e2e0b1a5bb_0_1563#slide=id.g2e2e0b1a5bb_0_1563",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "a9b8f0d4-dc8c-428a-ac05-8cbd29fc41e4",
+    "name": "Lịch sử giao dịch",
+    "description": "Bảng lưu trữ dữ liệu log sự kiện lọc và gán nhãn của người dùng trên màn hình lịch sử giao dịch (LSGD - Lịch Sử Giao Dịch)",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "1d4022aa-85c0-47d9-8f53-e346a8e74437",
+    "name": "BU Payment: VTTI Overview",
+    "description": "Tất cả giao dịch của VTTI (không có revenue): Airtime, Data, Billpay, Dịch vụ Công từ 2017 đến hiện tại",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "390df75f-43e9-4caa-a418-0959e0691f73",
+    "name": "BU Payment: P2P RECEIVER GENERAL",
+    "description": "Bao gồm các thông tin nhận tiền về MoMo (các luồng TITAN, QR, W2W)",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "58aa0bc4-eda4-4442-9d64-9f67d36a54ca",
+    "name": "BU Payment:  P2P QUY NHOM SELF SERVE ANALYTICS",
+    "description": "",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "9e15b462-aa3d-4bdc-80ff-dc86a6f83837",
+    "name": "BU Payment: P2P ERROR",
+    "description": "Dữ liệu về các event lỗi và giao dịch lỗi của người dùng dịch vụ chuyển tiền P2P",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "bf6c7cb8-75d4-493a-894c-ffd71d729cb1",
+    "name": "MEDIA - AD Platform",
+    "description": "Domain này phục vụ cho việc quản lý, tổng hợp và phân tích dữ liệu Media Marketing, bao gồm dữ liệu hiệu suất quảng cáo từ các kênh như Facebook, Google, TikTok, Apple Search Ads, Moloco,…",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  },
+  {
+    "id": "7a5b7857-5204-4a8a-a961-f427f228cf99",
+    "name": "Data Loss Prevention",
+    "description": "Cung cấp thông tin về các vấn đề bảo mật, bao gồm danh sách các fields (cột) đang được gắn nhãn (policy tag), thông tin về các nhãn dữ liệu, các truy cập dữ liệu cá nhân của người dùng, các quyền dữ liệu, quyền dữ liệu cá nhân đang được cấp cho người dùng.",
+    "instructions": "",
+    "schema_ddl": "",
+    "knowledgebase": [],
+    "memory": []
+  }
+]

@@ -82,6 +82,7 @@ User attrition -8.4%. Weak savers churn months 1-3, power savers remain and comp
 Of 1.17M unfunded Individual MAU: 623K (53%) = previously funded (reactivation 3-5× easier), 548K (47%) = never funded.
 
 ## Mimir Trust
-- MAU/MFU: MEDIUM (needs filter guidance)
-- AUM: LOW (30x inflation bug — sums across days)
-- General: MEDIUM
+- MAU/MFU: HIGH (exact match Feb 2026, correct REGEXP_EXTRACT + MAU_TYPE filter)
+- AUM: HIGH (bug FIXED as of 2026-03-06 — Mimir now uses end-of-month snapshot, not sum across days)
+- General: HIGH
+- Feb 29 bug: persists but Mimir self-corrects with retry

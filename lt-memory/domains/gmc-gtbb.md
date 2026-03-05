@@ -1,14 +1,55 @@
 # GMC: GTBB
 
 **Domain ID:** `16f33834-123a-4fef-aaeb-7e71da9346d6`
-**Last refreshed:** 2026-03-03
 
 ## Description
 Scheme giới thiệu bạn bè ở momo
 
-## Schema DDL
-```sql
-###Dataset name: GTBB 
- ## Table information : {"table_name":"momovn-growth-shared.GMC_SHARE.GMC_SEMANTIC_GTBB_INFO","table_desc":"Bảng này chứa thông tin chi tiết liên quan đến GMC Semantic GTBB (Growth Team Big Bet) với mục đích theo dõi thông tin phát triển và tăng trưởng. Dữ liệu từ bảng này có thể được tận dụng cho các mục đích như phân tích hoạt động của đại lý qua các tháng, đánh giá hiệu quả các chương trình khuyến mãi dựa trên thông tin mã khuyến mãi, và xác định các kênh phát triển chính.","column_desc":[{"column_name":"B_PHONE","description":"Số điện thoại của người dùng (B).\n ","children":[]},{"column_name":"AX_PHONE","description":"Số điện thoại của người dùng (AX).\n ","children":[]},{"column_name":"AX_AGENT_ID","description":"Mã định danh cho ví MoMo của người dùng (AX).\n ","children":[],"example_data":["36542111","53908432","55506296"]},{"column_name":"new_to_AX_in_month","description":"Thông tin mới về người dùng trong tháng dành cho AX.\n ","children":[],"example_data":["Retained AX","New to AX"]},{"column_name":"TYPE_GTBB_LIFE_TIME","description":"Loại GTBB trong suốt vòng đời.\n ","children":[],"example_data":["07. >50 Lifetime","01. 1 Lifetime","02. 2-3 Lifetime","03. 4-5 Lifetime","04. 6-10 Lifetime","06. 21-50 Lifetime","05. 11-20 Lifetime"]},{"column_name":"TYPE_GTBB_IN_MONTH","description":"Loại GTBB trong tháng.\n ","children":[],"example_data":["01. 1 in month","07. >50 in month","02. 2-3 in month","06. 21-50 in month","05. 11-20 in month","04. 6-10 in month","03. 4-5 in month"]},{"column_name":"TYPE_RETENT_AX","description":"Loại giữ chân người dùng đối với AX.\n ","children":[],"example_data":["NEW","ACTIVE","REACTIVE"]},{"column_name":"TYPE_AX_PER_B","description":"Loại của AX theo B.\n ","children":[],"example_data":["1","2","3"]},{"column_name":"B_AGENT_ID","description":"Mã định danh cho ví MoMo của người dùng (B).\n ","children":[],"example_data":["62966526","44840455","19309980"]},{"column_name":"FIRST_DATETIME_B","description":"Thời điểm diễn ra đầu tiên của người dùng (B).\n ","children":[],"example_data":["2022-08-18 11:40:06+00","2023-07-23 14:28:21+00","2021-08-27 18:02:39+00"]},{"column_name":"FIRST_DATE_B","description":"Ngày diễn ra đầu tiên của người dùng (B).\n ","children":[],"example_data":["2020-03-22","2020-02-14","2021-06-28"]},{"column_name":"PROMOTION_ID","description":"Mã khuyến mãi áp dụng cho người dùng.\n ","children":[],"example_data":["163","44","98"]},{"column_name":"CHANNEL","description":"Kênh phát triển được sử dụng.\n ","children":[],"example_data":["GTBB_DEFAULT","GTBB_REFERRAL_WEB","GTBB_OTHERS","GTBB_BU","GTBB_QR24"]},{"column_name":"B_BANK","description":"Ngân hàng liên kết với người dùng (B).\n ","children":[],"example_data":["VCB","BIDV","VTB","MBB","AGRIBANK","SACOM","ACB","VPB","TPB","SHINHAN","TCB","OCB","VIB","ABB","HDB","EXIM","MSB","NAB","SHB","SCB","SeABank","VCCB","PVCOM","TIMO","BVB","KLB","OJB","NCB","BAB","VIETBANK","IVB","VRB","SGB","P2P","NAPAS"]},{"column_name":"AX_AGENTID_GET_GIFT","description":"Mã định danh của AX nhận quà.\n ","children":[],"example_data":["55506296","36542111","42779210"]},{"column_name":"B_AGENTID_GET_GIFT","description":"Mã định danh của B nhận quà.\n ","children":[],"example_data":["46020306","45433816","39453006"]},{"column_name":"GROUP_MAU","description":"Nhóm MAU (Monthly Active Users).\n ","children":[],"example_data":["NOT FRAUD-NOT REMOVE MAU","FRAUD-REMOVED MAU","FRAUD-NOT REMOVE MAU"]}]}
-## Table information : {"table_name":"momovn-prod.REPORT.GMC_CS_CASE_CHECK_GTBB","table_desc":"Bảng này chứa thông tin báo cáo về các trường hợp kiểm tra GMC CS tại GTBB. Thông tin từ bảng này có thể được sử dụng để: \n - Theo dõi và phân tích các tác động của chương trình khuyến mãi (PROMOTION_ID) đến các trường hợp \n - Nghiên cứu và đánh giá ngân hàng liên quan (BANK) \n - Kiểm tra mã code gia nhập (DATE_ENTERCODE) trong từng báo cáo","column_desc":[{"column_name":"DATE_REPORT","description":"Ngày báo cáo các trường hợp kiểm tra trong hệ thống GTBB\n ","children":[],"example_data":[]},{"column_name":"BANK","description":"Tên ngân hàng liên quan đến từng trường hợp trong báo cáo\n ","children":[],"example_data":["VCB","TCB"]},{"column_name":"AX_AGENT_ID","description":"Mã định danh của đối tượng AX trong báo cáo\n ","children":[],"example_data":[]},{"column_name":"B_AGENT_ID","description":"Mã định danh của đối tượng B trong báo cáo\n ","children":[],"example_data":["47746100"]},{"column_name":"PROMOTION_ID","description":"Mã chương trình khuyến mãi liên quan đến báo cáo\n ","children":[],"example_data":["98"]},{"column_name":"DATE_ENTERCODE","description":"Ngày nhập mã code trong hệ thống để báo cáo\n ","children":[],"example_data":["2025-10-24 09:50:16\\t"]},{"column_name":"DESCRIPTION","description":"Mô tả chi tiết về từng trường hợp trong báo cáo\n ","children":[],"example_data":[]}]}
-```
+## Tables
+
+### `momovn-growth-shared.GMC_SHARE.GMC_SEMANTIC_GTBB_INFO`
+> Bảng này chứa thông tin chi tiết liên quan đến GMC Semantic GTBB (Growth Team Big Bet) với mục đích theo dõi thông tin phát triển và tăng trưởng. Dữ liệu từ bảng này có thể được tận dụng cho các mục đích như phân tích hoạt động của đại lý qua các tháng, đánh giá hiệu quả các chương trình khuyến mãi dựa trên thông tin mã khuyến mãi, và xác định các kênh phát triển chính.
+
+| Column | Type | Description | Example |
+|--------|------|-------------|---------|
+| `B_PHONE` | — | Số điện thoại của người dùng (B). | — |
+| `AX_PHONE` | — | Số điện thoại của người dùng (AX). | — |
+| `AX_AGENT_ID` | — | Mã định danh cho ví MoMo của người dùng (AX). | 36542111, 53908432, 55506296 |
+| `new_to_AX_in_month` | — | Thông tin mới về người dùng trong tháng dành cho AX. | Retained AX, New to AX |
+| `TYPE_GTBB_LIFE_TIME` | — | Loại GTBB trong suốt vòng đời. | 07. >50 Lifetime, 01. 1 Lifetime, 02. 2-3 Lifetime |
+| `TYPE_GTBB_IN_MONTH` | — | Loại GTBB trong tháng. | 01. 1 in month, 07. >50 in month, 02. 2-3 in month |
+| `TYPE_RETENT_AX` | — | Loại giữ chân người dùng đối với AX. | NEW, ACTIVE, REACTIVE |
+| `TYPE_AX_PER_B` | — | Loại của AX theo B. | 1, 2, 3 |
+| `B_AGENT_ID` | — | Mã định danh cho ví MoMo của người dùng (B). | 62966526, 44840455, 19309980 |
+| `FIRST_DATETIME_B` | — | Thời điểm diễn ra đầu tiên của người dùng (B). | 2022-08-18 11:40:06+00, 2023-07-23 14:28:21+00, 2021-08-27 18:02:39+00 |
+| `FIRST_DATE_B` | — | Ngày diễn ra đầu tiên của người dùng (B). | 2020-03-22, 2020-02-14, 2021-06-28 |
+| `PROMOTION_ID` | — | Mã khuyến mãi áp dụng cho người dùng. | 163, 44, 98 |
+| `CHANNEL` | — | Kênh phát triển được sử dụng. | GTBB_DEFAULT, GTBB_REFERRAL_WEB, GTBB_OTHERS |
+| `B_BANK` | — | Ngân hàng liên kết với người dùng (B). | VCB, BIDV, VTB |
+| `AX_AGENTID_GET_GIFT` | — | Mã định danh của AX nhận quà. | 55506296, 36542111, 42779210 |
+| `B_AGENTID_GET_GIFT` | — | Mã định danh của B nhận quà. | 46020306, 45433816, 39453006 |
+| `GROUP_MAU` | — | Nhóm MAU (Monthly Active Users). | NOT FRAUD-NOT REMOVE MAU, FRAUD-REMOVED MAU, FRAUD-NOT REMOVE MAU |
+
+### `momovn-prod.REPORT.GMC_CS_CASE_CHECK_GTBB`
+> Bảng này chứa thông tin báo cáo về các trường hợp kiểm tra GMC CS tại GTBB. Thông tin từ bảng này có thể được sử dụng để: 
+ - Theo dõi và phân tích các tác động của chương trình khuyến mãi (PROMOTION_ID) đến các trường hợp 
+ - Nghiên cứu và đánh giá ngân hàng liên quan (BANK) 
+ - Kiểm tra mã code gia nhập (DATE_ENTERCODE) trong từng báo cáo
+
+| Column | Type | Description | Example |
+|--------|------|-------------|---------|
+| `DATE_REPORT` | — | Ngày báo cáo các trường hợp kiểm tra trong hệ thống GTBB | — |
+| `BANK` | — | Tên ngân hàng liên quan đến từng trường hợp trong báo cáo | VCB, TCB |
+| `AX_AGENT_ID` | — | Mã định danh của đối tượng AX trong báo cáo | — |
+| `B_AGENT_ID` | — | Mã định danh của đối tượng B trong báo cáo | 47746100 |
+| `PROMOTION_ID` | — | Mã chương trình khuyến mãi liên quan đến báo cáo | 98 |
+| `DATE_ENTERCODE` | — | Ngày nhập mã code trong hệ thống để báo cáo | 2025-10-24 09:50:16\t |
+| `DESCRIPTION` | — | Mô tả chi tiết về từng trường hợp trong báo cáo | — |
+
+## Memory
+*4 entries — user-trained knowledge*
+
+1. Khi người dùng hỏi về "đủ điều kiện trả thưởng", hãy kiểm tra các cột sau trong bảng GMC_SEMANTIC_GTBB_INFO: GROUP_MAU, TYPE_GTBB_LIFE_TIME (của AX), TYPE_GTBB_IN_MONTH (của AX), B_BANK (của B), FIRST_DATE_B (của B), PROMOTION_ID (của B), AX_AGENTID_GET_GIFT, B_AGENTID_GET_GIFT. Đồng thời, cần tính toán số lượng B fraud trong tháng/năm hiện tại cho AX đó. _2025-10-31_
+2. Khi người dùng hỏi về "đủ điều kiện trả thưởng", hãy kiểm tra các cột sau trong bảng GMC_SEMANTIC_GTBB_INFO: GROUP_MAU, TYPE_GTBB_LIFE_TIME (của AX), TYPE_GTBB_IN_MONTH (của AX), B_BANK (của B), FIRST_DATE_B (của B), PROMOTION_ID (của B), AX_GET_GIFT, B_AGENTID_GET_GIFT. Đồng thời, cần tính toán số lượng B fraud trong tháng/năm hiện tại cho AX đó. _2025-10-31_
+3. Khi người dùng hỏi về "đủ điều kiện trả thưởng", hãy kiểm tra cột GROUP_MAU trong bảng GMC_SEMANTIC_GTBB_INFO. _2025-10-30_
+4. Khi người dùng hỏi về "đủ điều kiện trả thưởng", hãy kiểm tra các cột sau trong bảng GMC_SEMANTIC_GTBB_INFO: GROUP_MAU, TYPE_GTBB_LIFE_TIME (của AX), TYPE_GTBB_IN_MONTH (của AX), B_BANK (của B), FIRST_DATE_B (của B), PROMOTION_ID (của B). Đồng thời, cần tính toán số lượng B fraud trong tháng/năm hiện tại cho AX đó. _2025-10-30_

@@ -12,7 +12,7 @@ Build up knowledge about what data exists, what metrics mean, and how things con
 
 ## MoMo Business Landscape
 
-MoMo has **60 data domains** across these business units. Know the shape before you query.
+MoMo has **65 data domains** across these business units. Know the shape before you query.
 
 | Business Unit | Key Domains | Scale (Jan 2026) |
 |---------------|-------------|-------------------|
@@ -35,7 +35,7 @@ Read your memory before writing any SQL.
 ```
 1. Read lt-memory/_index.md
 2. Find the relevant domain file in lt-memory/domains/<domain>.md
-   → Domain files contain table schemas, column definitions (auto-refreshed daily, never edit)
+   → Domain files contain table schemas, column definitions, user-trained memory entries (auto-refreshed daily, never edit)
 3. Load lt-memory/knowledge/<domain>.md alongside the domain file
    → Knowledge files contain learned gotchas, corrections, business insights (human-curated)
 4. Load lt-memory/knowledge/_general.md for BQ access, Mimir behavior, SQL gotchas
@@ -62,29 +62,33 @@ Use `docs/ref/domain-router.md` to map the question to the right domain. For bro
 
 Before writing SQL, you MUST know the table structure. Two sources:
 
-**Source A: Domain metadata API (primary)**
+**Source A: lt-memory domain files (primary)**
+Check `lt-memory/domains/<domain>.md` — contains parsed table schemas with column names, types, descriptions, and user-trained memory entries. These are auto-refreshed daily from Mimir's metadata API.
+
+**Source B: Domain metadata API (fallback)**
 ```bash
 curl -s --request GET \
   --url 'https://s.mservice.io/mimir-server-to-server/v1/domain/metadata?domain_id=DOMAIN_ID'
 ```
 
-This returns tables, columns, and types. Parse and store in `lt-memory/domains/<domain>.md`.
+Use this if the domain file is missing or stale. Parse and regenerate via `scripts/json_to_md.py`.
 
-**Source B: lt-memory domain files (cached)**
-Check `lt-memory/domains/<domain>.md` — may already have the schema from a previous session.
-
-**If metadata returns `?` for column names** (e.g., InsurTech), you need to discover columns by other means:
-- Check if `mimir-da` has pattern files with SQL from past Mimir responses
+**If schema is unclear:**
 - Try a simple `SELECT * FROM <table> LIMIT 1` to see column names
-- Record what you find
+- Record what you find in `lt-memory/knowledge/<domain>.md`
 
 ### Step 3: Write the SQL
 
 Write SQL that:
-- **Only uses verified column names** — from metadata API or lt-memory domain files
+- **Only uses verified column names** — from domain files or metadata API
 - **Includes explicit time filters** — always filter by date/month column
 - **Uses aggregation appropriately** — COUNT, SUM, AVG, COUNT(DISTINCT ...)
 - **Handles Vietnamese number conventions** — dots are thousand separators
+- **Matches granularity to the question context:**
+  - YoY or multi-year comparison → GROUP BY month
+  - Quarterly review → GROUP BY month
+  - Monthly deep-dive → GROUP BY week or day
+  - Recent trend (last week) → GROUP BY day
 
 **SQL patterns for common metrics:**
 
@@ -135,19 +139,82 @@ WHERE month = '2026-01'
 
 ### Step 4: Execute the SQL
 
-> **TODO:** Configure SQL execution method. See `docs/tech/mimir_apis.md` section 2.
->
-> Possible execution methods:
-> - Direct database connection (requires connection string)
-> - Mimir SQL endpoint (if available)
-> - Export and run via a DB client
+BQ runs on shared company quota — be cost-conscious. Always dry-run before executing.
 
-### Step 5: Interpret the result
+**4a. Dry-run first** — estimate scan size (instant, free, no slots consumed):
 
-- State numbers in business context: "Moni had 290K MAU in January 2026, down from 309K in December 2025"
-- Show the SQL you wrote — it documents your methodology
-- Flag anything that looks wrong (zero values, negative numbers, missing data)
-- Compare against known baselines from domain files when available
+```bash
+export CLOUDSDK_PYTHON=/Library/Frameworks/Python.framework/Versions/3.11/bin/python3
+export PATH="$HOME/google-cloud-sdk/bin:$PATH"
+
+bq query --dry_run \
+  --project_id=momovn-bu-fi-shared \
+  --use_legacy_sql=false \
+  --format=csv \
+  < /tmp/query.sql
+```
+
+**4b. Apply tiered limits** based on dry-run bytes:
+
+| Dry-run estimate | max_bytes_billed | timeout | Action |
+|-----------------|-----------------|---------|--------|
+| < 1 GB | estimate × 1.2 | 60s | Run normally |
+| 1–5 GB | estimate × 1.2 | 90s | Run normally |
+| 5–20 GB | estimate × 1.2 | 180s | Run, warn it may be slow |
+| > 20 GB | — | — | STOP — add tighter date filter first |
+
+**4c. Run async with timeout:**
+
+```bash
+# Submit async
+JOB_ID=$(bq query --nosync \
+  --project_id=momovn-bu-fi-shared \
+  --use_legacy_sql=false \
+  --maximum_bytes_billed=$MAX_BYTES \
+  --format=csv \
+  < /tmp/query.sql 2>&1 | grep -oE 'job_[a-zA-Z0-9_-]+|[a-z]+:[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+')
+
+# Wait with timeout
+bq wait "$JOB_ID" $TIMEOUT_SECS
+
+# Get result
+bq head -n 1000 "$JOB_ID"
+```
+
+If `bq wait` exits with timeout: cancel the job with `bq cancel "$JOB_ID"`, note it, and move on.
+
+**4d. Keep results small — handle it in SQL, not after:**
+
+Results MUST come back at the right grain. If a query would return thousands of raw rows, fix the SQL — add GROUP BY, tighter filters, or aggregation — so it returns ≤ 200 rows. Never pull large raw datasets into context and try to process them after.
+
+**4e. Use Python for computation on returned data — never estimate mentally:**
+
+When you need to derive metrics from already-returned results (averages, percentiles, weighted rates, complex ratios across multiple query results), write and run a Python script. Never eyeball or estimate — 1000 numbers need code, not guesswork. This is for post-SQL computation, not for reducing result size (that's 4d's job).
+
+### Step 5: Present the result
+
+**Always show the SQL alongside the data.** Colleagues need to review and debug queries.
+
+Format each query result as:
+
+```
+**SQL:**
+​```sql
+SELECT ...
+FROM ...
+WHERE ...
+​```
+**Dry-run:** X.XX GB | **Runtime:** Xs
+
+| Column1 | Column2 | Column3 |
+|---------|---------|---------|
+| value   | value   | value   |
+```
+
+Then interpret in business context:
+- State numbers with meaning: "Paylater crossed 1M MAU in March 2025, up 45% YoY"
+- Flag anything suspicious (zero values, negative numbers, missing data)
+- Compare against known baselines from domain/knowledge files
 
 ### Compute derived metrics
 
@@ -256,7 +323,7 @@ Executives ask broad. You query specific. The bridge is **domain-aware decomposi
 
 **Step 3: Write SQL.** One SQL query per metric per domain. Check schema before writing.
 
-**Step 4: Execute.** Run all queries (in parallel when possible).
+**Step 4: Execute.** Run all queries (in parallel when possible). Use the dry-run → tiered limits → async pattern for each.
 
 **Step 5: Compute.** Calculate derived metrics (ratios, rates, penetration) from raw numbers.
 
@@ -297,24 +364,24 @@ See `docs/ref/decomposition-playbook.md` → Type 1: Product Adoption for full t
 
 ## Domain Discovery
 
-The data landscape is **already mapped** (60 domains discovered 2026-02-03). See `lt-memory/domains/_all.md` for the full list and `lt-memory/domains/<name>.md` for each domain's table schemas.
+The data landscape is **already mapped** (65 domains discovered 2026-03-03). See `lt-memory/domains/_all.md` for the full list and `lt-memory/domains/<name>.md` for each domain's table schemas + user-trained memory entries.
 
 ### When you encounter an unknown domain or metric
 
-1. **Check metadata:** `GET /v1/domain/metadata?domain_id=DOMAIN_ID` → reveals tables, columns, types
+1. **Check domain file:** `lt-memory/domains/<domain>.md` — contains tables, columns, types, and memory entries
 2. **Probe with a simple query:** `SELECT * FROM <table> LIMIT 5` to see actual data shape
-3. **Record everything** in `lt-memory/domains/<domain>.md`
+3. **Record everything** in `lt-memory/knowledge/<domain>.md`
 
 ### When domain knowledge is stale
 
-Domain files include a "Last Updated" date. If it's been months, re-probe to check for schema changes.
+Regenerate domain files: run `python3 scripts/json_to_md.py` (fetches from `_raw_api/` → `domains/`).
 
 ### Building deeper knowledge
 
 1. Try each metric type: volume (COUNT), value (SUM), users (COUNT DISTINCT)
 2. Try different time granularities (daily, monthly, yearly GROUP BY)
 3. Try breakdown dimensions (GROUP BY product, segment, region)
-4. Track "Open Questions" in the domain file for future exploration
+4. Track "Open Questions" in the knowledge file for future exploration
 
 ---
 
@@ -377,11 +444,13 @@ When a report has 3+ data dimensions, charts, or tables:
 
 | Situation | Action |
 |-----------|--------|
-| Unknown column | Check metadata API again, update domain file. Never guess column names |
-| Unknown table | Call `/v1/domain/metadata` to get table list |
+| Unknown column | Check domain file again, update knowledge file. Never guess column names |
+| Unknown table | Check domain file or call `/v1/domain/metadata` |
 | SQL syntax error | Fix syntax, log the error in lt-memory/errors/ |
 | Empty result set | May be valid (OTA has 0 bookings) or wrong time filter — verify |
 | Permission denied | Domain is restricted (known: Fraud, GTBB). Note it and move on |
 | 401 from metadata API | Infrastructure issue — tell the user, don't retry |
-| Schema mismatch | Domain schema changed — re-fetch metadata and update domain file |
+| Schema mismatch | Domain schema changed — regenerate via `scripts/json_to_md.py` |
 | Data mismatch | Domain name can be misleading (e.g., "Offline M4B" = engagement data, not transactions). Read the domain file before querying |
+| Query > 20 GB dry-run | Add tighter date filter or partition constraint. Do not run |
+| Query timeout | Cancel the job, note it, try a lighter version of the query |

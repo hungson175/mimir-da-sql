@@ -1,0 +1,167 @@
+{
+  "domain_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e",
+  "name": "BU FS: CreditTech Paylater",
+  "metadata": {
+    "id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e",
+    "name": "BU FS: CreditTech Paylater",
+    "description": "Data của sản phẩm Ví Trả Sau/Paylater. ",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: BU-FS: CreditTech Paylater \n \n## Table information : {\"table_name\": \"momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT\", \"table_description\": \"\", \"table_columns\": [{\"column_name\": \"agent_id\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"M\\u00e3 \\u0111\\u1ecbnh danh cho m\\u1ed7i v\\u00ed MoMo\", \"structs\": [], \"example_data\": [\"9088454\", \"4530253\", \"3292468\"]}, {\"column_name\": \"month_trans\", \"mode\": \"NULLABLE\", \"data_type\": \"DATE\", \"description\": \"Th\\u00e1ng c\\u1ee7a giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"2025-11-01\", \"2025-10-01\", \"2025-09-01\"]}, {\"column_name\": \"MAU_segment\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Ph\\u00e2n \\u0111o\\u1ea1n c\\u1ee7a ng\\u01b0\\u1eddi d\\u00f9ng ho\\u1ea1t \\u0111\\u1ed9ng h\\u00e0ng th\\u00e1ng\", \"structs\": [], \"example_data\": [\"2.Retain\", \"3.Reactive\", \"1.New\"]}, {\"column_name\": \"date_trans\", \"mode\": \"NULLABLE\", \"data_type\": \"DATE\", \"description\": \"Ng\\u00e0y th\\u1ef1c hi\\u1ec7n giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"2025-12-01\", \"2025-11-01\", \"2025-10-01\"]}, {\"column_name\": \"first_trans_id\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"ID giao d\\u1ecbch \\u0111\\u1ea7u ti\\u00ean\", \"structs\": []}, {\"column_name\": \"retain\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Tr\\u1ea1ng th\\u00e1i gi\\u1eef ch\\u00e2n ng\\u01b0\\u1eddi d\\u00f9ng\", \"structs\": [], \"example_data\": [\"39529428\", \"30030663\", \"47287393\"]}, {\"column_name\": \"usecase\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Tr\\u01b0\\u1eddng h\\u1ee3p s\\u1eed d\\u1ee5ng c\\u1ee7a giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"AIRTIME\", \"UTILITIES\", \"APPLICATION STORE\", \"LOGISTICS\", \"MARKETPLACE\", \"RETAIL\", \"SME OFFLINE\", \"DATA\", \"FNB\", \"CINEMA\", \"GAME\", \"DIGITAL CONTENT\", \"OTT\", \"PUBLIC SERVICE\", \"OTA\", \"ADS PAYMENT\", \"INSURANCE\", \"P2P - EWALLET TO BANK\", \"SME (ONLINE)\", \"MONEY MARKET FUNDS\", \"MEDIUM SIZE POS MC\", \"INVESTMENT PRODUCT\", \"FS - PAYMENT\", \"PAYLATER\", \"FI SOLUTIONS\", \"CREDIT CARD COLLECTION\"]}, {\"column_name\": \"trans_type\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Lo\\u1ea1i giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"pay_pl\", \"pay_ins\"]}, {\"column_name\": \"gift_segment\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Ph\\u00e2n \\u0111o\\u1ea1n qu\\u00e0 t\\u1eb7ng\", \"structs\": [], \"example_data\": [\"4.organic\", \"1.VTS gift\", \"2.BU gift\", \"3.ShopXu\"]}, {\"column_name\": \"fs_vts_gift\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Qu\\u00e0 t\\u1eb7ng t\\u1eeb d\\u1ecbch v\\u1ee5 V\\u00ed Tr\\u1ea3 sau\", \"structs\": [], \"example_data\": [\"md1_vcvts_vcttt_danang_progressbar_beta_50k\", \"240201_fs_vts_danang_100pt_35k\", \"230804_fs_vts_danang_10kmin10\"]}, {\"column_name\": \"gift_list\", \"mode\": \"REPEATED\", \"data_type\": \"STRING\", \"description\": \"Danh s\\u00e1ch qu\\u00e0 t\\u1eb7ng\", \"structs\": [], \"example_data\": [\"md1_vcvts_vcttt_danang_progressbar_beta_50k\", \"240201_fs_vts_danang_100pt_35k\", \"230804_fs_vts_danang_10kmin10\"]}, {\"column_name\": \"transaction_age\", \"mode\": \"NULLABLE\", \"data_type\": \"INTEGER\", \"description\": \"\\u0110\\u1ed9 tu\\u1ed5i giao d\\u1ecbch (s\\u1ed1 th\\u00e1ng k\\u1ec3 t\\u1eeb khi b\\u1eaft \\u0111\\u1ea7u s\\u1eed d\\u1ee5ng)\", \"structs\": [], \"example_data\": [\"22\", \"21\", \"23\"]}, {\"column_name\": \"WL_SEGMENT\", \"mode\": \"NULLABLE\", \"data_type\": \"STRING\", \"description\": \"Ph\\u00e2n \\u0111o\\u1ea1n danh s\\u00e1ch tr\\u1eafng (whitelist)\", \"structs\": [], \"example_data\": [\"NEW_TO_MOMO\", \"SOUNDBOX\"]}, {\"column_name\": \"trans_time\", \"mode\": \"NULLABLE\", \"data_type\": \"DATETIME\", \"description\": \"Th\\u1eddi gian th\\u1ef1c hi\\u1ec7n giao d\\u1ecbch\", \"structs\": [], \"example_data\": [\"2025-12-01 19:34:11\", \"2025-08-01 08:45:51\", \"2025-10-01 18:30:30\"]}]}\n\n",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "73c53c8c-6fff-4ce1-a177-262e2183dbef",
+        "memory": "MAU_SEGMENT = '1.New' là new mau (first time active PayLater), không phải New register",
+        "hash": "392ac6ed19285c7b5eb348af78d73730",
+        "metadata": null,
+        "created_at": "2025-08-25T01:42:19.361994-07:00",
+        "updated_at": "2025-08-25T01:42:43.414438-07:00",
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "95c4e4d9-4119-4eb2-9c25-dfd04b769dde",
+        "memory": "MAU = monthly active user, là user có hành vi thanh toán với Paylater trong tháng, tính tới ngày t-1 so với ngày lấy data",
+        "hash": "0ab456ddb86ffd65ed21c629bc163505",
+        "metadata": {
+          "user_name": "FS CREDITTECH PAYLATER"
+        },
+        "created_at": "2025-07-13T08:47:21.975389-07:00",
+        "updated_at": null,
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "deed3dba-e40c-4ead-8a2b-dbb451299c21",
+        "memory": "Active user bao gồm 3 trans_type: pay_pl, pay_ins, send_pl",
+        "hash": "d90f3fea02eca4729fc0e828c0288da9",
+        "metadata": {
+          "user_name": "FS CREDITTECH PAYLATER"
+        },
+        "created_at": "2025-07-11T03:12:41.055738-07:00",
+        "updated_at": "2025-07-11T03:22:10.911280-07:00",
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "bef72bbb-0374-4327-ba5d-d3e647fb3042",
+        "memory": "Khi được hỏi tới một tên merchant hay dùng giá trị của cột service_name trong bảng PAYLATER_ALL_TRANS, dưới đây là top các giá trị trong cột service_name, nếu bị hỏi tên merchant lạ quá hay hỏi cụ thể service_name của merchant là gì:\nservice_name\nVIETTEL\nTIKTOK\nMOBIFONE\nAPPLE\nGRAB-ENDUSER\nVINAPHONE\nTOPUP VIETTEL\nGOOGLE\nMWG - BACH HOA XANH\nBE GROUP\nGSM\nCIRCLE K\nEVN HO CHI MINH\nADSL FPT\nCGV\nP2P\nGS25\nEVN HA NOI\nMINISTOP\nHIGHLANDS COFFEE\nLAZADA\nFAMILYMART\nNETFLIX\nVIETLOTT SMS\nFUNTEK\nSPOTIFY\nVIETNAMOBILE\nINTERNET TRA SAU VIETTEL\nPHARMACITY\nGALAXY CINEMA\nPETROLIMEX\nJOLLIBEE\nLOTTE CINEMA\nBETA CINEMA\nMBB 247\nVNPT TOAN QUOC\nCO.OPMART\nBIG C - GO - TOPS MARKET\nNHA THUOC LONG CHAU\n7-ELEVEN\nVÉ XE RẺ\nPHƯƠNG TRANG\nEVN BEN TRE\nEVN DONG NAI\nDI DONG VIETTEL TRA SAU\nSIEU THI AEON\nCINESTAR\nVINAPHONE - TRA SAU\nTIKTOK LIVE\nPHUC LONG\nKATINAT\nMOBIFONE - TRA SAU\nCOOP FOOD\nBHD STAR\nMETRO HCM\nVIETJET AIR\nHỒNG TRÀ NGÔ GIA\nEVN CA MAU\nKINGFOOD\nTIKI\nTTT+\nBIDV 247\nEVN LONG AN\nLOTTE MART\nEVN HUNG YEN\nCOMBO DATA VIETTEL\nLOTTERIA\nVNPT HCM\nFACEBOOK\nNUOC CHO LON\nEVN BINH DUONG\nBUS OTA (VXR, FUTA)\nCON CUNG\nPHE LA\nEVN BAC GIANG\nTHE COFFEE HOUSE\nNUOC SACH HA NOI\nEVN HAI DUONG\nEVN QUANG NAM\nVE TAU - DUONG SAT VIET NAM (THU HO)\nGUARDIAN\nMM MEGA MARKET\nCOMECO\nEVN DAK LAK\nEVN DONG THAP\nCOOP SMILE\nNUOC TRUNG AN\nEVN DA NANG\nADSL FPT TRA TRUOC\nVETC\n CANVA PTY LTD\nNUOC THU DUC\nEVN QUANG BINH\nGOLDENGATE\nEVN TIEN GIANG\nEVN BINH DINH\nVDTC\nVIETINBANK\nEVN CAN THO\nEVN BAC NINH\nservice_name\nVIETTEL\nTIKTOK\nMOBIFONE",
+        "hash": "04a3a9de8d7acfd8bd9271ea758deaa5",
+        "metadata": {
+          "user_name": "FS CreditTech Paylater"
+        },
+        "created_at": "2025-07-18T16:53:05.461697",
+        "updated_at": "2025-07-20T20:16:19.754420-07:00",
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "7cda57db-f087-4238-98aa-a56b6a23906b",
+        "memory": "GMV chỉ tính cho giao dịch thành công (result_code = 0)",
+        "hash": "efe9ec1fe3586efd3472d9de44a5369a",
+        "metadata": {
+          "user_name": "FS CREDITTECH PAYLATER"
+        },
+        "created_at": "2025-07-11T03:53:24.790375-07:00",
+        "updated_at": null,
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "fd67c0c0-e817-4dbb-9514-7005357011ae",
+        "memory": "contract_type = Card -> hợp đồng Card",
+        "hash": "ad55482626570d3a5f75f9d23f9444ad",
+        "metadata": null,
+        "created_at": "2025-09-17T20:48:11.870359-07:00",
+        "updated_at": null,
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "9390593c-517c-4ac0-a259-66745e78b728",
+        "memory": "GMV = amount của các trans_type = pay_ins, pay_pl, send_pl",
+        "hash": "80669beb71c6dbd4150ad04b743a516d",
+        "metadata": {
+          "user_name": "FS CREDITTECH PAYLATER"
+        },
+        "created_at": "2025-07-11T03:53:24.732698-07:00",
+        "updated_at": "2025-07-11T03:55:57.308211-07:00",
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "d3375203-5088-4337-8478-25121abb9ff7",
+        "memory": "User thanh toán VTS là user có transaction_type = pay_pl, pay_ins, send_pl",
+        "hash": "8f8910ecfbe32cb8d607d79dea68de6d",
+        "metadata": {
+          "user_name": "FS CREDITTECH PAYLATER"
+        },
+        "created_at": "2025-07-13T08:47:22.012261-07:00",
+        "updated_at": null,
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "546b660e-71de-45eb-a066-41b55cc11b86",
+        "memory": "Khi truy vấn trường service_name, sử dụng tìm kiếm theo mẫu thay vì khớp chính xác, dùng chữ thường và hàm like",
+        "hash": "2f4ca97adaadfb509f60f3f31bc38c0e",
+        "metadata": {
+          "user_name": "FS CreditTech Paylater"
+        },
+        "created_at": "2025-07-18T03:20:17.862742-07:00",
+        "updated_at": null,
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "09910204-21bf-4175-a03c-e6dc5cac72e2",
+        "memory": "contract_type = Loan -> hợp đồng Loan",
+        "hash": "180fcf38555d4ab5ff3ea0c21e878bb4",
+        "metadata": null,
+        "created_at": "2025-09-17T20:48:11.759274-07:00",
+        "updated_at": null,
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "eaae3663-fea7-46c4-9fa0-29b77d421cc6",
+        "memory": "VTS là ví trả sau - paylater",
+        "hash": "24a4ede5cc1114df353203e6b1c06db5",
+        "metadata": {
+          "user_name": "FS CREDITTECH PAYLATER"
+        },
+        "created_at": "2025-07-11T03:12:41.008569-07:00",
+        "updated_at": "2025-07-13T08:47:21.718051-07:00",
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "bf89934d-ff6e-4104-886a-77bda1644fc4",
+        "memory": "Luôn lấy data đến ngày hôm qua, không lấy data hôm nay vì không đủ",
+        "hash": "5359874474c689774dec504668378ea5",
+        "metadata": {
+          "user_name": "FS CREDITTECH PAYLATER"
+        },
+        "created_at": "2025-07-14T00:51:57.636696-07:00",
+        "updated_at": null,
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "8a7535f1-0645-4aee-a054-8af6b1ad9ae4",
+        "memory": "lastest_status NOT IN ('DEACTIVED') hoặc lastest_status is null để thống kê hợp đồng",
+        "hash": "a519c4cd2dc8f6cebd87843a54a56651",
+        "metadata": null,
+        "created_at": "2025-09-17T20:48:12.050029-07:00",
+        "updated_at": "2025-09-17T20:48:59.808075-07:00",
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "cd161102-26bf-45e0-a285-c0964bdc20ff",
+        "memory": "contract_type = null -> không có thông tin",
+        "hash": "fb06ed2a56e2b8713d6fe984b16056f7",
+        "metadata": null,
+        "created_at": "2025-09-17T20:48:11.933714-07:00",
+        "updated_at": "2025-09-17T20:48:59.734687-07:00",
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      },
+      {
+        "id": "f946f23d-139a-42e0-9776-6345a817d6ed",
+        "memory": "Filter thêm partner_name để chi tiết theo partner",
+        "hash": "11c42ef0792b3c475ded3bfd42b12dec",
+        "metadata": null,
+        "created_at": "2025-09-17T20:48:11.994432-07:00",
+        "updated_at": null,
+        "user_id": "7e23d41a-0baf-4b36-84c3-07fb850bdb6e"
+      }
+    ]
+  }
+}

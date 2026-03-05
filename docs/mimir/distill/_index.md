@@ -42,14 +42,14 @@ distill/
 
 | Metric | Value |
 |--------|-------|
-| Rounds completed | 17 (R1 Feb + B2-B8 Jan + B9-B14 Phase 5 + B15-B17 Deep-dive) |
-| Total metrics tested | ~133 |
-| Overall Mimir accuracy | ~75% (upgraded InsurTech to HIGH, P2P LOW) |
-| SQL correction pairs collected | ~133 |
+| Rounds completed | 18 (R1 Feb + B2-B8 Jan + B9-B14 Phase 5 + B15-B17 Deep-dive + R18 DA-skill validation) |
+| Total metrics tested | ~143 (133 + 10 in R18) |
+| Overall Mimir accuracy | ~75% (6/8 MATCH in R18. TTT AUM bug FIXED. InsurTech CC_STATUS now reliable.) |
+| SQL correction pairs collected | ~143 |
 | Domains tested | 12 (FS: Paylater, VN, TTT, InsurTech, CLO, Moni/Chatbot; Non-FS: P2P, Billpay, Airtime, DLS, CheckScam, ReportScam) |
-| Lessons learned | 60+ total (in lt-memory/errors/sql-gotchas.md) |
+| Lessons learned | 69+ total |
 | CEO questions tested | 11+ |
-| Last updated | 2026-03-03 (Batch 17) |
+| Last updated | 2026-03-06 (Round 18) |
 
 ## Skill Package (BUILT — Batch 17)
 
@@ -66,15 +66,14 @@ Location: `~/.claude/skills/mimir-distill/`
 3. **TTT AUM: Mimir sums across all days** — Gets ~30x inflated AUM. Must use end-of-month snapshot.
 4. **CLO: Mimir uses DATE_MODIFIED** — Wrong for revenue attribution. Correct column is DATE_REQUESTED.
 
-## Trust Calibration (current)
+## Trust Calibration (updated 2026-03-06, Round 18)
 
 | Trust | Domains | Condition |
 |-------|---------|-----------|
-| High | Paylater, Chatbot Moni, Moni (Expense Mgmt) | Simple COUNT DISTINCT, clean tables. Mimir knows Moni = PRODUCT='MONI' + ACTION='CHAT' |
-| Low | InsurTech | Metadata-vs-reality mismatch |
-| Medium | Vay Nhanh | Jan test: all match, but H1 YoY: SQL construction error. Simple queries OK, complex YoY fails. |
-| Medium | TTT | MAU Individual exact, Money Pool -20-35% (REGEXP_EXTRACT). AUM WRONG (30x inflation). |
-| Medium | FI Solutions (CLO) | Simple queries match, but persistently uses DATE_MODIFIED instead of DATE_REQUESTED for revenue. |
+| High | Paylater MAU, TTT MAU, TTT AUM, InsurTech, Moni, Chatbot Moni | All exact match Feb 2026. TTT AUM bug FIXED. InsurTech CC_STATUS now reliable. |
+| High | Vay Nhanh (amount) | Disbursement amount exact match. Count still 3x undercount. |
+| Low | FI Solutions (CLO) | Persistently uses DATE_MODIFIED instead of DATE_REQUESTED. 5.6% deviation. |
+| Low | P2P Revenue | Filters service='W2W' (free transfers) → returns ~0. Bug persists since Batch 17. |
 
 ## What to Do Next
 

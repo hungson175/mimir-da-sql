@@ -57,4 +57,7 @@ Updated lender list: VIET_CREDIT (67%) + MCREDIT (14%) + AMBER (10%) + MBV (8.5%
 ## Mimir Trust
 - MAU: OK
 - Disbursement count: LOW (3x undercount — STATUS filter bug + Feb 29 bug)
-- Overall: MEDIUM
+- Disbursement amount: HIGH (exact match Feb 2026: 2.515T VND)
+- Overall: MEDIUM (amount OK, count still wrong)
+- Note: LOAN_AMOUNT = DISBURSED_AMOUNT in BAOTU_VAYNHANH_LOAN_INFO (same values)
+- Vietnamese ambiguity: "tong so giai ngan" = amount. For count, use "tong so khoan giai ngan".

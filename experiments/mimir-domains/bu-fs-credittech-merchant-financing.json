@@ -1,0 +1,25 @@
+{
+  "domain_id": "076f32ab-ad98-46fc-9998-1dd58de7134a",
+  "name": "BU FS: CreditTech – Merchant Financing",
+  "metadata": {
+    "id": "076f32ab-ad98-46fc-9998-1dd58de7134a",
+    "name": "BU FS: CreditTech – Merchant Financing",
+    "description": "Data của sản phẩm Vay nhanh cho nhà bán hàng, bao gồm các step accessed/submitted/disbursed",
+    "instructions": "",
+    "schema_ddl": "###Dataset name: BU FS: CreditTech – Merchant Financing \n ## Table information : {\"table_name\":\"momovn-prod.BU_FI.FMOB_PERFORMANCE_BY_OFFER\",\"table_desc\":\"Data về performance của sản phẩm Vay nhanh cho nhà bán hàng\",\"column_desc\":[{\"column_name\":\"ETL_DATE\",\"description\":\"ngày thực hiện hành động\",\"data_type\":\"DATE\"},{\"column_name\":\"AGENT_ID\",\"description\":\"mã người dùng momo\",\"data_type\":\"STRING\"},{\"column_name\":\"OFFER_GROUP\",\"description\":\"luồng offer của user, được phân chia ở đầu whitelist:\\n- 50M\\n- 70M\",\"data_type\":\"STRING\"},{\"column_name\":\"ACTION\",\"description\":\"hành động của user bao gồm:\\n- accessed\\n- submitted\\n- disbursed\",\"data_type\":\"STRING\"},{\"column_name\":\"AMOUNT\",\"description\":\"số tiền vay\",\"data_type\":\"FLOAT\"},{\"column_name\":\"LOAN_ID\",\"description\":\"mã hợp đồng khoản vay\",\"data_type\":\"STRING\"},{\"column_name\":\"TENOR\",\"description\":\"kỳ hạn\",\"data_type\":\"FLOAT\"},{\"column_name\":\"EMI\",\"description\":\"số tiền phải trả hàng tháng\",\"data_type\":\"FLOAT\"},{\"column_name\":\"GMV_3_MONTH\",\"description\":\"gmv 3 tháng gần nhất của user\",\"data_type\":\"FLOAT\"},{\"column_name\":\"GMV_6_MONTH\",\"description\":\"gmv 6 tháng gần nhất của user\",\"data_type\":\"FLOAT\"}]}",
+    "knowledgebase": [],
+    "memory": [
+      {
+        "id": "acbd3ee0-1020-47bd-a4f8-87e73a3184bf",
+        "memory": "GMV = Gross Merchandise Value = Tổng giá trị giao dịch của người dùng trong một khoảng thời gian nhất định. Dữ liệu hiện có bao gồm GMV 3 tháng và GMV 6 tháng của user.",
+        "hash": null,
+        "metadata": {
+          "user_name": "FS Merchant Financing"
+        },
+        "created_at": "2025-07-16T09:44:52.688596",
+        "updated_at": null,
+        "user_id": "076f32ab-ad98-46fc-9998-1dd58de7134a"
+      }
+    ]
+  }
+}
