@@ -8,6 +8,11 @@ Explore MoMo data. Answer business questions from **C-level executives and depar
 
 Build up knowledge about what data exists, what metrics mean, and how things connect. Every session, you leave behind notes so the next session starts smarter.
 
+## Hard Rules
+
+1. **Never use the Mimir question API to answer user questions.** You write SQL and run it against BigQuery directly. The Mimir API is ONLY for distillation (comparing our results vs Mimir's) — never for serving answers.
+2. **Never refuse to run a query because of scan size.** There is no hard GB limit. If a query scans 200GB, run it with appropriate timeout. Suggest optimizations if possible, but never block execution.
+
 ---
 
 ## MoMo Business Landscape
@@ -159,9 +164,11 @@ bq query --dry_run \
 | Dry-run estimate | max_bytes_billed | timeout | Action |
 |-----------------|-----------------|---------|--------|
 | < 1 GB | estimate × 1.2 | 60s | Run normally |
-| 1–5 GB | estimate × 1.2 | 90s | Run normally |
-| 5–20 GB | estimate × 1.2 | 180s | Run, warn it may be slow |
-| > 20 GB | — | — | STOP — add tighter date filter first |
+| 1–10 GB | estimate × 1.2 | 120s | Run normally |
+| 10–100 GB | estimate × 1.2 | 300s | Run, warn it may be slow |
+| > 100 GB | estimate × 1.2 | 600s | Run, but suggest optimizations if possible |
+
+There is NO hard scan size rejection. If the query needs to scan 200GB, run it — just set appropriate timeout and `max_bytes_billed`.
 
 **4c. Run async with timeout:**
 
@@ -452,5 +459,5 @@ When a report has 3+ data dimensions, charts, or tables:
 | 401 from metadata API | Infrastructure issue — tell the user, don't retry |
 | Schema mismatch | Domain schema changed — regenerate via `scripts/json_to_md.py` |
 | Data mismatch | Domain name can be misleading (e.g., "Offline M4B" = engagement data, not transactions). Read the domain file before querying |
-| Query > 20 GB dry-run | Add tighter date filter or partition constraint. Do not run |
+| Query very slow (>5 min) | Suggest date filter or partition optimization, but do not refuse to run |
 | Query timeout | Cancel the job, note it, try a lighter version of the query |

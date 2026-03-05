@@ -54,9 +54,10 @@ Based on dry-run bytes, set parameters:
 | < 1 GB | estimate × 1.2 | 60s | Run normally |
 | 1–5 GB | estimate × 1.2 | 90s | Run normally |
 | 5–20 GB | estimate × 1.2 | 180s | Run, note it may be slow |
-| > 20 GB | — | — | STOP — return REJECT block, do not run |
+| 20–100 GB | estimate × 1.2 | 300s | Run, warn it may be slow |
+| > 100 GB | estimate × 1.2 | 600s | Run, suggest optimizations if possible |
 
-For > 20 GB: the query needs a tighter date filter or partition constraint. Return the REJECT block below and stop.
+There is NO hard scan size rejection. If the query needs large scans, run it.
 
 ### Step 3 — Run async with timeout
 
