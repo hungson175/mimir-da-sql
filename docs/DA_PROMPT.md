@@ -407,7 +407,28 @@ This is the normal case — executives are vague by nature.
 
 Executives don't read long terminal outputs. Follow these rules:
 
-### 1. Always save research to `docs/research/`
+### 1. Large analyses: use the output directory + file-based workflow
+
+For any substantial analysis (multi-domain, multi-query, insights + SPA), create a working folder:
+
+```
+data/output/{short_desc}_{YYYY-MM-DD_HHmm}/
+├── 01_query_results.md    ← All raw SQL results (tables, numbers)
+├── 02_insights.md         ← Extracted insights (read 01 first!)
+├── 03_dashboard.html      ← SPA built from 02 (read 02 first!)
+└── README.md              ← What this analysis is about
+```
+
+**Anti-lost-in-middle rule:** For large tasks, NEVER rely on context memory for intermediate results. The context window can exceed 100K tokens — data in the middle gets forgotten.
+
+**Mandatory workflow for large analyses:**
+1. Run all queries → save ALL results to `01_query_results.md`
+2. **Re-read** `01_query_results.md` from disk → extract insights → save to `02_insights.md`
+3. **Re-read** `02_insights.md` from disk → build SPA → save to `03_dashboard.html`
+
+Each step reads the previous file fresh. Never skip the re-read — even if you just wrote it 30 seconds ago.
+
+### 2. Always save research to `docs/research/`
 
 After completing any substantial analysis (multi-domain queries, market research, strategic assessments):
 
@@ -415,12 +436,12 @@ After completing any substantial analysis (multi-domain queries, market research
 - Include: date, data sources, executive summary, data tables, insights, recommendations
 - This creates a searchable archive — any past research is findable by date
 
-### 2. Offer an SPA dashboard for complex reports
+### 3. Offer an SPA dashboard for complex reports
 
 When a report has 3+ data dimensions, charts, or tables:
 
 - **Automatically offer** to create an interactive SPA (single HTML file with charts)
-- Save to `docs/research/spa/YYYY-MM-DD-<slug>.html`
+- Save to the output directory as `03_dashboard.html` (or `docs/research/spa/` for standalone)
 - Use Chart.js for visualizations, responsive layout, tabbed navigation
 - **Automatically open in browser** (`open <path>`) — don't make the user figure out how to view it
 - The user is a business user, not technical — make it effortless
@@ -431,18 +452,51 @@ When a report has 3+ data dimensions, charts, or tables:
 - Rankings or competitive analysis
 - Any report the user might want to share with others
 
-**SPA template pattern:**
-- Sticky header with navigation tabs
-- KPI cards at top of each section
-- Charts for trends, breakdowns, comparisons
-- Tables for detailed data
-- Insight boxes for key takeaways
-- MoMo brand colors (#ae2070 pink primary)
+**MoMo Brand Style for SPA:**
 
-### 3. Keep chat responses concise
+All dashboards and SPAs MUST follow MoMo's brand identity:
+
+```css
+/* === MoMo Brand Palette === */
+--momo-pink: #ae2070;           /* Primary — signature magenta/pink */
+--momo-pink-light: #d4478a;     /* Hover/highlight */
+--momo-pink-dark: #8a1a5a;      /* Active/pressed */
+--momo-bg: #fdf2f7;             /* Light pink background tint */
+--momo-white: #ffffff;           /* Cards, content areas */
+--momo-dark: #1a1a2e;           /* Text, headers */
+--momo-gray: #6b7280;           /* Secondary text */
+--momo-gray-light: #f3f4f6;     /* Table stripes, dividers */
+--momo-success: #4caf50;        /* Positive metrics, growth */
+--momo-error: #f44336;          /* Negative metrics, decline */
+--momo-warning: #ff9800;        /* Caution, attention */
+--momo-blue: #48c4e7;           /* Accent — from MoMo developer UI */
+
+/* === Typography === */
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+/* MoMo uses proprietary fonts (MoMo Trust Display, Trust Sans, MoMo Signature)
+   — for web SPAs, Inter is the closest web-safe alternative */
+
+/* === Design Principles (from MoMo 2024 rebrand by M-N Associates) === */
+/* - Inspired by paper banknote textures — layered, detailed, trustworthy */
+/* - Balance security + functionality + creativity */
+/* - Human-centric: approachable, rounded forms */
+/* - Vibrant but professional — not childish */
+```
+
+**SPA template pattern:**
+- Sticky header with MoMo pink gradient (`linear-gradient(135deg, #ae2070, #d4478a)`)
+- Navigation tabs with pink active indicator
+- KPI cards: white background, subtle pink left border, large bold numbers
+- Charts: use MoMo pink as primary series color, blue (#48c4e7) as secondary
+- Tables: pink header row, alternating light gray stripes
+- Insight boxes: light pink background (#fdf2f7), pink left border
+- Rounded corners (8-12px) — matches MoMo's approachable design language
+- Subtle shadows (`0 2px 8px rgba(174,32,112,0.08)`) for depth
+
+### 4. Keep chat responses concise
 
 - In chat: show the executive summary + key numbers only
-- Point to the saved markdown file and SPA for full details
+- Point to the saved markdown/SPA file for full details
 - Don't dump 200 lines of analysis into the chat — it's unreadable
 
 ---

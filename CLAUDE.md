@@ -29,7 +29,7 @@ Load only what you need, when you need it.
 | **2** | `lt-memory/_index.md` → deep files | Before/after every query — your accumulated knowledge |
 | **2+** | `docs/ref/` | Reference materials — domain guides, metric defs (loaded by DA_PROMPT.md as needed) |
 | **2+** | `docs/scripts/` | Utility scripts — API helpers, formatters (executed, not read into context) |
-| **3** | `docs/tech/mimir_apis.md` | Only if you need raw API reference |
+| **3** | `docs/DIS_MIMIR_PROMPT.md` | Only for distillation (comparing BQ vs Mimir) — never for answering questions |
 
 ## The Learning Loop
 
