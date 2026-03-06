@@ -1,6 +1,18 @@
 # Knowledge: Vay Nhanh (VN)
 > Learned gotchas, corrections, business insights. Never auto-overwritten.
-> Last updated: 2026-03-04
+> Last updated: 2026-03-06
+
+## ENTRY_POINT Semantics (2026-03-06)
+
+`BAOTU_VAYNHANH_ENTRY_POINT` = **traffic vào màn hình Vay Nhanh**, không phải toàn bộ service.
+
+- `WHITELIST_CHECK` phân loại user đó có trong whitelist hay không tại thời điểm truy cập
+- **KHÔNG dùng** "whitelist users" như một metric độc lập — đây là traffic split, không phải pool user
+- Metrics đúng:
+  - **Traffic In Whitelist** = `COUNT(DISTINCT AGENT_ID) WHERE WHITELIST_CHECK = '1 IN WHITELIST'`
+  - **Traffic Not In Whitelist** = `COUNT(DISTINCT AGENT_ID) WHERE WHITELIST_CHECK = '2 NOT IN WHITELIST'`
+- Granularity: daily = COUNT DISTINCT per ETL_DATE. Weekly/monthly = COUNT DISTINCT across full period (không SUM daily counts)
+- Jan 2026 avg/day: ~97K in WL, ~64K not in WL
 
 ## SQL Gotchas
 

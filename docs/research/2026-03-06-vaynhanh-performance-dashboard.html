@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vay Nhanh — Performance 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+  /* ── MoMo Brand Design System ── */
+  :root {
+    /* Primary */
+    --momo-pink:      #A50064;
+    --pink-1:         #F95396;
+    --pink-2:         #FF9DBE;
+    --pink-light:     #FFEFF4;
+
+    /* Neutrals */
+    --bg:             #F8F8F8;
+    --surface:        #FFFFFF;
+    --surface2:       #F5F5F5;
+    --border:         #EBEBEB;
+    --border-strong:  #D9D9D9;
+    --ink:            #1A1A1A;
+    --ink2:           #555555;
+    --ink3:           #999999;
+
+    /* MoMo multi-color palette — chart series */
+    --c-traffic-in:   #A50064;   /* MoMo Pink — primary */
+    --c-traffic-out:  #FF9DBE;   /* Pink -1 */
+    --c-submitted:    #3F8FED;   /* Blue */
+    --c-disbursed:    #5EA12A;   /* Green +1 */
+    --c-gmv:          #7759D2;   /* Purple */
+    --c-ticket:       #F6C315;   /* Yellow +1 */
+
+    /* Status */
+    --success:        #5EA12A;
+    --warning:        #F6C315;
+    --error:          #E5303F;
+    --info:           #3F8FED;
+
+    --radius:         12px;
+    --radius-sm:      8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--momo-pink);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-logo {
+    width: 32px; height: 32px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--momo-pink);
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+  .header-left h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.2px;
+  }
+  .header-left p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 1px;
+  }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .pill {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .pill.live {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .pill.live::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: #9BF5A0;
+    border-radius: 50%;
+    animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── TAB NAV ── */
+  .tab-nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--ink3);
+    padding: 14px 0;
+    margin-right: 28px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active {
+    color: var(--momo-pink);
+    border-bottom-color: var(--momo-pink);
+  }
+
+  /* ── MAIN ── */
+  .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+
+  /* ── KPI GRID ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--border);
+    transition: box-shadow 0.15s, transform 0.15s;
+    cursor: default;
+  }
+  .kpi-card:hover {
+    box-shadow: 0 4px 16px rgba(165,0,100,0.08);
+    transform: translateY(-1px);
+  }
+  .kpi-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink3);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--ink3);
+    line-height: 1.4;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CHART GRIDS ── */
+  .chart-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .chart-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* ── CHART CARD ── */
+  .chart-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+  .chart-card.mb { margin-bottom: 12px; }
+  .chart-header { margin-bottom: 16px; }
+  .chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .chart-subtitle {
+    font-size: 11px;
+    color: var(--ink3);
+    margin-top: 3px;
+  }
+  .chart-wrap { position: relative; height: 240px; }
+  .chart-wrap.tall { height: 300px; }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── TET NOTE ── */
+  .tet-note {
+    background: #FFF9D9;
+    border: 1px solid #FFEB76;
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    font-size: 12px;
+    color: #8a6800;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    max-height: 380px;
+    overflow-y: auto;
+  }
+  .table-wrap::-webkit-scrollbar { width: 4px; }
+  .table-wrap::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    color: var(--ink3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 10px 14px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+  }
+  .data-table th:first-child { text-align: left; }
+  .data-table td {
+    padding: 9px 14px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink);
+  }
+  .data-table td:first-child { text-align: left; color: var(--ink2); }
+  .data-table tr:hover td { background: var(--pink-light); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1200px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .chart-grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 900px) {
+    .main { padding: 16px; }
+    .header { padding: 0 16px; }
+    .tab-nav { padding: 0 16px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid-2, .chart-grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo">M</div>
+    <div class="header-left">
+      <h1>Vay Nhanh — Performance Dashboard</h1>
+      <p>01/01/2026 — 05/03/2026 &nbsp;·&nbsp; BU_FI.BAOTU_VAYNHANH_*</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="pill">BigQuery</span>
+    <span class="pill live">Live</span>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('daily')">Daily</button>
+  <button class="tab-btn" onclick="switchTab('weekly')">Weekly</button>
+  <button class="tab-btn" onclick="switchTab('monthly')">Monthly</button>
+</div>
+
+<div class="main">
+
+  <!-- KPI Summary Cards -->
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#FFEFF4">👥</div>
+      <div class="kpi-label">Traffic In Whitelist</div>
+      <div class="kpi-value" id="kpi-traffic-in">—</div>
+      <div class="kpi-sub">avg unique/day · in WL</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#FEC8DC">🚫</div>
+      <div class="kpi-label">Traffic Not In WL</div>
+      <div class="kpi-value" id="kpi-traffic-out">—</div>
+      <div class="kpi-sub">avg unique/day · not in WL</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#EAF5FB">📋</div>
+      <div class="kpi-label">Submitted Users</div>
+      <div class="kpi-value" id="kpi-submitted">—</div>
+      <div class="kpi-sub">avg unique/day · nộp đơn</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#F3F8D9">✅</div>
+      <div class="kpi-label">Disbursed Users</div>
+      <div class="kpi-value" id="kpi-disbursed">—</div>
+      <div class="kpi-sub">avg unique/day · giải ngân</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#F4F2FF">💰</div>
+      <div class="kpi-label">GMV Disburse</div>
+      <div class="kpi-value" id="kpi-gmv">—</div>
+      <div class="kpi-sub">total Jan–05/Mar · tỷ VND</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#FFF9D9">🎫</div>
+      <div class="kpi-label">Avg Ticket Size</div>
+      <div class="kpi-value" id="kpi-ticket">—</div>
+      <div class="kpi-sub">avg per loan · triệu VND</div>
+    </div>
+  </div>
+
+  <!-- DAILY TAB -->
+  <div class="tab-panel active" id="tab-daily">
+    <div class="tet-note">
+      🎆 <strong>Tết Nguyên Đán 17–22/02/2026</strong> — volume giảm ~70%. Phục hồi từ 23/02.
+    </div>
+
+    <div class="section-title">Funnel</div>
+    <div class="chart-card mb">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Traffic Funnel — Daily</div>
+          <div class="chart-subtitle">Unique users/ngày · ENTRY_POINT + LOAN_INFO</div>
+        </div>
+      </div>
+      <div class="chart-wrap tall">
+        <canvas id="chart-daily-funnel"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-grid-2">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">GMV Disburse (tỷ VND) — Daily</div>
+            <div class="chart-subtitle">Tổng giải ngân theo ngày</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-daily-gmv"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Avg Ticket Size (triệu VND) — Daily</div>
+            <div class="chart-subtitle">Giá trị khoản vay trung bình</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-daily-ticket"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Raw Data</div>
+    <div class="table-wrap">
+      <table class="data-table" id="table-daily"></table>
+    </div>
+  </div>
+
+  <!-- WEEKLY TAB -->
+  <div class="tab-panel" id="tab-weekly">
+    <div class="section-title">Funnel</div>
+    <div class="chart-card mb">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Traffic Funnel — Weekly</div>
+          <div class="chart-subtitle">Unique users/tuần · ENTRY_POINT + LOAN_INFO</div>
+        </div>
+      </div>
+      <div class="chart-wrap tall">
+        <canvas id="chart-weekly-funnel"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-grid-2">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">GMV Disburse (tỷ VND) — Weekly</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-weekly-gmv"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Avg Ticket Size (triệu VND) — Weekly</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-weekly-ticket"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Raw Data</div>
+    <div class="table-wrap">
+      <table class="data-table" id="table-weekly"></table>
+    </div>
+  </div>
+
+  <!-- MONTHLY TAB -->
+  <div class="tab-panel" id="tab-monthly">
+    <div class="section-title">Funnel</div>
+    <div class="chart-grid-3" style="margin-bottom:20px">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Traffic Users (In / Not In Whitelist)</div>
+            <div class="chart-subtitle">Unique users truy cập VN theo tháng</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-monthly-whitelist"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Submitted Users</div>
+            <div class="chart-subtitle">Tổng theo tháng</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-monthly-submitted"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Disbursed Users</div>
+            <div class="chart-subtitle">Tổng theo tháng</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-monthly-disbursed"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-grid-2">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">GMV Disburse (tỷ VND) — Monthly</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-monthly-gmv"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Avg Ticket Size (triệu VND) — Monthly</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-monthly-ticket"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Raw Data</div>
+    <div class="table-wrap">
+      <table class="data-table" id="table-monthly"></table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── RAW DATA ───────────────────────────────────────────────────────────────
+// Columns: date, traffic_in_whitelist (unique), traffic_not_in_whitelist (unique), submitted, disbursed, gmv, avg_ticket
+// Source: BAOTU_VAYNHANH_ENTRY_POINT (traffic) + BAOTU_VAYNHANH_LOAN_INFO (submitted/disbursed)
+// Columns: date, traffic_in (unique/day), traffic_out (unique/day), submitted, disbursed, gmv, avg_ticket
+const RAW = [
+  ["2026-01-01",87064,63902,6212,4580,77982000000,16677074],
+  ["2026-01-02",94814,65961,6966,5215,98287000000,18537722],
+  ["2026-01-03",96102,65863,6897,5071,94780000000,18407458],
+  ["2026-01-04",98077,67461,6846,5104,95174000000,18408897],
+  ["2026-01-05",131377,74906,8576,6148,119247500000,19205589],
+  ["2026-01-06",110640,68899,7891,5610,105618500000,18571918],
+  ["2026-01-07",105525,63330,7621,5303,101667500000,18886773],
+  ["2026-01-08",100107,62438,7529,5141,96464500000,18572295],
+  ["2026-01-09",103577,63157,7781,5772,108444000000,18569178],
+  ["2026-01-10",104939,62540,8595,6350,117199000000,18266677],
+  ["2026-01-11",90338,61161,7601,5497,100437000000,18044736],
+  ["2026-01-12",104252,66379,8431,6132,117494000000,18898826],
+  ["2026-01-13",98258,63462,7941,5467,98277500000,17736419],
+  ["2026-01-14",96889,63022,8729,6085,112981500000,18356052],
+  ["2026-01-15",104975,65744,8583,5968,109252000000,18103065],
+  ["2026-01-16",99699,66257,8906,6257,114555000000,18111462],
+  ["2026-01-17",85696,60104,7547,5260,94519000000,17773411],
+  ["2026-01-18",84915,62572,7550,5241,92324000000,17416337],
+  ["2026-01-19",98016,68673,7941,5498,100322500000,18059856],
+  ["2026-01-20",98364,66430,8218,5631,106258500000,18714072],
+  ["2026-01-21",95092,65040,7838,5540,102050500000,18255903],
+  ["2026-01-22",90098,62045,7379,5154,93835500000,18010653],
+  ["2026-01-23",87579,61633,7200,5002,90773500000,17950069],
+  ["2026-01-24",81158,58707,6863,4842,83772500000,17096429],
+  ["2026-01-25",83683,63357,7401,5221,89832000000,17055629],
+  ["2026-01-26",93610,66984,7758,5428,100348500000,18308429],
+  ["2026-01-27",101793,69055,8090,5490,101662000000,18304285],
+  ["2026-01-28",91053,64937,7150,5012,92114500000,18233274],
+  ["2026-01-29",90384,63219,7534,5303,92079500000,17159802],
+  ["2026-01-30",93276,62395,8142,5823,100969000000,17197922],
+  ["2026-01-31",88725,59955,7834,5473,99694500000,18099946],
+  ["2026-02-01",100926,63806,8671,6013,107814000000,17776422],
+  ["2026-02-02",115400,69338,9188,6062,113870000000,18645816],
+  ["2026-02-03",119640,73654,8932,6192,119060000000,19046553],
+  ["2026-02-04",118059,69931,8948,6389,120328500000,18658474],
+  ["2026-02-05",127193,70432,9218,6693,123134500000,18277349],
+  ["2026-02-06",123884,65962,9263,6532,124016500000,18838903],
+  ["2026-02-07",111509,58795,9006,6222,111974500000,17921655],
+  ["2026-02-08",93643,57021,7922,5669,100336500000,17565914],
+  ["2026-02-09",111372,60159,9427,6738,124187500000,18327553],
+  ["2026-02-10",124784,66113,10671,7722,141947000000,18266246],
+  ["2026-02-11",113058,63585,9897,6863,126605500000,18308821],
+  ["2026-02-12",109576,61286,9773,6886,123182000000,17721479],
+  ["2026-02-13",104557,59855,9419,6837,118735500000,17210538],
+  ["2026-02-14",84913,54065,7946,5766,94388500000,16215169],
+  ["2026-02-15",76525,50602,7170,5176,83457500000,15939171],
+  ["2026-02-16",72775,44918,6460,4642,69918000000,14904711],
+  ["2026-02-17",51449,38349,2891,1946,28820000000,14562911],
+  ["2026-02-18",54463,38308,3233,2190,33787000000,15151121],
+  ["2026-02-19",58707,39008,3619,2428,39592000000,15964516],
+  ["2026-02-20",68287,41078,3962,2656,42234500000,15747390],
+  ["2026-02-21",72261,42305,4379,2987,48841000000,16156467],
+  ["2026-02-22",80721,46633,4876,3190,54488000000,16874574],
+  ["2026-02-23",109569,56525,6480,4259,77197000000,17940274],
+  ["2026-02-24",94909,53682,6300,4215,75803500000,17802607],
+  ["2026-02-25",93992,54597,6185,4400,78910000000,17704734],
+  ["2026-02-26",91236,53836,6045,4240,75820000000,17731525],
+  ["2026-02-27",91600,52884,6070,4221,74094500000,17384913],
+  ["2026-02-28",87012,48085,6529,4738,82647500000,17279427],
+  ["2026-03-01",97419,51261,6955,5052,85510000000,16658874],
+  ["2026-03-02",111316,55521,7105,5197,94884500000,17984174],
+  ["2026-03-03",109857,58441,7348,5264,93912500000,17619606],
+  ["2026-03-04",112511,58159,7192,5238,95427500000,17957753],
+  ["2026-03-05",128404,60839,7758,5620,100543500000,17691976],
+];
+
+const DATES = RAW.map(r => r[0]);
+const TRAFFIC_IN  = RAW.map(r => r[1]); // unique users/day in whitelist
+const TRAFFIC_OUT = RAW.map(r => r[2]); // unique users/day not in whitelist
+const SUBMITTED   = RAW.map(r => r[3]);
+const DISBURSED   = RAW.map(r => r[4]);
+const GMV         = RAW.map(r => r[5] / 1e9);
+const TICKET      = RAW.map(r => r[6] / 1e6);
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+function fmt(n, dec=0) {
+  if (n >= 1e9) return (n/1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return n.toFixed(dec);
+}
+function fmtNum(n) { return Math.round(n).toLocaleString('vi-VN'); }
+function avg(arr) { return arr.reduce((a,b)=>a+b,0)/arr.length; }
+function sum(arr) { return arr.reduce((a,b)=>a+b,0); }
+
+// ─── KPI CARDS ──────────────────────────────────────────────────────────────
+document.getElementById('kpi-traffic-in').textContent  = fmt(avg(TRAFFIC_IN));
+document.getElementById('kpi-traffic-out').textContent = fmt(avg(TRAFFIC_OUT));
+document.getElementById('kpi-submitted').textContent   = fmt(avg(SUBMITTED));
+document.getElementById('kpi-disbursed').textContent   = fmt(avg(DISBURSED));
+document.getElementById('kpi-gmv').textContent         = sum(GMV).toFixed(0) + 'T';
+document.getElementById('kpi-ticket').textContent      = avg(TICKET).toFixed(1) + 'M';
+
+// ─── CHART DEFAULTS ─────────────────────────────────────────────────────────
+Chart.defaults.color = '#999999';
+Chart.defaults.borderColor = '#EBEBEB';
+Chart.defaults.font.family = "-apple-system, 'SF Pro Text', BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif";
+Chart.defaults.font.size = 11;
+
+const PALETTE = {
+  c1: '#A50064',  // MoMo Pink — traffic in
+  c2: '#FF9DBE',  // Pink -1   — traffic out
+  c3: '#3F8FED',  // Blue      — submitted
+  c4: '#5EA12A',  // Green     — disbursed
+  c5: '#7759D2',  // Purple    — gmv
+  c6: '#F6C315',  // Yellow    — ticket
+};
+
+const TET_ZONE = {
+  type: 'box',
+  xMin: '2026-02-17',
+  xMax: '2026-02-22',
+  backgroundColor: 'rgba(246,195,21,0.07)',
+  borderColor: 'rgba(246,195,21,0.4)',
+  borderWidth: 1,
+  label: { content: 'Tết', display: true, color: '#8a6800', font: { size: 10 } }
+};
+
+const TOOLTIP_BASE = {
+  backgroundColor: '#1A1A1A',
+  borderColor: '#333',
+  borderWidth: 1,
+  padding: 12,
+  cornerRadius: 8,
+  titleColor: '#999',
+  bodyColor: '#fff',
+  titleFont: { size: 11 },
+  bodyFont: { size: 12, weight: '600' },
+};
+
+const SCALE_BASE = {
+  x: { grid: { color: '#F5F5F5' }, ticks: { maxTicksLimit: 10, maxRotation: 0, color: '#999' } },
+  y: { grid: { color: '#F5F5F5' }, ticks: { color: '#999' } }
+};
+
+function lineOpts(withTet=true) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'top', labels: { boxWidth: 10, padding: 16, color: '#555', font: { size: 11 } } },
+      tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmtNum(ctx.parsed.y)}` } },
+      annotation: withTet ? { annotations: { tet: TET_ZONE } } : {}
+    },
+    scales: SCALE_BASE
+  };
+}
+
+function barOpts(withTet=false) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { boxWidth: 10, padding: 16, color: '#555', font: { size: 11 } } },
+      tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmtNum(ctx.parsed.y)}` } },
+      annotation: withTet ? { annotations: { tet: TET_ZONE } } : {}
+    },
+    scales: SCALE_BASE
+  };
+}
+
+// ─── DAILY CHARTS ───────────────────────────────────────────────────────────
+new Chart(document.getElementById('chart-daily-funnel'), {
+  type: 'line',
+  data: {
+    labels: DATES,
+    datasets: [
+      { label: 'Traffic In WL',     data: TRAFFIC_IN,  borderColor: PALETTE.c1, backgroundColor: 'rgba(165,0,100,0.06)',  fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 },
+      { label: 'Traffic Not In WL', data: TRAFFIC_OUT, borderColor: PALETTE.c2, backgroundColor: 'rgba(255,157,190,0.06)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2, borderDash: [5,4] },
+      { label: 'Submitted',         data: SUBMITTED,   borderColor: PALETTE.c3, backgroundColor: 'rgba(63,143,237,0.06)',  fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 },
+      { label: 'Disbursed',         data: DISBURSED,   borderColor: PALETTE.c4, backgroundColor: 'rgba(94,161,42,0.06)',   fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 },
+    ]
+  },
+  options: lineOpts(true)
+});
+
+new Chart(document.getElementById('chart-daily-gmv'), {
+  type: 'bar',
+  data: {
+    labels: DATES,
+    datasets: [{ label: 'GMV (tỷ VND)', data: GMV, backgroundColor: PALETTE.c5, borderWidth: 0, borderRadius: 2 }]
+  },
+  options: barOpts(true)
+});
+
+new Chart(document.getElementById('chart-daily-ticket'), {
+  type: 'line',
+  data: {
+    labels: DATES,
+    datasets: [{ label: 'Avg Ticket (triệu VND)', data: TICKET, borderColor: PALETTE.c6, backgroundColor: 'rgba(246,195,21,0.08)', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2 }]
+  },
+  options: lineOpts(true)
+});
+
+// ─── DAILY TABLE ────────────────────────────────────────────────────────────
+(function() {
+  const t = document.getElementById('table-daily');
+  t.innerHTML = `<thead><tr>
+    <th>Date</th>
+    <th>Traffic In WL</th>
+    <th>Traffic Not In WL</th>
+    <th>Submitted Users</th>
+    <th>Disbursed Users</th>
+    <th>GMV (tỷ VND)</th>
+    <th>Avg Ticket (triệu)</th>
+  </tr></thead><tbody>${
+    [...RAW].reverse().map(r => `<tr>
+      <td>${r[0]}</td>
+      <td>${fmtNum(r[1])}</td>
+      <td>${fmtNum(r[2])}</td>
+      <td>${fmtNum(r[3])}</td>
+      <td>${fmtNum(r[4])}</td>
+      <td>${(r[5]/1e9).toFixed(2)}</td>
+      <td>${(r[6]/1e6).toFixed(2)}</td>
+    </tr>`).join('')
+  }</tbody>`;
+})();
+
+// ─── WEEKLY AGGREGATION ─────────────────────────────────────────────────────
+function getWeekKey(dateStr) {
+  const d = new Date(dateStr);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(d.setDate(diff));
+  return mon.toISOString().slice(0,10);
+}
+
+const weekMap = {};
+RAW.forEach(r => {
+  const wk = getWeekKey(r[0]);
+  if (!weekMap[wk]) weekMap[wk] = { tin:0, tout:0, submitted:0, disbursed:0, gmv:0, ticket_sum:0, days:0 };
+  weekMap[wk].tin       += r[1];
+  weekMap[wk].tout      += r[2];
+  weekMap[wk].submitted += r[3];
+  weekMap[wk].disbursed += r[4];
+  weekMap[wk].gmv       += r[5]/1e9;
+  weekMap[wk].ticket_sum+= r[6]/1e6;
+  weekMap[wk].days      += 1;
+});
+
+const WEEKS   = Object.keys(weekMap).sort();
+const W_LABELS = WEEKS.map(w => 'W ' + w.slice(5));
+
+new Chart(document.getElementById('chart-weekly-funnel'), {
+  type: 'bar',
+  data: {
+    labels: W_LABELS,
+    datasets: [
+      { label: 'Traffic In WL',     data: WEEKS.map(w=>weekMap[w].tin),       backgroundColor: PALETTE.c1, borderRadius: 4 },
+      { label: 'Traffic Not In WL', data: WEEKS.map(w=>weekMap[w].tout),      backgroundColor: PALETTE.c2, borderRadius: 4 },
+      { label: 'Submitted',         data: WEEKS.map(w=>weekMap[w].submitted), backgroundColor: PALETTE.c3, borderRadius: 4 },
+      { label: 'Disbursed',         data: WEEKS.map(w=>weekMap[w].disbursed), backgroundColor: PALETTE.c4, borderRadius: 4 },
+    ]
+  },
+  options: barOpts()
+});
+
+new Chart(document.getElementById('chart-weekly-gmv'), {
+  type: 'bar',
+  data: {
+    labels: W_LABELS,
+    datasets: [{ label: 'GMV (tỷ VND)', data: WEEKS.map(w=>weekMap[w].gmv), backgroundColor: PALETTE.c5, borderRadius: 4 }]
+  },
+  options: barOpts()
+});
+
+new Chart(document.getElementById('chart-weekly-ticket'), {
+  type: 'line',
+  data: {
+    labels: W_LABELS,
+    datasets: [{ label: 'Avg Ticket (triệu VND)', data: WEEKS.map(w=>weekMap[w].ticket_sum/weekMap[w].days), borderColor: PALETTE.c6, backgroundColor: 'rgba(246,195,21,0.1)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: PALETTE.c6, borderWidth: 2 }]
+  },
+  options: barOpts()
+});
+
+(function() {
+  const t = document.getElementById('table-weekly');
+  t.innerHTML = `<thead><tr>
+    <th>Week (Mon)</th>
+    <th>Traffic In WL</th>
+    <th>Traffic Not In WL</th>
+    <th>Submitted Users</th>
+    <th>Disbursed Users</th>
+    <th>GMV (tỷ VND)</th>
+    <th>Avg Ticket (triệu)</th>
+  </tr></thead><tbody>${
+    [...WEEKS].reverse().map(w => `<tr>
+      <td>${w}</td>
+      <td>${fmtNum(weekMap[w].tin)}</td>
+      <td>${fmtNum(weekMap[w].tout)}</td>
+      <td>${fmtNum(weekMap[w].submitted)}</td>
+      <td>${fmtNum(weekMap[w].disbursed)}</td>
+      <td>${weekMap[w].gmv.toFixed(2)}</td>
+      <td>${(weekMap[w].ticket_sum/weekMap[w].days).toFixed(2)}</td>
+    </tr>`).join('')
+  }</tbody>`;
+})();
+
+// ─── MONTHLY AGGREGATION ────────────────────────────────────────────────────
+const monthMap = {};
+RAW.forEach(r => {
+  const mo = r[0].slice(0,7);
+  if (!monthMap[mo]) monthMap[mo] = { tin:0, tout:0, submitted:0, disbursed:0, gmv:0, ticket_sum:0, days:0 };
+  monthMap[mo].tin       += r[1];
+  monthMap[mo].tout      += r[2];
+  monthMap[mo].submitted += r[3];
+  monthMap[mo].disbursed += r[4];
+  monthMap[mo].gmv       += r[5]/1e9;
+  monthMap[mo].ticket_sum+= r[6]/1e6;
+  monthMap[mo].days      += 1;
+});
+
+const MONTHS  = Object.keys(monthMap).sort();
+const M_LABELS = { '2026-01': 'Jan 2026', '2026-02': 'Feb 2026', '2026-03': 'Mar 2026 (partial)' };
+
+const ML = MONTHS.map(m => M_LABELS[m] || m);
+const stackOpts = { ...barOpts(), scales: { x: { stacked: true, grid:{color:'#f0ede8'}, ticks:{color:'#a09890'} }, y: { stacked: true, grid:{color:'#f0ede8'}, ticks:{color:'#a09890'} } } };
+
+new Chart(document.getElementById('chart-monthly-whitelist'), {
+  type: 'bar',
+  data: {
+    labels: ML,
+    datasets: [
+      { label: 'Traffic In WL',     data: MONTHS.map(m=>monthMap[m].tin),  backgroundColor: PALETTE.c1, borderRadius: 4 },
+      { label: 'Traffic Not In WL', data: MONTHS.map(m=>monthMap[m].tout), backgroundColor: PALETTE.c2, borderRadius: 4 },
+    ]
+  },
+  options: stackOpts
+});
+
+new Chart(document.getElementById('chart-monthly-submitted'), {
+  type: 'bar',
+  data: { labels: ML, datasets: [{ label: 'Submitted', data: MONTHS.map(m=>monthMap[m].submitted), backgroundColor: PALETTE.c3, borderRadius: 4 }] },
+  options: barOpts()
+});
+
+new Chart(document.getElementById('chart-monthly-disbursed'), {
+  type: 'bar',
+  data: { labels: ML, datasets: [{ label: 'Disbursed', data: MONTHS.map(m=>monthMap[m].disbursed), backgroundColor: PALETTE.c4, borderRadius: 4 }] },
+  options: barOpts()
+});
+
+new Chart(document.getElementById('chart-monthly-gmv'), {
+  type: 'bar',
+  data: { labels: ML, datasets: [{ label: 'GMV (tỷ VND)', data: MONTHS.map(m=>monthMap[m].gmv), backgroundColor: PALETTE.c5, borderRadius: 4 }] },
+  options: barOpts()
+});
+
+new Chart(document.getElementById('chart-monthly-ticket'), {
+  type: 'line',
+  data: { labels: ML, datasets: [{ label: 'Avg Ticket (triệu VND)', data: MONTHS.map(m=>monthMap[m].ticket_sum/monthMap[m].days), borderColor: PALETTE.c6, backgroundColor: 'rgba(246,195,21,0.1)', fill: true, tension: 0.4, pointRadius: 6, pointBackgroundColor: PALETTE.c6, borderWidth: 2 }] },
+  options: barOpts()
+});
+
+(function() {
+  const t = document.getElementById('table-monthly');
+  t.innerHTML = `<thead><tr>
+    <th>Month</th>
+    <th>Traffic In WL</th>
+    <th>Traffic Not In WL</th>
+    <th>Submitted Users</th>
+    <th>Disbursed Users</th>
+    <th>GMV (tỷ VND)</th>
+    <th>Avg Ticket (triệu)</th>
+    <th>Days</th>
+  </tr></thead><tbody>${
+    [...MONTHS].reverse().map(m => `<tr>
+      <td>${M_LABELS[m] || m}</td>
+      <td>${fmtNum(monthMap[m].tin)}</td>
+      <td>${fmtNum(monthMap[m].tout)}</td>
+      <td>${fmtNum(monthMap[m].submitted)}</td>
+      <td>${fmtNum(monthMap[m].disbursed)}</td>
+      <td>${monthMap[m].gmv.toFixed(1)}</td>
+      <td>${(monthMap[m].ticket_sum/monthMap[m].days).toFixed(2)}</td>
+      <td>${monthMap[m].days}</td>
+    </tr>`).join('')
+  }</tbody>`;
+})();
+
+// ─── TAB SWITCHING ──────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+</script>
+</body>
+</html>

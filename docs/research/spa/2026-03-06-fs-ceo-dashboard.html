@@ -6,57 +6,48 @@
     <title>MoMo FS | CEO Executive Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --momo-pink: #ae2070;
             --momo-pink-light: #d44a8f;
             --momo-pink-dark: #8a1a59;
             --success-green: #00a651;
-            --danger-red: #dc3545;
-            --warning-amber: #f59e0b;
-            --bg-primary: #0f0f0f;
-            --bg-secondary: #1a1a1a;
-            --bg-card: #242424;
-            --bg-elevated: #2d2d2d;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666666;
-            --border-subtle: #333333;
-            --gradient-pink: linear-gradient(135deg, #ae2070 0%, #d44a8f 100%);
-            --gradient-dark: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
-            --shadow-glow: 0 0 40px rgba(174, 32, 112, 0.15);
+            --danger-red: #e74c3c;
+            --warning-amber: #f39c12;
+            --bg-primary: #fafafa;
+            --bg-secondary: #f5f5f5;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --border-light: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
+            line-height: 1.5;
         }
 
-        /* Header */
+        /* Sticky Header */
         .header {
-            background: var(--gradient-dark);
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 1.5rem 3rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem 2rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-sm);
         }
 
         .header-content {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -66,140 +57,116 @@
         .brand {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .brand-logo {
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-pink);
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            background: var(--momo-pink);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
             color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
         }
 
         .brand-text h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
-            letter-spacing: -0.02em;
+            color: var(--text-primary);
         }
 
         .brand-text p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            font-weight: 300;
-        }
-
-        .header-meta {
-            text-align: right;
-        }
-
-        .header-meta .date {
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
-        .header-meta .badge {
-            display: inline-block;
-            background: var(--momo-pink);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 0.5rem;
+        .nav-tabs {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--bg-secondary);
+            padding: 0.25rem;
+            border-radius: 8px;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover { color: var(--text-primary); }
+        .nav-tab.active {
+            background: var(--bg-card);
+            color: var(--momo-pink);
+            box-shadow: var(--shadow-sm);
         }
 
         /* Main Container */
         .container {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 3rem;
+            padding: 2rem;
         }
 
-        /* Hero Section */
-        .hero {
+        /* Section */
+        .section {
             margin-bottom: 3rem;
+            display: none;
         }
 
-        .hero-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #fff 0%, #ae2070 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        .section.active { display: block; }
 
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            font-weight: 300;
-            margin-bottom: 2rem;
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
         }
 
         /* KPI Cards */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .kpi-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-pink);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
         }
 
         .kpi-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-glow);
-            border-color: var(--momo-pink);
-        }
-
-        .kpi-card:hover::before {
-            opacity: 1;
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
 
         .kpi-label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+            font-size: 0.75rem;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 0.5rem;
         }
 
         .kpi-value {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 0.5rem;
         }
 
@@ -209,115 +176,15 @@
             gap: 0.25rem;
             font-size: 0.875rem;
             font-weight: 600;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
         }
 
-        .kpi-change.positive {
-            background: rgba(0, 166, 81, 0.15);
-            color: var(--success-green);
-        }
-
-        .kpi-change.negative {
-            background: rgba(220, 53, 69, 0.15);
-            color: var(--danger-red);
-        }
+        .kpi-change.positive { color: var(--success-green); }
+        .kpi-change.negative { color: var(--danger-red); }
 
         .kpi-context {
             font-size: 0.75rem;
             color: var(--text-muted);
-            margin-top: 0.75rem;
-        }
-
-        /* Section Headers */
-        .section {
-            margin-bottom: 3rem;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem;
-            font-weight: 600;
-        }
-
-        .section-actions {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--gradient-pink);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 0 20px rgba(174, 32, 112, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            border: 1px solid var(--border-subtle);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-card);
-            border-color: var(--momo-pink);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            background: var(--bg-secondary);
-            padding: 0.5rem;
-            border-radius: 12px;
-            width: fit-content;
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-        }
-
-        .tab.active {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .tab:hover:not(.active) {
-            color: var(--text-primary);
+            margin-top: 0.5rem;
         }
 
         /* Chart Grid */
@@ -330,9 +197,10 @@
 
         .chart-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
             padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .chart-card.full-width {
@@ -340,15 +208,14 @@
         }
 
         .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 1rem;
         }
 
         .chart-title {
-            font-size: 1.125rem;
+            font-size: 1rem;
             font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
         }
 
         .chart-subtitle {
@@ -358,105 +225,67 @@
 
         .chart-container {
             position: relative;
-            height: 300px;
+            height: 280px;
         }
 
         .chart-container.large {
-            height: 400px;
+            height: 350px;
         }
 
-        /* Insights Panel */
-        .insights-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 1.5rem;
+        /* Insight Box */
+        .insight-box {
+            background: linear-gradient(135deg, #fff5f8 0%, #ffffff 100%);
+            border-left: 4px solid var(--momo-pink);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
-        .insights-title {
-            font-size: 1.125rem;
+        .insight-box h4 {
+            font-size: 0.875rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            color: var(--momo-pink);
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .insights-title::before {
-            content: '💡';
-        }
-
-        .insight-item {
-            display: flex;
-            gap: 1rem;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .insight-item:last-child {
-            border-bottom: none;
-        }
-
-        .insight-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-elevated);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .insight-content h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .insight-content p {
+        .insight-box p {
             font-size: 0.875rem;
             color: var(--text-secondary);
+            line-height: 1.6;
         }
 
         /* Scenario Cards */
         .scenario-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
         .scenario-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 1.5rem;
-            position: relative;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
         }
 
-        .scenario-card.baseline {
-            border-color: var(--success-green);
-        }
-
-        .scenario-card.moderate {
-            border-color: var(--warning-amber);
-        }
-
-        .scenario-card.severe {
-            border-color: var(--danger-red);
-        }
+        .scenario-card.baseline { border-color: var(--success-green); }
+        .scenario-card.moderate { border-color: var(--warning-amber); }
+        .scenario-card.severe { border-color: var(--danger-red); }
 
         .scenario-header {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             margin-bottom: 1rem;
         }
 
         .scenario-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
         }
 
@@ -465,103 +294,114 @@
         .scenario-dot.severe { background: var(--danger-red); }
 
         .scenario-title {
-            font-size: 1.125rem;
+            font-size: 1rem;
             font-weight: 600;
         }
 
         .scenario-probability {
             font-size: 0.75rem;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .scenario-metrics {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+            margin-left: auto;
         }
 
         .scenario-metric {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .scenario-metric:last-child {
-            border-bottom: none;
-        }
-
-        .scenario-metric-label {
+            border-bottom: 1px solid var(--border-light);
             font-size: 0.875rem;
-            color: var(--text-secondary);
         }
 
-        .scenario-metric-value {
-            font-weight: 600;
-        }
+        .scenario-metric:last-child { border-bottom: none; }
+        .scenario-metric-label { color: var(--text-secondary); }
+        .scenario-metric-value { font-weight: 600; }
 
-        /* Recommendations */
+        /* Recommendation Cards */
         .rec-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
         .rec-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.25rem;
             display: flex;
             gap: 1rem;
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
         }
 
         .rec-card:hover {
+            box-shadow: var(--shadow-md);
             border-color: var(--momo-pink);
-            transform: translateX(4px);
         }
 
         .rec-number {
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-pink);
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            background: var(--momo-pink);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
             color: white;
+            font-weight: 700;
+            font-size: 1rem;
             flex-shrink: 0;
         }
 
         .rec-content h4 {
-            font-size: 1.125rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .rec-content p {
             font-size: 0.875rem;
             color: var(--text-secondary);
-            line-height: 1.6;
         }
 
-        /* Print Styles */
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background: var(--bg-secondary); }
+
+        .trend-up { color: var(--success-green); font-weight: 600; }
+        .trend-down { color: var(--danger-red); font-weight: 600; }
+
+        /* Print */
         @media print {
-            .header { position: static; }
-            .tabs { display: none; }
-            .btn { display: none; }
-            body { background: white; color: black; }
-            .kpi-card, .chart-card, .scenario-card, .rec-card {
-                border: 1px solid #ddd;
-                break-inside: avoid;
-            }
+            .header { position: static; box-shadow: none; }
+            .nav-tabs { display: none; }
+            .section { display: block !important; }
         }
 
         /* Responsive */
@@ -575,32 +415,10 @@
 
         @media (max-width: 768px) {
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .hero-title { font-size: 2rem; }
             .container { padding: 1rem; }
             .header { padding: 1rem; }
+            .nav-tabs { display: none; }
         }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-in {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
     </style>
 </head>
 <body>
@@ -610,231 +428,190 @@
                 <div class="brand-logo">M</div>
                 <div class="brand-text">
                     <h1>Financial Services</h1>
-                    <p>Executive Performance Dashboard</p>
+                    <p>CEO Executive Dashboard · March 6, 2026</p>
                 </div>
             </div>
-            <div class="header-meta">
-                <div class="date">March 6, 2026</div>
-                <span class="badge">CEO Report</span>
-            </div>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+                <button class="nav-tab" onclick="showSection('products')">Products</button>
+                <button class="nav-tab" onclick="showSection('projections')">Projections</button>
+                <button class="nav-tab" onclick="showSection('recommendations')">Recommendations</button>
+            </nav>
         </div>
     </header>
 
     <main class="container">
-        <!-- Hero Section -->
-        <section class="hero">
-            <h1 class="hero-title">Exceptional Growth Momentum</h1>
-            <p class="hero-subtitle">Financial Services delivered record-breaking performance in 2025 with 5x growth in lending products</p>
-        </section>
-
-        <!-- KPI Cards -->
-        <div class="kpi-grid">
-            <div class="kpi-card animate-in delay-1">
-                <div class="kpi-label">Paylater MAU</div>
-                <div class="kpi-value">1.44M</div>
-                <div class="kpi-change positive">
-                    <span>↑</span> 44.3% YoY
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+            <h2 class="section-title">Executive Summary</h2>
+            
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Paylater MAU</div>
+                    <div class="kpi-value">1.44M</div>
+                    <div class="kpi-change positive">↑ 44.3% YoY</div>
+                    <div class="kpi-context">Dec 2025 vs Dec 2024</div>
                 </div>
-                <div class="kpi-context">Dec 2025 vs Dec 2024</div>
-            </div>
-            <div class="kpi-card animate-in delay-2">
-                <div class="kpi-label">Vay Nhanh Disbursement</div>
-                <div class="kpi-value">10.5T</div>
-                <div class="kpi-change positive">
-                    <span>↑</span> 518% YoY
+                <div class="kpi-card">
+                    <div class="kpi-label">Vay Nhanh</div>
+                    <div class="kpi-value">10.5T</div>
+                    <div class="kpi-change positive">↑ 518% YoY</div>
+                    <div class="kpi-context">VND disbursed in 2025</div>
                 </div>
-                <div class="kpi-context">VND in 2025 vs 1.7T in 2024</div>
-            </div>
-            <div class="kpi-card animate-in delay-3">
-                <div class="kpi-label">TTT AUM</div>
-                <div class="kpi-value">11.3T</div>
-                <div class="kpi-change positive">
-                    <span>↑</span> 23% Growth
+                <div class="kpi-card">
+                    <div class="kpi-label">TTT AUM</div>
+                    <div class="kpi-value">11.3T</div>
+                    <div class="kpi-change positive">↑ 23% Growth</div>
+                    <div class="kpi-context">From Jan to Dec 2025</div>
                 </div>
-                <div class="kpi-context">From Jan to Dec 2025</div>
-            </div>
-            <div class="kpi-card animate-in delay-4">
-                <div class="kpi-label">CLO Disbursement</div>
-                <div class="kpi-value">912B</div>
-                <div class="kpi-change positive">
-                    <span>↑</span> 424% YoY
+                <div class="kpi-card">
+                    <div class="kpi-label">CLO</div>
+                    <div class="kpi-value">912B</div>
+                    <div class="kpi-change positive">↑ 424% YoY</div>
+                    <div class="kpi-context">VND with 5 partners</div>
                 </div>
-                <div class="kpi-context">VND with 5 active partners</div>
-            </div>
-            <div class="kpi-card animate-in delay-5">
-                <div class="kpi-label">InsurTech Revenue</div>
-                <div class="kpi-value">52B</div>
-                <div class="kpi-change positive">
-                    <span>↑</span> 15% YoY
-                </div>
-                <div class="kpi-context">Cyber insurance +275%</div>
-            </div>
-        </div>
-
-        <!-- Product Performance Section -->
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">Product Performance Deep Dive</h2>
-                <div class="section-actions">
-                    <button class="btn btn-secondary" onclick="exportData()">
-                        <span>📊</span> Export Data
-                    </button>
+                <div class="kpi-card">
+                    <div class="kpi-label">InsurTech</div>
+                    <div class="kpi-value">52B</div>
+                    <div class="kpi-change positive">↑ 15% YoY</div>
+                    <div class="kpi-context">Cyber +275%</div>
                 </div>
             </div>
 
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('overview')">Overview</button>
-                <button class="tab" onclick="switchTab('paylater')">Paylater</button>
-                <button class="tab" onclick="switchTab('vaynhanh')">Vay Nhanh</button>
-                <button class="tab" onclick="switchTab('ttt')">TTT</button>
-                <button class="tab" onclick="switchTab('clo')">CLO</button>
-            </div>
-
-            <div id="overview-content" class="tab-content">
-                <div class="chart-grid">
-                    <div class="chart-card full-width">
-                        <div class="chart-header">
-                            <div>
-                                <div class="chart-title">YoY Growth Comparison by Product</div>
-                                <div class="chart-subtitle">2024 vs 2025 Performance</div>
-                            </div>
-                        </div>
-                        <div class="chart-container large">
-                            <canvas id="yoyGrowthChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="insights-panel">
-                    <div class="insights-title">Key Insights</div>
-                    <div class="insight-item">
-                        <div class="insight-icon">🚀</div>
-                        <div class="insight-content">
-                            <h4>Vay Nhanh Transformation</h4>
-                            <p>Product pivoted from small loans (avg 9.7M) to larger tickets (avg 21M), driving 518% volume growth</p>
-                        </div>
-                    </div>
-                    <div class="insight-item">
-                        <div class="insight-icon">📈</div>
-                        <div class="insight-content">
-                            <h4>Paylater Retention Excellence</h4>
-                            <p>80%+ monthly retention with 10-12% reactivation rate shows strong product-market fit</p>
-                        </div>
-                    </div>
-                    <div class="insight-item">
-                        <div class="insight-icon">🏦</div>
-                        <div class="insight-content">
-                            <h4>CLO Partner Diversification</h4>
-                            <p>Expanded from 1 partner (Home Credit) to 5 partners, reducing concentration risk</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="paylater-content" class="tab-content" style="display: none;">
-                <div class="chart-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div>
-                                <div class="chart-title">Paylater MAU Trend</div>
-                                <div class="chart-subtitle">Monthly Active Users 2024-2025</div>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="paylaterChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div>
-                                <div class="chart-title">User Segmentation</div>
-                                <div class="chart-subtitle">2025 Average Composition</div>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="paylaterSegmentChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="vaynhanh-content" class="tab-content" style="display: none;">
-                <div class="chart-grid">
-                    <div class="chart-card full-width">
-                        <div class="chart-header">
-                            <div>
-                                <div class="chart-title">Vay Nhanh Disbursement Volume</div>
-                                <div class="chart-subtitle">Monthly disbursement in Billions VND</div>
-                            </div>
-                        </div>
-                        <div class="chart-container large">
-                            <canvas id="vaynhanhChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="ttt-content" class="tab-content" style="display: none;">
-                <div class="chart-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div>
-                                <div class="chart-title">TTT AUM Growth</div>
-                                <div class="chart-subtitle">Assets Under Management (Trillions VND)</div>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="tttAumChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div>
-                                <div class="chart-title">MFU vs MAU</div>
-                                <div class="chart-subtitle">Monthly Funded vs Active Users</div>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="tttMfuChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="clo-content" class="tab-content" style="display: none;">
-                <div class="chart-grid">
-                    <div class="chart-card full-width">
-                        <div class="chart-header">
-                            <div>
-                                <div class="chart-title">CLO Disbursement by Partner</div>
-                                <div class="chart-subtitle">Monthly volume in Billions VND</div>
-                            </div>
-                        </div>
-                        <div class="chart-container large">
-                            <canvas id="cloPartnerChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2026-2027 Projections -->
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">2026-2027 Strategic Outlook</h2>
-                <div class="section-actions">
-                    <button class="btn btn-primary" onclick="toggleScenarios()">
-                        <span>🎯</span> View Scenarios
-                    </button>
-                </div>
+            <div class="insight-box">
+                <h4>💡 Key Insight</h4>
+                <p>Financial Services delivered exceptional growth in 2025. Vay Nhanh transformed from small-ticket lending (avg 9.7M) to larger loans (avg 21M), driving 518% volume growth. Paylater maintained 80%+ retention while expanding MAU 44%. TTT AUM grew steadily to 11.3T VND.</p>
             </div>
 
             <div class="chart-grid">
                 <div class="chart-card full-width">
                     <div class="chart-header">
-                        <div>
-                            <div class="chart-title">Revenue Projections: Baseline vs Stress Scenarios</div>
-                            <div class="chart-subtitle">VND Trillions - Paylater + Vay Nhanh + CLO Combined</div>
-                        </div>
+                        <div class="chart-title">YoY Performance Comparison</div>
+                        <div class="chart-subtitle">2024 vs 2025 across all FS products</div>
+                    </div>
+                    <div class="chart-container large">
+                        <canvas id="yoyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Metric</th>
+                        <th>2024</th>
+                        <th>2025</th>
+                        <th>Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Paylater</strong></td>
+                        <td>MAU (Dec)</td>
+                        <td>996K</td>
+                        <td>1.44M</td>
+                        <td class="trend-up">+44.3%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vay Nhanh</strong></td>
+                        <td>Disbursement</td>
+                        <td>1.7T VND</td>
+                        <td>10.5T VND</td>
+                        <td class="trend-up">+518%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TTT</strong></td>
+                        <td>AUM (Dec)</td>
+                        <td>9.18T VND</td>
+                        <td>11.3T VND</td>
+                        <td class="trend-up">+23%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CLO</strong></td>
+                        <td>Disbursement</td>
+                        <td>174B VND</td>
+                        <td>912B VND</td>
+                        <td class="trend-up">+424%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>InsurTech</strong></td>
+                        <td>Revenue</td>
+                        <td>45B VND</td>
+                        <td>52B VND</td>
+                        <td class="trend-up">+15%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="section">
+            <h2 class="section-title">Product Performance</h2>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Paylater MAU Trend</div>
+                        <div class="chart-subtitle">Monthly Active Users 2024-2025</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="paylaterChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">User Segmentation</div>
+                        <div class="chart-subtitle">2025 average composition</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="segmentChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <div class="chart-title">Vay Nhanh Disbursement</div>
+                        <div class="chart-subtitle">Monthly volume in Billions VND</div>
+                    </div>
+                    <div class="chart-container large">
+                        <canvas id="vaynhanhChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">TTT AUM Growth</div>
+                        <div class="chart-subtitle">Assets Under Management (Trillions VND)</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tttChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">CLO by Partner</div>
+                        <div class="chart-subtitle">Monthly disbursement volume</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="cloChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projections Section -->
+        <section id="projections" class="section">
+            <h2 class="section-title">2026-2027 Strategic Outlook</h2>
+
+            <div class="insight-box">
+                <h4>⚠️ Risk Assessment</h4>
+                <p>Three scenarios modeled: Baseline (60% prob) assumes continued growth trajectory. Moderate Stress (30% prob) factors in economic downturn with 15-33% revenue impact. Severe Crisis (10% prob) models major disruption with 40-60% impact.</p>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <div class="chart-title">Revenue Projections</div>
+                        <div class="chart-subtitle">Baseline vs Stress Scenarios (VND Trillions)</div>
                     </div>
                     <div class="chart-container large">
                         <canvas id="projectionChart"></canvas>
@@ -842,118 +619,105 @@
                 </div>
             </div>
 
-            <div class="scenario-grid" id="scenarioPanel">
+            <div class="scenario-grid">
                 <div class="scenario-card baseline">
                     <div class="scenario-header">
                         <div class="scenario-dot baseline"></div>
-                        <div>
-                            <div class="scenario-title">Baseline</div>
-                            <div class="scenario-probability">60% Probability</div>
-                        </div>
+                        <div class="scenario-title">Baseline</div>
+                        <div class="scenario-probability">60%</div>
                     </div>
-                    <div class="scenario-metrics">
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">2026 Target</span>
-                            <span class="scenario-metric-value" style="color: var(--success-green);">15.0T VND</span>
-                        </div>
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">2027 Target</span>
-                            <span class="scenario-metric-value" style="color: var(--success-green);">22.0T VND</span>
-                        </div>
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">Paylater MAU '27</span>
-                            <span class="scenario-metric-value">2.8M</span>
-                        </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">2026 Target</span>
+                        <span class="scenario-metric-value trend-up">15.0T</span>
+                    </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">2027 Target</span>
+                        <span class="scenario-metric-value trend-up">22.0T</span>
+                    </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">Paylater MAU '27</span>
+                        <span class="scenario-metric-value">2.8M</span>
                     </div>
                 </div>
                 <div class="scenario-card moderate">
                     <div class="scenario-header">
                         <div class="scenario-dot moderate"></div>
-                        <div>
-                            <div class="scenario-title">Moderate Stress</div>
-                            <div class="scenario-probability">30% Probability</div>
-                        </div>
+                        <div class="scenario-title">Moderate Stress</div>
+                        <div class="scenario-probability">30%</div>
                     </div>
-                    <div class="scenario-metrics">
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">2026 Target</span>
-                            <span class="scenario-metric-value" style="color: var(--warning-amber);">10.0T VND</span>
-                        </div>
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">2027 Target</span>
-                            <span class="scenario-metric-value" style="color: var(--warning-amber);">12.0T VND</span>
-                        </div>
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">Paylater MAU '27</span>
-                            <span class="scenario-metric-value">2.1M</span>
-                        </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">2026 Target</span>
+                        <span class="scenario-metric-value" style="color: var(--warning-amber)">10.0T</span>
+                    </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">2027 Target</span>
+                        <span class="scenario-metric-value" style="color: var(--warning-amber)">12.0T</span>
+                    </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">Paylater MAU '27</span>
+                        <span class="scenario-metric-value">2.1M</span>
                     </div>
                 </div>
                 <div class="scenario-card severe">
                     <div class="scenario-header">
                         <div class="scenario-dot severe"></div>
-                        <div>
-                            <div class="scenario-title">Severe Crisis</div>
-                            <div class="scenario-probability">10% Probability</div>
-                        </div>
+                        <div class="scenario-title">Severe Crisis</div>
+                        <div class="scenario-probability">10%</div>
                     </div>
-                    <div class="scenario-metrics">
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">2026 Target</span>
-                            <span class="scenario-metric-value" style="color: var(--danger-red);">6.0T VND</span>
-                        </div>
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">2027 Target</span>
-                            <span class="scenario-metric-value" style="color: var(--danger-red);">7.0T VND</span>
-                        </div>
-                        <div class="scenario-metric">
-                            <span class="scenario-metric-label">Paylater MAU '27</span>
-                            <span class="scenario-metric-value">1.6M</span>
-                        </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">2026 Target</span>
+                        <span class="scenario-metric-value trend-down">6.0T</span>
+                    </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">2027 Target</span>
+                        <span class="scenario-metric-value trend-down">7.0T</span>
+                    </div>
+                    <div class="scenario-metric">
+                        <span class="scenario-metric-label">Paylater MAU '27</span>
+                        <span class="scenario-metric-value">1.6M</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Strategic Recommendations -->
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">Strategic Recommendations</h2>
-            </div>
+        <!-- Recommendations Section -->
+        <section id="recommendations" class="section">
+            <h2 class="section-title">Strategic Recommendations</h2>
+
             <div class="rec-grid">
                 <div class="rec-card">
                     <div class="rec-number">1</div>
                     <div class="rec-content">
                         <h4>Accelerate Vay Nhanh</h4>
-                        <p>Highest growth potential product. Invest in lender partnerships and risk management infrastructure. Target: 15T VND in 2026.</p>
+                        <p>Highest growth potential. Invest in lender partnerships and risk management. Target: 15T VND in 2026.</p>
                     </div>
                 </div>
                 <div class="rec-card">
                     <div class="rec-number">2</div>
                     <div class="rec-content">
                         <h4>Defend Paylater Leadership</h4>
-                        <p>Maintain UX advantage while expanding use cases. Target 500+ new merchants and launch installment products.</p>
+                        <p>Maintain UX advantage. Target 500+ new merchants and launch installment products.</p>
                     </div>
                 </div>
                 <div class="rec-card">
                     <div class="rec-number">3</div>
                     <div class="rec-content">
                         <h4>Monetize TTT</h4>
-                        <p>Introduce premium features while maintaining competitive interest rates. Launch TTT+ premium tier.</p>
+                        <p>Introduce premium features while maintaining competitive rates. Launch TTT+ tier.</p>
                     </div>
                 </div>
                 <div class="rec-card">
                     <div class="rec-number">4</div>
                     <div class="rec-content">
                         <h4>Diversify CLO Partners</h4>
-                        <p>Reduce Home Credit dependence. Onboard 2-3 new bank partners and launch digital mortgage products.</p>
+                        <p>Reduce Home Credit dependence. Onboard 2-3 new bank partners. Launch digital mortgage.</p>
                     </div>
                 </div>
                 <div class="rec-card">
                     <div class="rec-number">5</div>
                     <div class="rec-content">
                         <h4>Innovate InsurTech</h4>
-                        <p>Launch high-margin health insurance. Expand B2B offerings and implement AI-powered claims processing.</p>
+                        <p>Launch health insurance products. Expand B2B offerings. Implement AI claims processing.</p>
                     </div>
                 </div>
             </div>
@@ -961,75 +725,47 @@
     </main>
 
     <script>
-        // Chart.js Global Defaults
-        Chart.defaults.color = '#a0a0a0';
-        Chart.defaults.borderColor = '#333333';
-        Chart.defaults.font.family = "'Source Sans 3', sans-serif";
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
 
-        // Data
+        // Chart defaults
+        Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+        Chart.defaults.color = '#666';
+
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        const paylater2024 = [693, 659, 729, 733, 761, 782, 797, 826, 851, 886, 921, 996];
-        const paylater2025 = [989, 971, 1043, 1072, 1108, 1166, 1211, 1257, 1276, 1314, 1378, 1437];
-        
-        const vaynhanh2024 = [453, 345, 463, 342, 35, 0, 43, 53, 65, 87, 114, 172];
-        const vaynhanh2025 = [224, 197, 302, 377, 463, 970, 998, 1091, 1374, 1784, 1846, 2138];
-        
-        const tttAum2025 = [9.18, 9.43, 9.50, 9.89, 10.10, 10.38, 10.47, 10.72, 10.85, 10.90, 11.12, 11.30];
-        const tttMau2025 = [3.45, 3.17, 3.02, 2.95, 3.15, 3.28, 3.61, 3.64, 3.63, 3.57, 3.57, 3.70];
-        const tttMfu2025 = [2.49, 2.53, 2.47, 2.46, 2.53, 2.56, 2.75, 2.79, 2.88, 2.97, 2.98, 3.07];
 
-        // YoY Growth Chart
-        const yoyCtx = document.getElementById('yoyGrowthChart').getContext('2d');
-        new Chart(yoyCtx, {
+        // YoY Chart
+        new Chart(document.getElementById('yoyChart'), {
             type: 'bar',
             data: {
                 labels: ['Paylater', 'Vay Nhanh', 'TTT AUM', 'CLO', 'InsurTech'],
                 datasets: [{
                     label: '2024',
-                    data: [996, 1700, 9180, 174, 45],
-                    backgroundColor: '#333333',
-                    borderRadius: 8
+                    data: [1, 1.7, 9.2, 0.17, 45],
+                    backgroundColor: '#e0e0e0',
+                    borderRadius: 6
                 }, {
                     label: '2025',
-                    data: [1437, 10500, 11300, 912, 52],
+                    data: [1.44, 10.5, 11.3, 0.91, 52],
                     backgroundColor: '#ae2070',
-                    borderRadius: 8
+                    borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { color: '#fff', padding: 20 }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) label += ': ';
-                                if (context.parsed.y >= 1000) {
-                                    label += (context.parsed.y / 1000).toFixed(1) + 'T';
-                                } else {
-                                    label += context.parsed.y + 'B';
-                                }
-                                return label;
-                            }
-                        }
-                    }
+                    legend: { position: 'top', align: 'end' }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: { color: '#333333' },
-                        ticks: {
-                            callback: function(value) {
-                                if (value >= 1000) return (value / 1000) + 'T';
-                                return value + 'B';
-                            }
-                        }
+                        grid: { color: '#f0f0f0' }
                     },
                     x: {
                         grid: { display: false }
@@ -1039,23 +775,21 @@
         });
 
         // Paylater Chart
-        const paylaterCtx = document.getElementById('paylaterChart').getContext('2d');
-        new Chart(paylaterCtx, {
+        new Chart(document.getElementById('paylaterChart'), {
             type: 'line',
             data: {
                 labels: months,
                 datasets: [{
                     label: '2024',
-                    data: paylater2024,
-                    borderColor: '#666666',
-                    backgroundColor: 'rgba(102, 102, 102, 0.1)',
-                    fill: true,
+                    data: [693, 659, 729, 733, 761, 782, 797, 826, 851, 886, 921, 996],
+                    borderColor: '#999',
+                    backgroundColor: 'transparent',
                     tension: 0.4
                 }, {
                     label: '2025',
-                    data: paylater2025,
+                    data: [989, 971, 1043, 1072, 1108, 1166, 1211, 1257, 1276, 1314, 1378, 1437],
                     borderColor: '#ae2070',
-                    backgroundColor: 'rgba(174, 32, 112, 0.1)',
+                    backgroundColor: 'rgba(174,32,112,0.1)',
                     fill: true,
                     tension: 0.4
                 }]
@@ -1063,62 +797,48 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
+                plugins: { legend: { display: true, position: 'top' } },
                 scales: {
-                    y: {
-                        beginAtZero: false,
-                        grid: { color: '#333333' },
-                        ticks: {
-                            callback: function(value) {
-                                return (value / 1000).toFixed(1) + 'M';
-                            }
-                        }
-                    }
+                    y: { beginAtZero: false, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
                 }
             }
         });
 
-        // Paylater Segmentation
-        const segmentCtx = document.getElementById('paylaterSegmentChart').getContext('2d');
-        new Chart(segmentCtx, {
+        // Segmentation Chart
+        new Chart(document.getElementById('segmentChart'), {
             type: 'doughnut',
             data: {
-                labels: ['Retained (82%)', 'Reactive (12%)', 'New (6%)'],
+                labels: ['Retained 82%', 'Reactive 12%', 'New 6%'],
                 datasets: [{
                     data: [82, 12, 6],
-                    backgroundColor: ['#00a651', '#f59e0b', '#ae2070'],
+                    backgroundColor: ['#00a651', '#f39c12', '#ae2070'],
                     borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '65%',
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { color: '#fff', padding: 20 }
-                    }
-                },
-                cutout: '60%'
+                    legend: { position: 'bottom', labels: { padding: 20 } }
+                }
             }
         });
 
         // Vay Nhanh Chart
-        const vaynhanhCtx = document.getElementById('vaynhanhChart').getContext('2d');
-        new Chart(vaynhanhCtx, {
+        new Chart(document.getElementById('vaynhanhChart'), {
             type: 'bar',
             data: {
                 labels: months,
                 datasets: [{
                     label: '2024',
-                    data: vaynhanh2024,
-                    backgroundColor: '#333333',
+                    data: [453, 345, 463, 342, 35, 0, 43, 53, 65, 87, 114, 172],
+                    backgroundColor: '#e0e0e0',
                     borderRadius: 4
                 }, {
                     label: '2025',
-                    data: vaynhanh2025,
+                    data: [224, 197, 302, 377, 463, 970, 998, 1091, 1374, 1784, 1846, 2138],
                     backgroundColor: '#ae2070',
                     borderRadius: 4
                 }]
@@ -1126,34 +846,24 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
+                plugins: { legend: { display: true } },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#333333' },
-                        ticks: {
-                            callback: function(value) {
-                                return value + 'B';
-                            }
-                        }
-                    }
+                    y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
                 }
             }
         });
 
-        // TTT AUM Chart
-        const tttAumCtx = document.getElementById('tttAumChart').getContext('2d');
-        new Chart(tttAumCtx, {
+        // TTT Chart
+        new Chart(document.getElementById('tttChart'), {
             type: 'line',
             data: {
                 labels: months,
                 datasets: [{
                     label: 'AUM (T VND)',
-                    data: tttAum2025,
+                    data: [9.18, 9.43, 9.50, 9.89, 10.10, 10.38, 10.47, 10.72, 10.85, 10.90, 11.12, 11.30],
                     borderColor: '#00a651',
-                    backgroundColor: 'rgba(0, 166, 81, 0.1)',
+                    backgroundColor: 'rgba(0,166,81,0.1)',
                     fill: true,
                     tension: 0.4
                 }]
@@ -1161,65 +871,16 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
-                    y: {
-                        beginAtZero: false,
-                        grid: { color: '#333333' },
-                        ticks: {
-                            callback: function(value) {
-                                return value + 'T';
-                            }
-                        }
-                    }
+                    y: { beginAtZero: false, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
                 }
             }
         });
 
-        // TTT MFU Chart
-        const tttMfuCtx = document.getElementById('tttMfuChart').getContext('2d');
-        new Chart(tttMfuCtx, {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'MAU',
-                    data: tttMau2025,
-                    borderColor: '#ae2070',
-                    backgroundColor: 'transparent',
-                    tension: 0.4
-                }, {
-                    label: 'MFU',
-                    data: tttMfu2025,
-                    borderColor: '#00a651',
-                    backgroundColor: 'transparent',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
-                scales: {
-                    y: {
-                        grid: { color: '#333333' },
-                        ticks: {
-                            callback: function(value) {
-                                return value + 'M';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // CLO Partner Chart
-        const cloCtx = document.getElementById('cloPartnerChart').getContext('2d');
-        new Chart(cloCtx, {
+        // CLO Chart
+        new Chart(document.getElementById('cloChart'), {
             type: 'bar',
             data: {
                 labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -1230,40 +891,24 @@
                     borderRadius: 4
                 }, {
                     label: 'FE Credit',
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 33.9, 29.2, 40.3, 39.9],
+                    data: [0, 0, 0, 0, 0, 0, 0],
                     backgroundColor: '#00a651',
-                    borderRadius: 4
-                }, {
-                    label: 'MCredit',
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6.3, 6.0],
-                    backgroundColor: '#f59e0b',
                     borderRadius: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
+                plugins: { legend: { display: true } },
                 scales: {
-                    x: { stacked: true },
-                    y: {
-                        stacked: true,
-                        grid: { color: '#333333' },
-                        ticks: {
-                            callback: function(value) {
-                                return value + 'B';
-                            }
-                        }
-                    }
+                    x: { stacked: true, grid: { display: false } },
+                    y: { stacked: true, beginAtZero: true, grid: { color: '#f0f0f0' } }
                 }
             }
         });
 
         // Projection Chart
-        const projectionCtx = document.getElementById('projectionChart').getContext('2d');
-        new Chart(projectionCtx, {
+        new Chart(document.getElementById('projectionChart'), {
             type: 'line',
             data: {
                 labels: ['2024', '2025', '2026', '2027'],
@@ -1271,22 +916,22 @@
                     label: 'Baseline',
                     data: [1.9, 11.5, 15.0, 22.0],
                     borderColor: '#00a651',
-                    backgroundColor: 'rgba(0, 166, 81, 0.1)',
+                    backgroundColor: 'rgba(0,166,81,0.1)',
                     fill: true,
                     tension: 0.4
                 }, {
                     label: 'Moderate Stress',
                     data: [1.9, 11.5, 10.0, 12.0],
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderColor: '#f39c12',
+                    backgroundColor: 'rgba(243,156,18,0.1)',
                     fill: true,
                     tension: 0.4,
                     borderDash: [5, 5]
                 }, {
                     label: 'Severe Crisis',
                     data: [1.9, 11.5, 6.0, 7.0],
-                    borderColor: '#dc3545',
-                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231,76,60,0.1)',
                     fill: true,
                     tension: 0.4,
                     borderDash: [10, 5]
@@ -1295,55 +940,13 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
+                plugins: { legend: { display: true, position: 'top' } },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#333333' },
-                        ticks: {
-                            callback: function(value) {
-                                return value + 'T';
-                            }
-                        }
-                    }
+                    y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
                 }
             }
         });
-
-        // Tab Switching
-        function switchTab(tabName) {
-            // Update tab buttons
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            // Hide all content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.style.display = 'none';
-            });
-
-            // Show selected content
-            document.getElementById(tabName + '-content').style.display = 'block';
-        }
-
-        // Export function
-        function exportData() {
-            alert('Export functionality would generate a PDF/Excel report with all dashboard data.');
-        }
-
-        // Toggle scenarios
-        function toggleScenarios() {
-            const panel = document.getElementById('scenarioPanel');
-            panel.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Open in browser
-        window.onload = function() {
-            console.log('CEO Dashboard loaded successfully');
-        };
     </script>
 </body>
 </html>

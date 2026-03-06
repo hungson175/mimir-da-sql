@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vay Nhanh Performance Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .header h1 { font-size: 2rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .header p { color: #94a3b8; font-size: 0.9rem; }
+    .tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
+    .tab { padding: 10px 24px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; cursor: pointer; color: #94a3b8; transition: all 0.2s; }
+    .tab:hover { background: #334155; }
+    .tab.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+    .kpi-card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+    .kpi-label { font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; }
+    .kpi-value { font-size: 1.8rem; font-weight: 700; color: #fff; }
+    .kpi-value.green { color: #22c55e; }
+    .kpi-sub { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+    .chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .chart-card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+    .chart-title { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: #e2e8f0; }
+    .full-width { grid-column: span 2; }
+    .hidden { display: none; }
+    .period-selector { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 16px; }
+    .period-btn { padding: 6px 14px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; cursor: pointer; color: #94a3b8; font-size: 0.85rem; }
+    .period-btn:hover { background: #334155; }
+    .period-btn.active { background: #475569; color: #fff; }
+    .note { text-align: center; color: #64748b; font-size: 0.8rem; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📊 Vay Nhanh Performance Dashboard</h1>
+    <p>01/01/2026 - 06/03/2026 | Data Source: BigQuery BU_FI</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('daily')">Daily</div>
+    <div class="tab" onclick="switchTab('weekly')">Weekly</div>
+    <div class="tab" onclick="switchTab('monthly')">Monthly</div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Whitelist Users</div>
+      <div class="kpi-value green" id="kpi-whitelist">-</div>
+      <div class="kpi-sub" id="kpi-whitelist-sub">Total unique</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Submitted Users</div>
+      <div class="kpi-value" id="kpi-submitted">-</div>
+      <div class="kpi-sub" id="kpi-submitted-sub">Total unique</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Disbursed Users</div>
+      <div class="kpi-value green" id="kpi-disbursed">-</div>
+      <div class="kpi-sub" id="kpi-disbursed-sub">Total unique</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">GMV Disbursed</div>
+      <div class="kpi-value" id="kpi-gmv">-</div>
+      <div class="kpi-sub" id="kpi-gmv-sub">VND</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Avg Ticket Size</div>
+      <div class="kpi-value" id="kpi-avg-ticket">-</div>
+      <div class="kpi-sub" id="kpi-avg-ticket-sub">VND</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card full-width">
+      <div class="chart-title">User Funnel Trend</div>
+      <canvas id="funnelChart" height="80"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">GMV Disbursed</div>
+      <canvas id="gmvChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Average Ticket Size</div>
+      <canvas id="ticketChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="note">* March 6, 2026 data may be incomplete (partial day)</div>
+
+  <script>
+    // Raw daily data from BigQuery
+    const rawData = {
+      whitelist: [
+        {date:'2026-01-01',val:87064},{date:'2026-01-02',val:94814},{date:'2026-01-03',val:96102},{date:'2026-01-04',val:98077},{date:'2026-01-05',val:131377},{date:'2026-01-06',val:110640},{date:'2026-01-07',val:105525},{date:'2026-01-08',val:100107},{date:'2026-01-09',val:103577},{date:'2026-01-10',val:104939},{date:'2026-01-11',val:90338},{date:'2026-01-12',val:104252},{date:'2026-01-13',val:98258},{date:'2026-01-14',val:96889},{date:'2026-01-15',val:104975},{date:'2026-01-16',val:99699},{date:'2026-01-17',val:85696},{date:'2026-01-18',val:84915},{date:'2026-01-19',val:98016},{date:'2026-01-20',val:98364},{date:'2026-01-21',val:95092},{date:'2026-01-22',val:90098},{date:'2026-01-23',val:87579},{date:'2026-01-24',val:81158},{date:'2026-01-25',val:83683},{date:'2026-01-26',val:93610},{date:'2026-01-27',val:101793},{date:'2026-01-28',val:91053},{date:'2026-01-29',val:90384},{date:'2026-01-30',val:93276},{date:'2026-01-31',val:88725},{date:'2026-02-01',val:100926},{date:'2026-02-02',val:115400},{date:'2026-02-03',val:119640},{date:'2026-02-04',val:118059},{date:'2026-02-05',val:127193},{date:'2026-02-06',val:123884},{date:'2026-02-07',val:111509},{date:'2026-02-08',val:93643},{date:'2026-02-09',val:111372},{date:'2026-02-10',val:124784},{date:'2026-02-11',val:113058},{date:'2026-02-12',val:109576},{date:'2026-02-13',val:104557},{date:'2026-02-14',val:84913},{date:'2026-02-15',val:76525},{date:'2026-02-16',val:72775},{date:'2026-02-17',val:51449},{date:'2026-02-18',val:54463},{date:'2026-02-19',val:58707},{date:'2026-02-20',val:68287},{date:'2026-02-21',val:72261},{date:'2026-02-22',val:80721},{date:'2026-02-23',val:109569},{date:'2026-02-24',val:94909},{date:'2026-02-25',val:93992},{date:'2026-02-26',val:91236},{date:'2026-02-27',val:91600},{date:'2026-02-28',val:87012},{date:'2026-03-01',val:97419},{date:'2026-03-02',val:111316},{date:'2026-03-03',val:109857},{date:'2026-03-04',val:112511},{date:'2026-03-05',val:128404}
+      ],
+      submitted: [
+        {date:'2026-01-01',val:6212},{date:'2026-01-02',val:6966},{date:'2026-01-03',val:6897},{date:'2026-01-04',val:6846},{date:'2026-01-05',val:8576},{date:'2026-01-06',val:7891},{date:'2026-01-07',val:7621},{date:'2026-01-08',val:7529},{date:'2026-01-09',val:7781},{date:'2026-01-10',val:8595},{date:'2026-01-11',val:7601},{date:'2026-01-12',val:8431},{date:'2026-01-13',val:7941},{date:'2026-01-14',val:8729},{date:'2026-01-15',val:8583},{date:'2026-01-16',val:8906},{date:'2026-01-17',val:7547},{date:'2026-01-18',val:7550},{date:'2026-01-19',val:7941},{date:'2026-01-20',val:8218},{date:'2026-01-21',val:7838},{date:'2026-01-22',val:7379},{date:'2026-01-23',val:7200},{date:'2026-01-24',val:6863},{date:'2026-01-25',val:7401},{date:'2026-01-26',val:7758},{date:'2026-01-27',val:8090},{date:'2026-01-28',val:7150},{date:'2026-01-29',val:7534},{date:'2026-01-30',val:8142},{date:'2026-01-31',val:7834},{date:'2026-02-01',val:8671},{date:'2026-02-02',val:9188},{date:'2026-02-03',val:8932},{date:'2026-02-04',val:8948},{date:'2026-02-05',val:9218},{date:'2026-02-06',val:9263},{date:'2026-02-07',val:9006},{date:'2026-02-08',val:7922},{date:'2026-02-09',val:9427},{date:'2026-02-10',val:10671},{date:'2026-02-11',val:9897},{date:'2026-02-12',val:9773},{date:'2026-02-13',val:9419},{date:'2026-02-14',val:7946},{date:'2026-02-15',val:7170},{date:'2026-02-16',val:6460},{date:'2026-02-17',val:2891},{date:'2026-02-18',val:3233},{date:'2026-02-19',val:3619},{date:'2026-02-20',val:3962},{date:'2026-02-21',val:4379},{date:'2026-02-22',val:4876},{date:'2026-02-23',val:6480},{date:'2026-02-24',val:6300},{date:'2026-02-25',val:6185},{date:'2026-02-26',val:6045},{date:'2026-02-27',val:6070},{date:'2026-02-28',val:6529},{date:'2026-03-01',val:6955},{date:'2026-03-02',val:7105},{date:'2026-03-03',val:7348},{date:'2026-03-04',val:7192},{date:'2026-03-05',val:7758},{date:'2026-03-06',val:341}
+      ],
+      disbursed: [
+        {date:'2026-01-01',val:4580},{date:'2026-01-02',val:5215},{date:'2026-01-03',val:5071},{date:'2026-01-04',val:5104},{date:'2026-01-05',val:6148},{date:'2026-01-06',val:5610},{date:'2026-01-07',val:5303},{date:'2026-01-08',val:5141},{date:'2026-01-09',val:5772},{date:'2026-01-10',val:6350},{date:'2026-01-11',val:5497},{date:'2026-01-12',val:6132},{date:'2026-01-13',val:5467},{date:'2026-01-14',val:6085},{date:'2026-01-15',val:5968},{date:'2026-01-16',val:6257},{date:'2026-01-17',val:5260},{date:'2026-01-18',val:5241},{date:'2026-01-19',val:5498},{date:'2026-01-20',val:5631},{date:'2026-01-21',val:5540},{date:'2026-01-22',val:5154},{date:'2026-01-23',val:5002},{date:'2026-01-24',val:4842},{date:'2026-01-25',val:5221},{date:'2026-01-26',val:5428},{date:'2026-01-27',val:5490},{date:'2026-01-28',val:5012},{date:'2026-01-29',val:5303},{date:'2026-01-30',val:5823},{date:'2026-01-31',val:5473},{date:'2026-02-01',val:6013},{date:'2026-02-02',val:6062},{date:'2026-02-03',val:6192},{date:'2026-02-04',val:6389},{date:'2026-02-05',val:6693},{date:'2026-02-06',val:6532},{date:'2026-02-07',val:6222},{date:'2026-02-08',val:5669},{date:'2026-02-09',val:6738},{date:'2026-02-10',val:7722},{date:'2026-02-11',val:6863},{date:'2026-02-12',val:6886},{date:'2026-02-13',val:6837},{date:'2026-02-14',val:5766},{date:'2026-02-15',val:5176},{date:'2026-02-16',val:4642},{date:'2026-02-17',val:1946},{date:'2026-02-18',val:2190},{date:'2026-02-19',val:2428},{date:'2026-02-20',val:2656},{date:'2026-02-21',val:2987},{date:'2026-02-22',val:3190},{date:'2026-02-23',val:4259},{date:'2026-02-24',val:4215},{date:'2026-02-25',val:4400},{date:'2026-02-26',val:4240},{date:'2026-02-27',val:4221},{date:'2026-02-28',val:4738},{date:'2026-03-01',val:5052},{date:'2026-03-02',val:5197},{date:'2026-03-03',val:5264},{date:'2026-03-04',val:5238},{date:'2026-03-05',val:5620},{date:'2026-03-06',val:281}
+      ],
+      gmv: [
+        {date:'2026-01-01',val:77982000000},{date:'2026-01-02',val:98287000000},{date:'2026-01-03',val:94780000000},{date:'2026-01-04',val:95174000000},{date:'2026-01-05',val:119247500000},{date:'2026-01-06',val:105618500000},{date:'2026-01-07',val:101667500000},{date:'2026-01-08',val:96464500000},{date:'2026-01-09',val:108444000000},{date:'2026-01-10',val:117199000000},{date:'2026-01-11',val:100437000000},{date:'2026-01-12',val:117494000000},{date:'2026-01-13',val:98277500000},{date:'2026-01-14',val:112981500000},{date:'2026-01-15',val:109252000000},{date:'2026-01-16',val:114555000000},{date:'2026-01-17',val:94519000000},{date:'2026-01-18',val:92324000000},{date:'2026-01-19',val:100322500000},{date:'2026-01-20',val:106258500000},{date:'2026-01-21',val:102050500000},{date:'2026-01-22',val:93835500000},{date:'2026-01-23',val:90773500000},{date:'2026-01-24',val:83772500000},{date:'2026-01-25',val:89832000000},{date:'2026-01-26',val:100348500000},{date:'2026-01-27',val:101662000000},{date:'2026-01-28',val:92114500000},{date:'2026-01-29',val:92079500000},{date:'2026-01-30',val:100969000000},{date:'2026-01-31',val:99694500000},{date:'2026-02-01',val:107814000000},{date:'2026-02-02',val:113870000000},{date:'2026-02-03',val:119060000000},{date:'2026-02-04',val:120328500000},{date:'2026-02-05',val:123134500000},{date:'2026-02-06',val:124016500000},{date:'2026-02-07',val:111974500000},{date:'2026-02-08',val:100336500000},{date:'2026-02-09',val:124187500000},{date:'2026-02-10',val:141947000000},{date:'2026-02-11',val:126605500000},{date:'2026-02-12',val:123182000000},{date:'2026-02-13',val:118735500000},{date:'2026-02-14',val:94388500000},{date:'2026-02-15',val:83457500000},{date:'2026-02-16',val:69918000000},{date:'2026-02-17',val:28820000000},{date:'2026-02-18',val:33787000000},{date:'2026-02-19',val:39592000000},{date:'2026-02-20',val:42234500000},{date:'2026-02-21',val:48841000000},{date:'2026-02-22',val:54488000000},{date:'2026-02-23',val:77197000000},{date:'2026-02-24',val:75803500000},{date:'2026-02-25',val:78910000000},{date:'2026-02-26',val:75820000000},{date:'2026-02-27',val:74094500000},{date:'2026-02-28',val:82647500000},{date:'2026-03-01',val:85510000000},{date:'2026-03-02',val:94884500000},{date:'2026-03-03',val:93912500000},{date:'2026-03-04',val:95427500000},{date:'2026-03-05',val:100543500000},{date:'2026-03-06',val:3865000000}
+      ],
+      avgTicket: [
+        {date:'2026-01-01',val:16677074},{date:'2026-01-02',val:18537722},{date:'2026-01-03',val:18407458},{date:'2026-01-04',val:18408897},{date:'2026-01-05',val:19205589},{date:'2026-01-06',val:18571918},{date:'2026-01-07',val:18886773},{date:'2026-01-08',val:18572295},{date:'2026-01-09',val:18569178},{date:'2026-01-10',val:18266677},{date:'2026-01-11',val:18044736},{date:'2026-01-12',val:18898826},{date:'2026-01-13',val:17736419},{date:'2026-01-14',val:18356052},{date:'2026-01-15',val:18103065},{date:'2026-01-16',val:18111462},{date:'2026-01-17',val:17773411},{date:'2026-01-18',val:17416337},{date:'2026-01-19',val:18059856},{date:'2026-01-20',val:18714072},{date:'2026-01-21',val:18255903},{date:'2026-01-22',val:18010653},{date:'2026-01-23',val:17950069},{date:'2026-01-24',val:17096429},{date:'2026-01-25',val:17055629},{date:'2026-01-26',val:18308429},{date:'2026-01-27',val:18304285},{date:'2026-01-28',val:18233274},{date:'2026-01-29',val:17159802},{date:'2026-01-30',val:17197922},{date:'2026-01-31',val:18099946},{date:'2026-02-01',val:17776422},{date:'2026-02-02',val:18645816},{date:'2026-02-03',val:19046553},{date:'2026-02-04',val:18658474},{date:'2026-02-05',val:18277349},{date:'2026-02-06',val:18838903},{date:'2026-02-07',val:17921655},{date:'2026-02-08',val:17565914},{date:'2026-02-09',val:18327553},{date:'2026-02-10',val:18266246},{date:'2026-02-11',val:18308821},{date:'2026-02-12',val:17721479},{date:'2026-02-13',val:17210538},{date:'2026-02-14',val:16215169},{date:'2026-02-15',val:15939171},{date:'2026-02-16',val:14904711},{date:'2026-02-17',val:14562911},{date:'2026-02-18',val:15151121},{date:'2026-02-19',val:15964516},{date:'2026-02-20',val:15747390},{date:'2026-02-21',val:16156467},{date:'2026-02-22',val:16874574},{date:'2026-02-23',val:17940274},{date:'2026-02-24',val:17802607},{date:'2026-02-25',val:17704734},{date:'2026-02-26',val:17731525},{date:'2026-02-27',val:17384913},{date:'2026-02-28',val:17279427},{date:'2026-03-01',val:16658874},{date:'2026-03-02',val:17984174},{date:'2026-03-03',val:17619606},{date:'2026-03-04',val:17957753},{date:'2026-03-05',val:17691976},{date:'2026-03-06',val:13754448}
+      ]
+    };
+
+    // Aggregate data by period
+    function aggregateByPeriod(data, period) {
+      const agg = {};
+      data.forEach(d => {
+        const date = new Date(d.date);
+        let key;
+        if (period === 'daily') key = d.date;
+        else if (period === 'weekly') {
+          const weekStart = new Date(date);
+          weekStart.setDate(date.getDate() - date.getDay());
+          key = weekStart.toISOString().split('T')[0];
+        } else {
+          key = d.date.substring(0, 7);
+        }
+        if (!agg[key]) agg[key] = { sum: 0, count: 0, vals: [] };
+        agg[key].sum += d.val;
+        agg[key].count++;
+        agg[key].vals.push(d.val);
+      });
+      return Object.entries(agg).map(([k, v]) => ({ date: k, sum: v.sum, count: v.count, avg: v.sum / v.count }));
+    }
+
+    // Format helpers
+    function fmtNum(n) {
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+      return n.toString();
+    }
+    function fmtVND(n) {
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + 'T';
+      if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+      return n.toString();
+    }
+
+    // Aggregate all metrics
+    function getAggregatedData(period) {
+      return {
+        labels: [],
+        whitelist: aggregateByPeriod(rawData.whitelist, period),
+        submitted: aggregateByPeriod(rawData.submitted, period),
+        disbursed: aggregateByPeriod(rawData.disbursed, period),
+        gmv: aggregateByPeriod(rawData.gmv, period),
+        avgTicket: aggregateByPeriod(rawData.avgTicket, period)
+      };
+    }
+
+    let currentPeriod = 'daily';
+    let funnelChart, gmvChart, ticketChart;
+
+    function updateKPIs(data) {
+      const totalWhitelist = data.whitelist.reduce((a, b) => a + b.sum, 0);
+      const totalSubmitted = data.submitted.reduce((a, b) => a + b.sum, 0);
+      const totalDisbursed = data.disbursed.reduce((a, b) => a + b.sum, 0);
+      const totalGMV = data.gmv.reduce((a, b) => a + b.sum, 0);
+      const avgTicket = totalGMV / totalDisbursed;
+
+      document.getElementById('kpi-whitelist').textContent = fmtNum(totalWhitelist);
+      document.getElementById('kpi-whitelist-sub').textContent = data.whitelist.length + ' periods';
+      document.getElementById('kpi-submitted').textContent = fmtNum(totalSubmitted);
+      document.getElementById('kpi-submitted-sub').textContent = data.submitted.length + ' periods';
+      document.getElementById('kpi-disbursed').textContent = fmtNum(totalDisbursed);
+      document.getElementById('kpi-disbursed-sub').textContent = data.disbursed.length + ' periods';
+      document.getElementById('kpi-gmv').textContent = fmtVND(totalGMV) + ' VND';
+      document.getElementById('kpi-avg-ticket').textContent = fmtVND(avgTicket) + ' VND';
+    }
+
+    function renderCharts(data) {
+      const labels = data.whitelist.map(d => d.date);
+
+      // Destroy existing charts
+      if (funnelChart) funnelChart.destroy();
+      if (gmvChart) gmvChart.destroy();
+      if (ticketChart) ticketChart.destroy();
+
+      // Funnel Chart
+      funnelChart = new Chart(document.getElementById('funnelChart'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Whitelist Users', data: data.whitelist.map(d => d.sum), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.3 },
+            { label: 'Submitted Users', data: data.submitted.map(d => d.sum), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.3 },
+            { label: 'Disbursed Users', data: data.disbursed.map(d => d.sum), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.3 }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { grid: { color: '#334155' } }, x: { grid: { color: '#334155' } } } }
+      });
+
+      // GMV Chart
+      gmvChart = new Chart(document.getElementById('gmvChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'GMV (VND)', data: data.gmv.map(d => d.sum / 1e9), backgroundColor: '#8b5cf6' }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' }, ticks: { callback: v => v + 'B' } }, x: { grid: { display: false } } } }
+      });
+
+      // Ticket Size Chart
+      ticketChart = new Chart(document.getElementById('ticketChart'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'Avg Ticket (VND)', data: data.avgTicket.map(d => d.avg / 1e6), borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.1)', fill: true, tension: 0.3 }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' }, ticks: { callback: v => v + 'M' } }, x: { grid: { display: false } } } }
+      });
+    }
+
+    function switchTab(period) {
+      currentPeriod = period;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      const data = getAggregatedData(period);
+      updateKPIs(data);
+      renderCharts(data);
+    }
+
+    // Initialize
+    const initData = getAggregatedData('daily');
+    updateKPIs(initData);
+    renderCharts(initData);
+  </script>
+</body>
+</html>

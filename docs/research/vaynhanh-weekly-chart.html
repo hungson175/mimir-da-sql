@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Giải ngân Vay Nhanh 24/02 - 02/03/2026</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; }
+    h1 { color: #1a1a2e; margin-bottom: 8px; }
+    .subtitle { color: #666; margin-bottom: 30px; }
+    .chart-container { position: relative; height: 400px; }
+    .summary { display: flex; gap: 20px; margin-top: 30px; }
+    .stat { background: #f8f9fa; padding: 20px; border-radius: 12px; flex: 1; text-align: center; }
+    .stat-value { font-size: 28px; font-weight: bold; color: #2E86AB; }
+    .stat-label { color: #666; font-size: 14px; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Giải ngân Vay Nhanh</h1>
+  <p class="subtitle">Tuần 24/02 - 02/03/2026</p>
+  
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
+  </div>
+  
+  <div class="summary">
+    <div class="stat">
+      <div class="stat-value">32,446</div>
+      <div class="stat-label">Tổng hồ sơ</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">567.7 tỷ</div>
+      <div class="stat-label">Tổng tiền giải ngân</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">+63%</div>
+      <div class="stat-label">So với tuần trước</div>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['24/02', '25/02', '26/02', '27/02', '28/02', '01/03', '02/03'],
+        datasets: [
+          {
+            label: 'Số hồ sơ',
+            data: [4258, 4457, 4276, 4263, 4783, 5133, 5276],
+            backgroundColor: '#2E86AB',
+            yAxisID: 'y'
+          },
+          {
+            label: 'Tiền (tỷ VND)',
+            data: [75.8, 78.9, 75.8, 74.1, 82.6, 85.5, 94.9],
+            type: 'line',
+            borderColor: '#A23B72',
+            backgroundColor: '#A23B72',
+            tension: 0.3,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: { 
+            type: 'linear', 
+            position: 'left', 
+            title: { display: true, text: 'Số hồ sơ' },
+            min: 0, max: 6000
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            title: { display: true, text: 'Tiền (tỷ VND)' },
+            min: 0, max: 110,
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

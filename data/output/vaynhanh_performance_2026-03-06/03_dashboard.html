@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vay Nhanh Performance Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --momo-pink: #ae2070;
+  --momo-pink-light: #d4478a;
+  --momo-pink-dark: #8a1a5a;
+  --momo-bg: #fdf2f7;
+  --momo-white: #ffffff;
+  --momo-dark: #1a1a2e;
+  --momo-gray: #6b7280;
+  --momo-gray-light: #f3f4f6;
+  --momo-success: #4caf50;
+  --momo-error: #f44336;
+  --momo-warning: #ff9800;
+  --momo-blue: #48c4e7;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--momo-bg);
+  color: var(--momo-dark);
+  min-height: 100vh;
+}
+.header {
+  background: linear-gradient(135deg, #ae2070, #d4478a);
+  color: white;
+  padding: 24px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(174,32,112,0.2);
+}
+.header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+.header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--momo-white);
+  border-bottom: 2px solid var(--momo-gray-light);
+  padding: 0 32px;
+  position: sticky;
+  top: 76px;
+  z-index: 99;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.nav-tab {
+  padding: 14px 24px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--momo-gray);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  user-select: none;
+}
+.nav-tab:hover { color: var(--momo-pink); }
+.nav-tab.active {
+  color: var(--momo-pink);
+  border-bottom-color: var(--momo-pink);
+  font-weight: 600;
+}
+.container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.kpi-card {
+  background: var(--momo-white);
+  border-radius: 12px;
+  padding: 20px;
+  border-left: 4px solid var(--momo-pink);
+  box-shadow: 0 2px 8px rgba(174,32,112,0.06);
+  transition: transform 0.15s;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(174,32,112,0.1); }
+.kpi-label {
+  font-size: 12px; font-weight: 500; color: var(--momo-gray);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.kpi-value { font-size: 26px; font-weight: 700; color: var(--momo-dark); }
+.kpi-sub { font-size: 12px; color: var(--momo-gray); margin-top: 4px; }
+.kpi-change { font-size: 12px; font-weight: 600; margin-top: 6px; }
+.kpi-change.up { color: var(--momo-success); }
+.kpi-change.down { color: var(--momo-error); }
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.chart-card {
+  background: var(--momo-white);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(174,32,112,0.06);
+}
+.chart-card.full { grid-column: 1 / -1; }
+.chart-title { font-size: 15px; font-weight: 600; color: var(--momo-dark); margin-bottom: 16px; }
+.chart-container { position: relative; width: 100%; }
+.chart-container.h300 { height: 300px; }
+.chart-container.h350 { height: 350px; }
+.chart-container.h400 { height: 400px; }
+
+/* Connected trio layout — 3 charts side by side with visual connector */
+.trio-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  margin-bottom: 24px;
+}
+.trio-card {
+  background: var(--momo-white);
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(174,32,112,0.06);
+}
+.trio-card:first-child { border-radius: 12px 0 0 12px; }
+.trio-card:nth-child(2) { border-left: 1px dashed #e5e7eb; border-right: 1px dashed #e5e7eb; }
+.trio-card:last-child { border-radius: 0 12px 12px 0; }
+.trio-card .chart-title {
+  font-size: 13px; font-weight: 600; color: var(--momo-dark); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.trio-card .chart-title .arrow { color: var(--momo-gray); font-size: 16px; }
+.trio-card .mini-kpi {
+  font-size: 20px; font-weight: 700; margin-bottom: 8px;
+}
+.trio-card .mini-sub { font-size: 11px; color: var(--momo-gray); margin-bottom: 12px; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.insight-box {
+  background: var(--momo-bg);
+  border-left: 4px solid var(--momo-pink);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.insight-box strong { color: var(--momo-pink-dark); }
+
+.funnel-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.funnel-table th {
+  background: var(--momo-pink); color: white;
+  padding: 10px 14px; text-align: right; font-weight: 600;
+}
+.funnel-table th:first-child { text-align: left; }
+.funnel-table td {
+  padding: 8px 14px; text-align: right;
+  border-bottom: 1px solid var(--momo-gray-light);
+}
+.funnel-table td:first-child { text-align: left; font-weight: 500; }
+.funnel-table tr:nth-child(even) { background: var(--momo-gray-light); }
+.funnel-table tr:hover { background: #fce4ec; }
+
+/* Funnel gauge cards */
+.funnel-gauges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.gauge-card {
+  background: var(--momo-white);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(174,32,112,0.06);
+}
+.gauge-card .chart-title { margin-bottom: 4px; }
+.gauge-card .gauge-desc { font-size: 12px; color: var(--momo-gray); margin-bottom: 16px; }
+
+.footer { text-align: center; padding: 20px; font-size: 12px; color: var(--momo-gray); }
+
+@media (max-width: 1024px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .chart-grid { grid-template-columns: 1fr; }
+  .trio-row { grid-template-columns: 1fr; }
+  .trio-card { border-radius: 0 !important; border-left: none !important; border-right: none !important; border-bottom: 1px dashed #e5e7eb; }
+  .trio-card:first-child { border-radius: 12px 12px 0 0 !important; }
+  .trio-card:last-child { border-radius: 0 0 12px 12px !important; border-bottom: none; }
+  .funnel-gauges { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .container { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Vay Nhanh Performance Dashboard</h1>
+  <div class="subtitle">01/01/2026 - 05/03/2026 | Source: BigQuery (BAOTU_VAYNHANH_LOAN_INFO + ENTRY_POINT) | Generated: 06/03/2026</div>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchTab('daily')">Daily</div>
+  <div class="nav-tab" onclick="switchTab('weekly')">Weekly</div>
+  <div class="nav-tab" onclick="switchTab('monthly')">Monthly</div>
+  <div class="nav-tab" onclick="switchTab('funnel')">Funnel Analysis</div>
+</div>
+
+<div class="container">
+  <div id="kpi-section"></div>
+
+  <!-- ==================== DAILY TAB ==================== -->
+  <div id="tab-daily" class="tab-content active">
+    <div class="insight-box">
+      <strong>Key Insight:</strong> Tet holiday (Feb 14-22) caused a sharp dip across all metrics — whitelist traffic dropped 60%, disbursements fell 70%.
+      Recovery started Feb 23 and is trending back to pre-Tet levels by early March. Feb 10 was the peak day with <strong>7,722 disbursed users</strong> and <strong>142B VND GMV</strong>.
+    </div>
+
+    <!-- Whitelist: bar chart (no line) -->
+    <div class="chart-grid">
+      <div class="chart-card full">
+        <div class="chart-title">Whitelist Users (Daily Traffic)</div>
+        <div class="chart-container h300"><canvas id="chart-daily-whitelist"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Connected trio: Submitted → Disbursed → GMV -->
+    <div class="trio-row">
+      <div class="trio-card">
+        <div class="chart-title">Submitted Users</div>
+        <div id="trio-sub-kpi" class="mini-kpi" style="color:#48c4e7">--</div>
+        <div class="mini-sub">avg/day (last 5 days)</div>
+        <div class="chart-container h300"><canvas id="chart-trio-submitted"></canvas></div>
+      </div>
+      <div class="trio-card">
+        <div class="chart-title"><span class="arrow">&#8594;</span> Disbursed Users</div>
+        <div id="trio-dis-kpi" class="mini-kpi" style="color:#4caf50">--</div>
+        <div class="mini-sub">avg/day (last 5 days)</div>
+        <div class="chart-container h300"><canvas id="chart-trio-disbursed"></canvas></div>
+      </div>
+      <div class="trio-card">
+        <div class="chart-title"><span class="arrow">&#8594;</span> GMV Disburse</div>
+        <div id="trio-gmv-kpi" class="mini-kpi" style="color:#ae2070">--</div>
+        <div class="mini-sub">avg/day (last 5 days)</div>
+        <div class="chart-container h300"><canvas id="chart-trio-gmv"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Avg ticket size standalone -->
+    <div class="chart-grid">
+      <div class="chart-card full">
+        <div class="chart-title">Average Ticket Size (Daily, Million VND)</div>
+        <div class="chart-container h300"><canvas id="chart-daily-ticket"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== WEEKLY TAB ==================== -->
+  <div id="tab-weekly" class="tab-content">
+    <div class="insight-box">
+      <strong>Weekly View:</strong> Aggregated by ISO week (Mon-Sun). Week 7-8 (Feb 10-23) shows the Tet impact clearly.
+      Pre-Tet peak was <strong>W6</strong> with 46K disbursed users and 862B VND GMV. Post-Tet recovery in W9-10 is at ~70% of pre-Tet levels.
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card full">
+        <div class="chart-title">Whitelist Users (Weekly)</div>
+        <div class="chart-container h300"><canvas id="chart-weekly-whitelist"></canvas></div>
+      </div>
+    </div>
+    <div class="trio-row">
+      <div class="trio-card">
+        <div class="chart-title">Submitted Users</div>
+        <div class="chart-container h300"><canvas id="chart-weekly-submitted"></canvas></div>
+      </div>
+      <div class="trio-card">
+        <div class="chart-title"><span class="arrow">&#8594;</span> Disbursed Users</div>
+        <div class="chart-container h300"><canvas id="chart-weekly-disbursed"></canvas></div>
+      </div>
+      <div class="trio-card">
+        <div class="chart-title"><span class="arrow">&#8594;</span> GMV Disburse</div>
+        <div class="chart-container h300"><canvas id="chart-weekly-gmv"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card full">
+        <div class="chart-title">Average Ticket Size (Weekly, Million VND)</div>
+        <div class="chart-container h300"><canvas id="chart-weekly-ticket"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MONTHLY TAB ==================== -->
+  <div id="tab-monthly" class="tab-content">
+    <div class="insight-box">
+      <strong>Monthly Summary:</strong> January was a strong month with <strong>3.07T VND</strong> GMV and <strong>171K disbursed users</strong>.
+      February dropped to <strong>2.56T VND</strong> (-17%) due to Tet. March (5 days) is pacing at <strong>~2.8T VND</strong> run-rate if current daily avg holds.
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card full">
+        <div class="chart-title">User Funnel (Monthly, Stacked)</div>
+        <div class="chart-container h400"><canvas id="chart-monthly-stacked"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">GMV Disburse (Monthly, Trillion VND)</div>
+        <div class="chart-container h300"><canvas id="chart-monthly-gmv"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Average Ticket Size (Monthly, Million VND)</div>
+        <div class="chart-container h300"><canvas id="chart-monthly-ticket"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FUNNEL TAB ==================== -->
+  <div id="tab-funnel" class="tab-content">
+    <div class="insight-box">
+      <strong>Conversion Funnel:</strong> Whitelist-to-Submit rate is ~8%, Submit-to-Disburse rate is ~73%.
+      The bottleneck is at the top of funnel — only 8% of whitelist traffic converts to loan submission.
+      Once submitted, approval+disbursement rate is high at 73%.
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card full">
+        <div class="chart-title">Monthly Funnel Breakdown</div>
+        <div id="funnel-table-container"></div>
+      </div>
+    </div>
+    <!-- Two separate charts for the two conversion rates -->
+    <div class="funnel-gauges">
+      <div class="gauge-card">
+        <div class="chart-title">Top-of-Funnel: Whitelist &#8594; Submit Rate</div>
+        <div class="gauge-desc">Measures how many whitelist visitors actually apply for a loan (~8%)</div>
+        <div class="chart-container h300"><canvas id="chart-funnel-top"></canvas></div>
+      </div>
+      <div class="gauge-card">
+        <div class="chart-title">Bottom-of-Funnel: Submit &#8594; Disburse Rate</div>
+        <div class="gauge-desc">Measures approval + disbursement success after submission (~73%)</div>
+        <div class="chart-container h300"><canvas id="chart-funnel-bottom"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Vay Nhanh Performance Dashboard | Data from BigQuery | MoMo Financial Services
+</div>
+
+<script>
+// ============ RAW DATA ============
+const dailyData = [
+  {dt:'2026-01-01',wl:87064,sub:6212,dis:4580,gmv:7.7982e10,ticket:1.667707442258341e7},
+  {dt:'2026-01-02',wl:94814,sub:6966,dis:5215,gmv:9.8287e10,ticket:1.8537721614485096e7},
+  {dt:'2026-01-03',wl:96102,sub:6897,dis:5071,gmv:9.478e10,ticket:1.8407457758788124e7},
+  {dt:'2026-01-04',wl:98077,sub:6846,dis:5104,gmv:9.5174e10,ticket:1.840889748549323e7},
+  {dt:'2026-01-05',wl:131377,sub:8576,dis:6148,gmv:1.192475e11,ticket:1.920558866162023e7},
+  {dt:'2026-01-06',wl:110640,sub:7891,dis:5610,gmv:1.056185e11,ticket:1.857191841040971e7},
+  {dt:'2026-01-07',wl:105525,sub:7621,dis:5303,gmv:1.016675e11,ticket:1.888677317480959e7},
+  {dt:'2026-01-08',wl:100107,sub:7529,dis:5141,gmv:9.64645e10,ticket:1.8572294955718137e7},
+  {dt:'2026-01-09',wl:103577,sub:7781,dis:5772,gmv:1.08444e11,ticket:1.8569178082191788e7},
+  {dt:'2026-01-10',wl:104939,sub:8595,dis:6350,gmv:1.17199e11,ticket:1.826667705735661e7},
+  {dt:'2026-01-11',wl:90338,sub:7601,dis:5497,gmv:1.00437e11,ticket:1.8044735896514554e7},
+  {dt:'2026-01-12',wl:104252,sub:8431,dis:6132,gmv:1.17494e11,ticket:1.8898825800225187e7},
+  {dt:'2026-01-13',wl:98258,sub:7941,dis:5467,gmv:9.82775e10,ticket:1.7736419418877453e7},
+  {dt:'2026-01-14',wl:96889,sub:8729,dis:6085,gmv:1.129815e11,ticket:1.835605199025182e7},
+  {dt:'2026-01-15',wl:104975,sub:8583,dis:5968,gmv:1.09252e11,ticket:1.810306545153273e7},
+  {dt:'2026-01-16',wl:99699,sub:8906,dis:6257,gmv:1.14555e11,ticket:1.8111462450592887e7},
+  {dt:'2026-01-17',wl:85696,sub:7547,dis:5260,gmv:9.4519e10,ticket:1.7773411056788266e7},
+  {dt:'2026-01-18',wl:84915,sub:7550,dis:5241,gmv:9.2324e10,ticket:1.741633654027542e7},
+  {dt:'2026-01-19',wl:98016,sub:7941,dis:5498,gmv:1.003225e11,ticket:1.8059855985598557e7},
+  {dt:'2026-01-20',wl:98364,sub:8218,dis:5631,gmv:1.062585e11,ticket:1.8714071856287427e7},
+  {dt:'2026-01-21',wl:95092,sub:7838,dis:5540,gmv:1.020505e11,ticket:1.825590339892666e7},
+  {dt:'2026-01-22',wl:90098,sub:7379,dis:5154,gmv:9.38355e10,ticket:1.8010652591170825e7},
+  {dt:'2026-01-23',wl:87579,sub:7200,dis:5002,gmv:9.07735e10,ticket:1.7950069210994657e7},
+  {dt:'2026-01-24',wl:81158,sub:6863,dis:4842,gmv:8.37725e10,ticket:1.7096428571428567e7},
+  {dt:'2026-01-25',wl:83683,sub:7401,dis:5221,gmv:8.9832e10,ticket:1.7055629390544903e7},
+  {dt:'2026-01-26',wl:93610,sub:7758,dis:5428,gmv:1.003485e11,ticket:1.830842911877395e7},
+  {dt:'2026-01-27',wl:101793,sub:8090,dis:5490,gmv:1.01662e11,ticket:1.830428519985596e7},
+  {dt:'2026-01-28',wl:91053,sub:7150,dis:5012,gmv:9.21145e10,ticket:1.823327395091052e7},
+  {dt:'2026-01-29',wl:90384,sub:7534,dis:5303,gmv:9.20795e10,ticket:1.715980245993292e7},
+  {dt:'2026-01-30',wl:93276,sub:8142,dis:5823,gmv:1.00969e11,ticket:1.7197921989439618e7},
+  {dt:'2026-01-31',wl:88725,sub:7834,dis:5473,gmv:9.96945e10,ticket:1.809994553376906e7},
+  {dt:'2026-02-01',wl:100926,sub:8671,dis:6013,gmv:1.07814e11,ticket:1.777642209398186e7},
+  {dt:'2026-02-02',wl:115400,sub:9188,dis:6062,gmv:1.1387e11,ticket:1.864581627640413e7},
+  {dt:'2026-02-03',wl:119640,sub:8932,dis:6192,gmv:1.1906e11,ticket:1.9046552551591747e7},
+  {dt:'2026-02-04',wl:118059,sub:8948,dis:6389,gmv:1.203285e11,ticket:1.865847418204373e7},
+  {dt:'2026-02-05',wl:127193,sub:9218,dis:6693,gmv:1.231345e11,ticket:1.8277348968383547e7},
+  {dt:'2026-02-06',wl:123884,sub:9263,dis:6532,gmv:1.240165e11,ticket:1.8838903235606868e7},
+  {dt:'2026-02-07',wl:111509,sub:9006,dis:6222,gmv:1.119745e11,ticket:1.7921654929577462e7},
+  {dt:'2026-02-08',wl:93643,sub:7922,dis:5669,gmv:1.003365e11,ticket:1.7565913865546227e7},
+  {dt:'2026-02-09',wl:111372,sub:9427,dis:6738,gmv:1.241875e11,ticket:1.8327553128689494e7},
+  {dt:'2026-02-10',wl:124784,sub:10671,dis:7722,gmv:1.41947e11,ticket:1.826624630034745e7},
+  {dt:'2026-02-11',wl:113058,sub:9897,dis:6863,gmv:1.266055e11,ticket:1.8308821402747657e7},
+  {dt:'2026-02-12',wl:109576,sub:9773,dis:6886,gmv:1.23182e11,ticket:1.7721478923895836e7},
+  {dt:'2026-02-13',wl:104557,sub:9419,dis:6837,gmv:1.187355e11,ticket:1.7210537759095516e7},
+  {dt:'2026-02-14',wl:84913,sub:7946,dis:5766,gmv:9.43885e10,ticket:1.6215169214911522e7},
+  {dt:'2026-02-15',wl:76525,sub:7170,dis:5176,gmv:8.34575e10,ticket:1.5939171122994652e7},
+  {dt:'2026-02-16',wl:72775,sub:6460,dis:4642,gmv:6.9918e10,ticket:1.490471114900874e7},
+  {dt:'2026-02-17',wl:51449,sub:2891,dis:1946,gmv:2.882e10,ticket:1.4562910560889332e7},
+  {dt:'2026-02-18',wl:54463,sub:3233,dis:2190,gmv:3.3787e10,ticket:1.5151121076233184e7},
+  {dt:'2026-02-19',wl:58707,sub:3619,dis:2428,gmv:3.9592e10,ticket:1.5964516129032256e7},
+  {dt:'2026-02-20',wl:68287,sub:3962,dis:2656,gmv:4.22345e10,ticket:1.574739000745712e7},
+  {dt:'2026-02-21',wl:72261,sub:4379,dis:2987,gmv:4.8841e10,ticket:1.6156467085676478e7},
+  {dt:'2026-02-22',wl:80721,sub:4876,dis:3190,gmv:5.4488e10,ticket:1.687457417157014e7},
+  {dt:'2026-02-23',wl:109569,sub:6480,dis:4259,gmv:7.7197e10,ticket:1.7940274227283303e7},
+  {dt:'2026-02-24',wl:94909,sub:6300,dis:4215,gmv:7.58035e10,ticket:1.7802606857679665e7},
+  {dt:'2026-02-25',wl:93992,sub:6185,dis:4400,gmv:7.891e10,ticket:1.7704734126093782e7},
+  {dt:'2026-02-26',wl:91236,sub:6045,dis:4240,gmv:7.582e10,ticket:1.773152478952293e7},
+  {dt:'2026-02-27',wl:91600,sub:6070,dis:4221,gmv:7.40945e10,ticket:1.7384913186297514e7},
+  {dt:'2026-02-28',wl:87012,sub:6529,dis:4738,gmv:8.26475e10,ticket:1.7279427137779634e7},
+  {dt:'2026-03-01',wl:97419,sub:6955,dis:5052,gmv:8.551e10,ticket:1.6658873952854084e7},
+  {dt:'2026-03-02',wl:111316,sub:7105,dis:5197,gmv:9.48845e10,ticket:1.7984173616376046e7},
+  {dt:'2026-03-03',wl:109857,sub:7348,dis:5264,gmv:9.39125e10,ticket:1.7619606003752355e7},
+  {dt:'2026-03-04',wl:112511,sub:7192,dis:5238,gmv:9.54275e10,ticket:1.795775310500564e7},
+  {dt:'2026-03-05',wl:128404,sub:7758,dis:5620,gmv:1.005435e11,ticket:1.7691976068977654e7},
+];
+
+// ============ AGGREGATION ============
+function getISOWeek(d) {
+  const date = new Date(d); date.setHours(0,0,0,0);
+  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+  const week1 = new Date(date.getFullYear(), 0, 4);
+  return { year: date.getFullYear(), week: 1 + Math.round(((date - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7) };
+}
+function getMonday(d) {
+  const date = new Date(d); const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(date.setDate(diff)).toISOString().slice(0,10);
+}
+function aggregateWeekly(data) {
+  const weeks = {};
+  data.forEach(r => {
+    const monday = getMonday(r.dt);
+    if (!weeks[monday]) weeks[monday] = {wl:0,sub:0,dis:0,gmv:0,ticketSum:0,ticketCount:0,days:0};
+    const w = weeks[monday];
+    w.wl += r.wl; w.sub += r.sub; w.dis += r.dis; w.gmv += r.gmv;
+    w.ticketSum += r.ticket; w.ticketCount++; w.days++;
+  });
+  return Object.entries(weeks).map(([k,v]) => ({
+    label: k, wl: v.wl, sub: v.sub, dis: v.dis, gmv: v.gmv,
+    ticket: v.ticketSum / v.ticketCount, days: v.days
+  })).sort((a,b) => a.label.localeCompare(b.label));
+}
+function aggregateMonthly(data) {
+  const months = {};
+  data.forEach(r => {
+    const m = r.dt.slice(0,7);
+    if (!months[m]) months[m] = {wl:0,sub:0,dis:0,gmv:0,ticketSum:0,ticketCount:0,days:0};
+    const mo = months[m];
+    mo.wl += r.wl; mo.sub += r.sub; mo.dis += r.dis; mo.gmv += r.gmv;
+    mo.ticketSum += r.ticket; mo.ticketCount++; mo.days++;
+  });
+  return Object.entries(months).map(([k,v]) => ({
+    label: k, wl: v.wl, sub: v.sub, dis: v.dis, gmv: v.gmv,
+    ticket: v.ticketSum / v.ticketCount, days: v.days
+  })).sort((a,b) => a.label.localeCompare(b.label));
+}
+
+const weeklyData = aggregateWeekly(dailyData);
+const monthlyData = aggregateMonthly(dailyData);
+
+// ============ FORMAT ============
+function fmtNum(n) {
+  if (n >= 1e12) return (n/1e12).toFixed(2) + 'T';
+  if (n >= 1e9) return (n/1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return n.toFixed(0);
+}
+function fmtK(n) { return (n/1000).toFixed(1) + 'K'; }
+
+// ============ KPI CARDS ============
+function renderKPIs() {
+  const jan = monthlyData.find(m => m.label === '2026-01');
+  const last5 = dailyData.slice(-6, -1);
+  const avgDailyWL = last5.reduce((s,r) => s + r.wl, 0) / last5.length;
+  const avgDailySub = last5.reduce((s,r) => s + r.sub, 0) / last5.length;
+  const avgDailyDis = last5.reduce((s,r) => s + r.dis, 0) / last5.length;
+  const avgDailyGMV = last5.reduce((s,r) => s + r.gmv, 0) / last5.length;
+  const avgTicket = last5.reduce((s,r) => s + r.ticket, 0) / last5.length;
+  const janAvgWL = jan.wl / 31, janAvgSub = jan.sub / 31, janAvgDis = jan.dis / 31, janAvgGMV = jan.gmv / 31;
+  const pctWL = ((avgDailyWL - janAvgWL) / janAvgWL * 100).toFixed(1);
+  const pctSub = ((avgDailySub - janAvgSub) / janAvgSub * 100).toFixed(1);
+  const pctDis = ((avgDailyDis - janAvgDis) / janAvgDis * 100).toFixed(1);
+  const pctGMV = ((avgDailyGMV - janAvgGMV) / janAvgGMV * 100).toFixed(1);
+  const totalGMV = dailyData.reduce((s,r) => s + r.gmv, 0);
+
+  // Also populate trio mini KPIs
+  document.getElementById('trio-sub-kpi').textContent = fmtK(avgDailySub);
+  document.getElementById('trio-dis-kpi').textContent = fmtK(avgDailyDis);
+  document.getElementById('trio-gmv-kpi').textContent = fmtNum(avgDailyGMV) + '/day';
+
+  document.getElementById('kpi-section').innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Whitelist Users</div>
+        <div class="kpi-value">${fmtK(avgDailyWL)}</div>
+        <div class="kpi-sub">avg/day (last 5 days)</div>
+        <div class="kpi-change ${pctWL >= 0 ? 'up' : 'down'}">${pctWL >= 0 ? '+' : ''}${pctWL}% vs Jan avg</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Submitted Users</div>
+        <div class="kpi-value">${fmtK(avgDailySub)}</div>
+        <div class="kpi-sub">avg/day (last 5 days)</div>
+        <div class="kpi-change ${pctSub >= 0 ? 'up' : 'down'}">${pctSub >= 0 ? '+' : ''}${pctSub}% vs Jan avg</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Disbursed Users</div>
+        <div class="kpi-value">${fmtK(avgDailyDis)}</div>
+        <div class="kpi-sub">avg/day (last 5 days)</div>
+        <div class="kpi-change ${pctDis >= 0 ? 'up' : 'down'}">${pctDis >= 0 ? '+' : ''}${pctDis}% vs Jan avg</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">GMV Disburse (YTD)</div>
+        <div class="kpi-value">${fmtNum(totalGMV)}</div>
+        <div class="kpi-sub">${fmtNum(avgDailyGMV)}/day (last 5 days)</div>
+        <div class="kpi-change ${pctGMV >= 0 ? 'up' : 'down'}">${pctGMV >= 0 ? '+' : ''}${pctGMV}% vs Jan avg</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Ticket Size</div>
+        <div class="kpi-value">${(avgTicket/1e6).toFixed(1)}M</div>
+        <div class="kpi-sub">VND (last 5 days)</div>
+        <div class="kpi-change">Jan avg: ${(jan.ticket/1e6).toFixed(1)}M</div>
+      </div>
+    </div>`;
+}
+
+// ============ CHART DEFAULTS ============
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.plugins.legend.display = false;
+Chart.defaults.elements.line.tension = 0.3;
+Chart.defaults.elements.point.radius = 1.5;
+Chart.defaults.elements.point.hoverRadius = 5;
+
+const C = {
+  pink: '#ae2070', pinkFill: 'rgba(174,32,112,0.12)',
+  blue: '#48c4e7', blueFill: 'rgba(72,196,231,0.12)',
+  green: '#4caf50', greenFill: 'rgba(76,175,80,0.12)',
+  orange: '#ff9800', orangeFill: 'rgba(255,152,0,0.12)',
+  purple: '#9c27b0',
+};
+
+// ============ DAILY CHARTS ============
+function renderDailyCharts() {
+  const labels = dailyData.map(r => r.dt.slice(5));
+
+  // Whitelist: BAR chart (no line)
+  new Chart(document.getElementById('chart-daily-whitelist'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Whitelist Users',
+        data: dailyData.map(r => r.wl),
+        backgroundColor: dailyData.map(r => {
+          // Color-code: Tet period lighter
+          const d = new Date(r.dt);
+          if (r.dt >= '2026-02-14' && r.dt <= '2026-02-22') return 'rgba(174,32,112,0.3)';
+          return C.pink;
+        }),
+        borderRadius: 2,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 }, maxTicksLimit: 20 } },
+        y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => fmtK(v) }, beginAtZero: true }
+      },
+      plugins: {
+        tooltip: {
+          backgroundColor: 'rgba(26,26,46,0.9)',
+          callbacks: { label: ctx => 'Whitelist: ' + fmtK(ctx.parsed.y) }
+        }
+      }
+    }
+  });
+
+  // Trio: Submitted (area), Disbursed (area), GMV (area) — connected visually
+  function makeTrioChart(canvasId, data, color, fillColor, label, yFmt) {
+    new Chart(document.getElementById(canvasId), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label,
+          data,
+          borderColor: color,
+          backgroundColor: fillColor,
+          fill: true,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 }, maxTicksLimit: 12 } },
+          y: {
+            grid: { color: 'rgba(0,0,0,0.04)' },
+            ticks: {
+              callback: v => yFmt === 'k' ? fmtK(v) : yFmt === 'b' ? (v/1e9).toFixed(0)+'B' : fmtNum(v),
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            backgroundColor: 'rgba(26,26,46,0.9)',
+            callbacks: {
+              label: ctx => {
+                const v = ctx.parsed.y;
+                if (yFmt === 'k') return label + ': ' + fmtK(v);
+                if (yFmt === 'b') return label + ': ' + (v/1e9).toFixed(1) + 'B VND';
+                return label + ': ' + fmtNum(v);
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  makeTrioChart('chart-trio-submitted', dailyData.map(r => r.sub), C.blue, C.blueFill, 'Submitted', 'k');
+  makeTrioChart('chart-trio-disbursed', dailyData.map(r => r.dis), C.green, C.greenFill, 'Disbursed', 'k');
+  makeTrioChart('chart-trio-gmv', dailyData.map(r => r.gmv), C.pink, C.pinkFill, 'GMV', 'b');
+
+  // Avg ticket: horizontal line chart with reference line
+  new Chart(document.getElementById('chart-daily-ticket'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Avg Ticket Size',
+          data: dailyData.map(r => r.ticket),
+          borderColor: C.orange,
+          backgroundColor: C.orangeFill,
+          fill: true,
+          borderWidth: 2,
+          pointRadius: 1.5,
+        },
+        {
+          label: 'Jan Average (18.1M)',
+          data: Array(labels.length).fill(18.1e6),
+          borderColor: 'rgba(107,114,128,0.4)',
+          borderDash: [6, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 }, maxTicksLimit: 20 } },
+        y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => (v/1e6).toFixed(0) + 'M' } }
+      },
+      plugins: {
+        legend: { display: true, position: 'top', labels: { font: { size: 11 } } },
+        tooltip: {
+          backgroundColor: 'rgba(26,26,46,0.9)',
+          callbacks: { label: ctx => ctx.dataset.label + ': ' + (ctx.parsed.y/1e6).toFixed(2) + 'M VND' }
+        }
+      }
+    }
+  });
+}
+
+// ============ WEEKLY CHARTS ============
+function renderWeeklyCharts() {
+  const labels = weeklyData.map(w => { const iw = getISOWeek(w.label); return `W${iw.week} (${w.label.slice(5)})`; });
+
+  // Whitelist: bar
+  new Chart(document.getElementById('chart-weekly-whitelist'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Whitelist Users', data: weeklyData.map(r => r.wl), backgroundColor: C.pink, borderRadius: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => fmtK(v) } } },
+      plugins: { tooltip: { backgroundColor: 'rgba(26,26,46,0.9)', callbacks: { label: ctx => 'Whitelist: ' + fmtNum(ctx.parsed.y) } } }
+    }
+  });
+
+  // Trio weekly
+  function makeWeeklyTrio(canvasId, data, color, label, yFmt) {
+    new Chart(document.getElementById(canvasId), {
+      type: 'bar',
+      data: { labels, datasets: [{ label, data, backgroundColor: color, borderRadius: 4 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => yFmt === 'k' ? fmtK(v) : yFmt === 'b' ? (v/1e9).toFixed(0)+'B' : fmtNum(v), font: { size: 10 } } }
+        },
+        plugins: { tooltip: { backgroundColor: 'rgba(26,26,46,0.9)', callbacks: {
+          label: ctx => { const v = ctx.parsed.y; return yFmt === 'k' ? label+': '+fmtK(v) : yFmt === 'b' ? label+': '+(v/1e9).toFixed(1)+'B VND' : label+': '+fmtNum(v); }
+        } } }
+      }
+    });
+  }
+  makeWeeklyTrio('chart-weekly-submitted', weeklyData.map(r => r.sub), C.blue, 'Submitted', 'k');
+  makeWeeklyTrio('chart-weekly-disbursed', weeklyData.map(r => r.dis), C.green, 'Disbursed', 'k');
+  makeWeeklyTrio('chart-weekly-gmv', weeklyData.map(r => r.gmv), C.pink, 'GMV', 'b');
+
+  // Ticket: bar
+  new Chart(document.getElementById('chart-weekly-ticket'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Avg Ticket', data: weeklyData.map(r => r.ticket), backgroundColor: C.orange, borderRadius: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => (v/1e6).toFixed(0)+'M' } } },
+      plugins: { tooltip: { backgroundColor: 'rgba(26,26,46,0.9)', callbacks: { label: ctx => 'Avg Ticket: ' + (ctx.parsed.y/1e6).toFixed(2) + 'M VND' } } }
+    }
+  });
+}
+
+// ============ MONTHLY CHARTS ============
+function renderMonthlyCharts() {
+  const labels = monthlyData.map(m => m.label + (m.days < 28 ? ' (' + m.days + 'd)' : ''));
+
+  // STACKED bar: Whitelist split into 3 layers showing the funnel
+  // Layer 1 (bottom): Disbursed users
+  // Layer 2 (middle): Submitted but not disbursed (sub - dis)
+  // Layer 3 (top): Whitelist but not submitted (wl - sub)
+  new Chart(document.getElementById('chart-monthly-stacked'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Disbursed Users',
+          data: monthlyData.map(r => r.dis),
+          backgroundColor: C.green,
+          borderRadius: 0,
+        },
+        {
+          label: 'Submitted (not disbursed)',
+          data: monthlyData.map(r => r.sub - r.dis),
+          backgroundColor: C.blue,
+          borderRadius: 0,
+        },
+        {
+          label: 'Whitelist (not submitted)',
+          data: monthlyData.map(r => r.wl - r.sub),
+          backgroundColor: 'rgba(174,32,112,0.35)',
+          borderRadius: { topLeft: 6, topRight: 6 },
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => fmtNum(v) } }
+      },
+      plugins: {
+        legend: { display: true, position: 'top', labels: { font: { size: 12 }, usePointStyle: true, pointStyle: 'rectRounded' } },
+        tooltip: {
+          backgroundColor: 'rgba(26,26,46,0.9)',
+          callbacks: {
+            afterBody: function(items) {
+              const idx = items[0].dataIndex;
+              const m = monthlyData[idx];
+              return [
+                '', '--- Totals ---',
+                'Whitelist: ' + fmtNum(m.wl),
+                'Submitted: ' + fmtNum(m.sub),
+                'Disbursed: ' + fmtNum(m.dis),
+                'GMV: ' + fmtNum(m.gmv) + ' VND',
+                'Avg Ticket: ' + (m.ticket/1e6).toFixed(1) + 'M VND',
+              ];
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // GMV bar
+  new Chart(document.getElementById('chart-monthly-gmv'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'GMV', data: monthlyData.map(r => r.gmv), backgroundColor: [C.pink, C.pink, 'rgba(174,32,112,0.5)'], borderRadius: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => (v/1e12).toFixed(1)+'T' } } },
+      plugins: { tooltip: { backgroundColor: 'rgba(26,26,46,0.9)', callbacks: { label: ctx => 'GMV: ' + (ctx.parsed.y/1e12).toFixed(3) + 'T VND' } } }
+    }
+  });
+
+  // Ticket bar
+  new Chart(document.getElementById('chart-monthly-ticket'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Avg Ticket', data: monthlyData.map(r => r.ticket), backgroundColor: [C.orange, C.orange, 'rgba(255,152,0,0.5)'], borderRadius: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => (v/1e6).toFixed(0)+'M' } } },
+      plugins: { tooltip: { backgroundColor: 'rgba(26,26,46,0.9)', callbacks: { label: ctx => 'Avg Ticket: ' + (ctx.parsed.y/1e6).toFixed(2) + 'M VND' } } }
+    }
+  });
+}
+
+// ============ FUNNEL TAB ============
+function renderFunnel() {
+  // Table
+  let html = '<table class="funnel-table"><thead><tr>';
+  html += '<th>Month</th><th>Whitelist</th><th>Submitted</th><th>Disbursed</th>';
+  html += '<th>WL&#8594;Sub</th><th>Sub&#8594;Dis</th><th>WL&#8594;Dis</th>';
+  html += '<th>GMV (VND)</th><th>Avg Ticket</th></tr></thead><tbody>';
+  monthlyData.forEach(m => {
+    html += `<tr>
+      <td>${m.label}${m.days < 28 ? ' (' + m.days + 'd)' : ''}</td>
+      <td>${fmtNum(m.wl)}</td><td>${fmtNum(m.sub)}</td><td>${fmtNum(m.dis)}</td>
+      <td>${(m.sub/m.wl*100).toFixed(1)}%</td>
+      <td>${(m.dis/m.sub*100).toFixed(1)}%</td>
+      <td>${(m.dis/m.wl*100).toFixed(1)}%</td>
+      <td>${fmtNum(m.gmv)}</td><td>${(m.ticket/1e6).toFixed(1)}M</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('funnel-table-container').innerHTML = html;
+
+  // TWO SEPARATE charts instead of one with mismatched scales
+  const wLabels = weeklyData.map(w => { const iw = getISOWeek(w.label); return `W${iw.week}`; });
+
+  // Chart 1: Top-of-funnel (WL → Submit, ~5-8%)
+  new Chart(document.getElementById('chart-funnel-top'), {
+    type: 'line',
+    data: {
+      labels: wLabels,
+      datasets: [{
+        label: 'WL → Submit %',
+        data: weeklyData.map(r => (r.sub / r.wl * 100)),
+        borderColor: C.pink,
+        backgroundColor: C.pinkFill,
+        fill: true,
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointBackgroundColor: C.pink,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          ticks: { callback: v => v.toFixed(0) + '%' },
+          suggestedMin: 0,
+          suggestedMax: 12,
+        }
+      },
+      plugins: {
+        tooltip: { backgroundColor: 'rgba(26,26,46,0.9)', callbacks: { label: ctx => ctx.parsed.y.toFixed(1) + '%' } },
+        annotation: {}
+      }
+    }
+  });
+
+  // Chart 2: Bottom-of-funnel (Submit → Disburse, ~65-80%)
+  new Chart(document.getElementById('chart-funnel-bottom'), {
+    type: 'line',
+    data: {
+      labels: wLabels,
+      datasets: [{
+        label: 'Submit → Disburse %',
+        data: weeklyData.map(r => (r.dis / r.sub * 100)),
+        borderColor: C.green,
+        backgroundColor: C.greenFill,
+        fill: true,
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointBackgroundColor: C.green,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          ticks: { callback: v => v.toFixed(0) + '%' },
+          suggestedMin: 50,
+          suggestedMax: 85,
+        }
+      },
+      plugins: {
+        tooltip: { backgroundColor: 'rgba(26,26,46,0.9)', callbacks: { label: ctx => ctx.parsed.y.toFixed(1) + '%' } }
+      }
+    }
+  });
+}
+
+// ============ TAB SWITCHING ============
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ============ INIT ============
+renderKPIs();
+renderDailyCharts();
+renderWeeklyCharts();
+renderMonthlyCharts();
+renderFunnel();
+</script>
+</body>
+</html>

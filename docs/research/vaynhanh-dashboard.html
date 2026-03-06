@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vay Nhanh Performance Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; min-height: 100vh; }
+    
+    .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 24px 32px; }
+    .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 4px; }
+    .header p { opacity: 0.8; font-size: 14px; }
+    
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+    .kpi-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .kpi-card.highlight { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .kpi-card.highlight .kpi-value { color: white; }
+    .kpi-label { font-size: 13px; color: #666; margin-bottom: 8px; }
+    .kpi-card.highlight .kpi-label { color: rgba(255,255,255,0.8); }
+    .kpi-value { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+    .kpi-change { font-size: 12px; margin-top: 4px; }
+    .kpi-change.up { color: #10b981; }
+    .kpi-change.down { color: #ef4444; }
+    .kpi-card.highlight .kpi-change.up { color: #a7f3d0; }
+    
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: white; padding: 8px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .tab { padding: 10px 24px; border: none; background: transparent; cursor: pointer; font-size: 14px; font-weight: 500; color: #666; border-radius: 8px; transition: all 0.2s; }
+    .tab.active { background: #1a1a2e; color: white; }
+    
+    .chart-section { display: none; }
+    .chart-section.active { display: block; }
+    
+    .chart-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+    .chart-card h3 { font-size: 16px; font-weight: 600; color: #1a1a2e; margin-bottom: 20px; }
+    .chart-container { position: relative; height: 350px; }
+    
+    .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+    .summary-item { text-align: center; padding: 16px; background: #f8f9fa; border-radius: 8px; }
+    .summary-item .value { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+    .summary-item .label { font-size: 12px; color: #666; margin-top: 4px; }
+    
+    @media (max-width: 1200px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .summary-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Vay Nhanh Performance Dashboard</h1>
+    <p>Từ 01/01/2026 - 06/03/2026</p>
+  </div>
+  
+  <div class="container">
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Whitelist Users</div>
+        <div class="kpi-value" id="kpi-whitelist">-</div>
+        <div class="kpi-change up" id="change-whitelist">Loading...</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Submitted Users</div>
+        <div class="kpi-value" id="kpi-submitted">-</div>
+        <div class="kpi-change up" id="change-submitted">Loading...</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Disbursed Users</div>
+        <div class="kpi-value" id="kpi-disbursed">-</div>
+        <div class="kpi-change up" id="change-disbursed">Loading...</div>
+      </div>
+      <div class="kpi-card highlight">
+        <div class="kpi-label">GMV Disbursed (tỷ)</div>
+        <div class="kpi-value" id="kpi-gmv">-</div>
+        <div class="kpi-change up" id="change-gmv">Loading...</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Ticket Size (triệu)</div>
+        <div class="kpi-value" id="kpi-avg-ticket">-</div>
+        <div class="kpi-change" id="change-ticket">Loading...</div>
+      </div>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('daily')">Daily</button>
+      <button class="tab" onclick="switchTab('weekly')">Weekly</button>
+      <button class="tab" onclick="switchTab('monthly')">Monthly</button>
+    </div>
+    
+    <!-- Daily Chart -->
+    <div class="chart-section active" id="daily">
+      <div class="chart-card">
+        <h3>Daily Performance</h3>
+        <div class="chart-container">
+          <canvas id="dailyChart"></canvas>
+        </div>
+        <div class="summary-row">
+          <div class="summary-item">
+            <div class="value" id="daily-whitelist">-</div>
+            <div class="label">Avg Whitelist/Day</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="daily-submitted">-</div>
+            <div class="label">Avg Submitted/Day</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="daily-disbursed">-</div>
+            <div class="label">Avg Disbursed/Day</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="daily-gmv">-</div>
+            <div class="label">Avg GMV/Day (tỷ)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Weekly Chart -->
+    <div class="chart-section" id="weekly">
+      <div class="chart-card">
+        <h3>Weekly Performance</h3>
+        <div class="chart-container">
+          <canvas id="weeklyChart"></canvas>
+        </div>
+        <div class="summary-row">
+          <div class="summary-item">
+            <div class="value" id="weekly-whitelist">-</div>
+            <div class="label">Total Whitelist</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="weekly-submitted">-</div>
+            <div class="label">Total Submitted</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="weekly-disbursed">-</div>
+            <div class="label">Total Disbursed</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="weekly-gmv">-</div>
+            <div class="label">Total GMV (tỷ)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Monthly Chart -->
+    <div class="chart-section" id="monthly">
+      <div class="chart-card">
+        <h3>Monthly Performance</h3>
+        <div class="chart-container">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+        <div class="summary-row">
+          <div class="summary-item">
+            <div class="value" id="monthly-whitelist">-</div>
+            <div class="label">Total Whitelist</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="monthly-submitted">-</div>
+            <div class="label">Total Submitted</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="monthly-disbursed">-</div>
+            <div class="label">Total Disbursed</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="monthly-gmv">-</div>
+            <div class="label">Total GMV (tỷ)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data from BigQuery
+    const dailyData = [
+      {date: '2026-01-01', whitelist: 87064, submitted: 6160, disbursed: 4580, gmv: 77.98, avg_ticket: 16.68},
+      {date: '2026-01-02', whitelist: 94814, submitted: 6887, disbursed: 5215, gmv: 98.29, avg_ticket: 18.54},
+      {date: '2026-01-03', whitelist: 96102, submitted: 6928, disbursed: 5071, gmv: 94.78, avg_ticket: 18.41},
+      {date: '2026-01-04', whitelist: 98077, submitted: 6820, disbursed: 5104, gmv: 95.17, avg_ticket: 18.41},
+      {date: '2026-01-05', whitelist: 131377, submitted: 8648, disbursed: 6148, gmv: 119.25, avg_ticket: 19.21},
+      {date: '2026-01-06', whitelist: 110640, submitted: 7864, disbursed: 5610, gmv: 105.62, avg_ticket: 18.57},
+      {date: '2026-01-07', whitelist: 105525, submitted: 7660, disbursed: 5303, gmv: 101.67, avg_ticket: 18.89},
+      {date: '2026-01-08', whitelist: 100107, submitted: 7499, disbursed: 5141, gmv: 96.46, avg_ticket: 18.57},
+      {date: '2026-01-09', whitelist: 103577, submitted: 7803, disbursed: 5772, gmv: 108.44, avg_ticket: 18.57},
+      {date: '2026-01-10', whitelist: 104939, submitted: 8665, disbursed: 6350, gmv: 117.20, avg_ticket: 18.27},
+      {date: '2026-01-11', whitelist: 90338, submitted: 7630, disbursed: 5497, gmv: 100.44, avg_ticket: 18.04},
+      {date: '2026-01-12', whitelist: 104252, submitted: 8331, disbursed: 6132, gmv: 117.49, avg_ticket: 18.90},
+      {date: '2026-01-13', whitelist: 98258, submitted: 8102, disbursed: 5467, gmv: 98.28, avg_ticket: 17.74},
+      {date: '2026-01-14', whitelist: 96889, submitted: 8775, disbursed: 6085, gmv: 112.98, avg_ticket: 18.36},
+      {date: '2026-01-15', whitelist: 104975, submitted: 8335, disbursed: 5968, gmv: 109.25, avg_ticket: 18.10},
+      {date: '2026-01-16', whitelist: 99699, submitted: 9084, disbursed: 6257, gmv: 114.56, avg_ticket: 18.11},
+      {date: '2026-01-17', whitelist: 85696, submitted: 7529, disbursed: 5260, gmv: 94.52, avg_ticket: 17.77},
+      {date: '2026-01-18', whitelist: 84915, submitted: 7538, disbursed: 5241, gmv: 92.32, avg_ticket: 17.42},
+      {date: '2026-01-19', whitelist: 98016, submitted: 7920, disbursed: 5498, gmv: 100.32, avg_ticket: 18.06},
+      {date: '2026-01-20', whitelist: 98364, submitted: 8296, disbursed: 5631, gmv: 106.26, avg_ticket: 18.71},
+      {date: '2026-01-21', whitelist: 95092, submitted: 7620, disbursed: 5540, gmv: 102.05, avg_ticket: 18.26},
+      {date: '2026-01-22', whitelist: 90098, submitted: 7461, disbursed: 5154, gmv: 93.84, avg_ticket: 18.01},
+      {date: '2026-01-23', whitelist: 87579, submitted: 7222, disbursed: 5002, gmv: 90.77, avg_ticket: 17.95},
+      {date: '2026-01-24', whitelist: 81158, submitted: 6972, disbursed: 4842, gmv: 83.77, avg_ticket: 17.10},
+      {date: '2026-01-25', whitelist: 83683, submitted: 7339, disbursed: 5221, gmv: 89.83, avg_ticket: 17.06},
+      {date: '2026-01-26', whitelist: 93610, submitted: 7767, disbursed: 5428, gmv: 100.35, avg_ticket: 18.31},
+      {date: '2026-01-27', whitelist: 101793, submitted: 8023, disbursed: 5490, gmv: 101.66, avg_ticket: 18.30},
+      {date: '2026-01-28', whitelist: 91053, submitted: 7244, disbursed: 5012, gmv: 92.11, avg_ticket: 18.23},
+      {date: '2026-01-29', whitelist: 90384, submitted: 7431, disbursed: 5303, gmv: 92.08, avg_ticket: 17.16},
+      {date: '2026-01-30', whitelist: 93276, submitted: 8275, disbursed: 5823, gmv: 100.97, avg_ticket: 17.20},
+      {date: '2026-01-31', whitelist: 88725, submitted: 7989, disbursed: 5473, gmv: 99.69, avg_ticket: 18.10},
+      {date: '2026-02-01', whitelist: 100926, submitted: 8545, disbursed: 6013, gmv: 107.81, avg_ticket: 17.78},
+      {date: '2026-02-02', whitelist: 115400, submitted: 9120, disbursed: 6062, gmv: 113.87, avg_ticket: 18.65},
+      {date: '2026-02-03', whitelist: 119640, submitted: 8924, disbursed: 6192, gmv: 119.06, avg_ticket: 19.05},
+      {date: '2026-02-04', whitelist: 118059, submitted: 9021, disbursed: 6389, gmv: 120.33, avg_ticket: 18.66},
+      {date: '2026-02-05', whitelist: 127193, submitted: 9129, disbursed: 6693, gmv: 123.13, avg_ticket: 18.28},
+      {date: '2026-02-06', whitelist: 123884, submitted: 9381, disbursed: 6532, gmv: 124.02, avg_ticket: 18.84},
+      {date: '2026-02-07', whitelist: 111509, submitted: 9028, disbursed: 6223, gmv: 112.00, avg_ticket: 17.92},
+      {date: '2026-02-08', whitelist: 93643, submitted: 7921, disbursed: 5669, gmv: 100.34, avg_ticket: 17.57},
+      {date: '2026-02-09', whitelist: 111372, submitted: 9442, disbursed: 6738, gmv: 124.19, avg_ticket: 18.33},
+      {date: '2026-02-10', whitelist: 124784, submitted: 10633, disbursed: 7722, gmv: 141.95, avg_ticket: 18.27},
+      {date: '2026-02-11', whitelist: 113058, submitted: 9947, disbursed: 6863, gmv: 126.61, avg_ticket: 18.31},
+      {date: '2026-02-12', whitelist: 109576, submitted: 9884, disbursed: 6886, gmv: 123.18, avg_ticket: 17.72},
+      {date: '2026-02-13', whitelist: 104557, submitted: 9334, disbursed: 6837, gmv: 118.74, avg_ticket: 17.21},
+      {date: '2026-02-14', whitelist: 84913, submitted: 7920, disbursed: 5766, gmv: 94.39, avg_ticket: 16.22},
+      {date: '2026-02-15', whitelist: 76525, submitted: 7077, disbursed: 5176, gmv: 83.46, avg_ticket: 15.94},
+      {date: '2026-02-16', whitelist: 72775, submitted: 6210, disbursed: 4642, gmv: 69.92, avg_ticket: 14.90},
+      {date: '2026-02-17', whitelist: 51449, submitted: 2883, disbursed: 1946, gmv: 28.82, avg_ticket: 14.56},
+      {date: '2026-02-18', whitelist: 54463, submitted: 3224, disbursed: 2190, gmv: 33.79, avg_ticket: 15.15},
+      {date: '2026-02-19', whitelist: 58707, submitted: 3593, disbursed: 2428, gmv: 39.59, avg_ticket: 15.96},
+      {date: '2026-02-20', whitelist: 68287, submitted: 3964, disbursed: 2656, gmv: 42.23, avg_ticket: 15.75},
+      {date: '2026-02-21', whitelist: 72261, submitted: 4505, disbursed: 2987, gmv: 48.84, avg_ticket: 16.16},
+      {date: '2026-02-22', whitelist: 80721, submitted: 4828, disbursed: 3190, gmv: 54.49, avg_ticket: 16.87},
+      {date: '2026-02-23', whitelist: 109569, submitted: 6499, disbursed: 4259, gmv: 77.20, avg_ticket: 17.94},
+      {date: '2026-02-24', whitelist: 94909, submitted: 6335, disbursed: 4215, gmv: 75.80, avg_ticket: 17.80},
+      {date: '2026-02-25', whitelist: 93992, submitted: 6162, disbursed: 4400, gmv: 78.91, avg_ticket: 17.70},
+      {date: '2026-02-26', whitelist: 91236, submitted: 5987, disbursed: 4240, gmv: 75.82, avg_ticket: 17.73},
+      {date: '2026-02-27', whitelist: 91600, submitted: 6133, disbursed: 4222, gmv: 74.11, avg_ticket: 17.39},
+      {date: '2026-02-28', whitelist: 87012, submitted: 6744, disbursed: 4738, gmv: 82.65, avg_ticket: 17.28},
+      {date: '2026-03-01', whitelist: 97419, submitted: 6800, disbursed: 5052, gmv: 85.51, avg_ticket: 16.66},
+      {date: '2026-03-02', whitelist: 111316, submitted: 7188, disbursed: 5197, gmv: 94.88, avg_ticket: 17.98},
+      {date: '2026-03-03', whitelist: 109857, submitted: 7296, disbursed: 5264, gmv: 93.91, avg_ticket: 17.62},
+      {date: '2026-03-04', whitelist: 112511, submitted: 7215, disbursed: 5238, gmv: 95.43, avg_ticket: 17.96},
+      {date: '2026-03-05', whitelist: 128404, submitted: 7437, disbursed: 5620, gmv: 100.54, avg_ticket: 17.69},
+    ];
+
+    // Process weekly data
+    function getWeeklyData() {
+      const weeks = {};
+      dailyData.forEach(d => {
+        const date = new Date(d.date);
+        const dayOfWeek = date.getDay();
+        const monday = new Date(date);
+        monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        const weekKey = monday.toISOString().split('T')[0];
+        
+        if (!weeks[weekKey]) {
+          weeks[weekKey] = { whitelist: 0, submitted: 0, disbursed: 0, gmv: 0 };
+        }
+        weeks[weekKey].whitelist += d.whitelist;
+        weeks[weekKey].submitted += d.submitted;
+        weeks[weekKey].disbursed += d.disbursed;
+        weeks[weekKey].gmv += d.gmv;
+      });
+      return Object.entries(weeks).map(([date, data]) => ({ date, ...data })).sort((a,b) => a.date.localeCompare(b.date));
+    }
+
+    // Process monthly data
+    function getMonthlyData() {
+      const months = {};
+      dailyData.forEach(d => {
+        const monthKey = d.date.substring(0, 7);
+        if (!months[monthKey]) {
+          months[monthKey] = { whitelist: 0, submitted: 0, disbursed: 0, gmv: 0 };
+        }
+        months[monthKey].whitelist += d.whitelist;
+        months[monthKey].submitted += d.submitted;
+        months[monthKey].disbursed += d.disbursed;
+        months[monthKey].gmv += d.gmv;
+      });
+      return Object.entries(months).map(([date, data]) => ({ date, ...data })).sort((a,b) => a.date.localeCompare(b.date));
+    }
+
+    const weeklyData = getWeeklyData();
+    const monthlyData = getMonthlyData();
+
+    // Calculate KPI totals
+    const totalWhitelist = dailyData.reduce((sum, d) => sum + d.whitelist, 0);
+    const totalSubmitted = dailyData.reduce((sum, d) => sum + d.submitted, 0);
+    const totalDisbursed = dailyData.reduce((sum, d) => sum + d.disbursed, 0);
+    const totalGMV = dailyData.reduce((sum, d) => sum + d.gmv, 0);
+    const avgTicket = totalGMV / totalDisbursed;
+
+    // Update KPI cards
+    document.getElementById('kpi-whitelist').textContent = (totalWhitelist / 1000).toFixed(1) + 'K';
+    document.getElementById('kpi-submitted').textContent = (totalSubmitted / 1000).toFixed(1) + 'K';
+    document.getElementById('kpi-disbursed').textContent = (totalDisbursed / 1000).toFixed(1) + 'K';
+    document.getElementById('kpi-gmv').textContent = totalGMV.toFixed(0) + ' tỷ';
+    document.getElementById('kpi-avg-ticket').textContent = avgTicket.toFixed(2) + ' tr';
+
+    // Calculate changes (compare last week vs previous week)
+    const lastWeek = dailyData.slice(-7);
+    const prevWeek = dailyData.slice(-14, -7);
+    const lastWeekGMV = lastWeek.reduce((s, d) => s + d.gmv, 0);
+    const prevWeekGMV = prevWeek.reduce((s, d) => s + d.gmv, 0);
+    const gmvChange = ((lastWeekGMV - prevWeekGMV) / prevWeekGMV * 100).toFixed(0);
+    document.getElementById('change-gmv').textContent = `${gmvChange > 0 ? '+' : ''}${gmvChange}% vs last week`;
+    document.getElementById('change-whitelist').textContent = 'Cumulative';
+    document.getElementById('change-submitted').textContent = 'Cumulative';
+    document.getElementById('change-disbursed').textContent = 'Cumulative';
+    document.getElementById('change-ticket').textContent = 'Average';
+
+    // Daily summary
+    const avgDailyWhitelist = (totalWhitelist / dailyData.length).toFixed(0);
+    const avgDailySubmitted = (totalSubmitted / dailyData.length).toFixed(0);
+    const avgDailyDisbursed = (totalDisbursed / dailyData.length).toFixed(0);
+    const avgDailyGMV = (totalGMV / dailyData.length).toFixed(1);
+    document.getElementById('daily-whitelist').textContent = avgDailyWhitelist;
+    document.getElementById('daily-submitted').textContent = avgDailySubmitted;
+    document.getElementById('daily-disbursed').textContent = avgDailyDisbursed;
+    document.getElementById('daily-gmv').textContent = avgDailyGMV;
+
+    // Weekly summary
+    document.getElementById('weekly-whitelist').textContent = (weeklyData[weeklyData.length-1].whitelist / 1000).toFixed(1) + 'K';
+    document.getElementById('weekly-submitted').textContent = (weeklyData[weeklyData.length-1].submitted / 1000).toFixed(1) + 'K';
+    document.getElementById('weekly-disbursed').textContent = (weeklyData[weeklyData.length-1].disbursed / 1000).toFixed(1) + 'K';
+    document.getElementById('weekly-gmv').textContent = weeklyData[weeklyData.length-1].gmv.toFixed(1);
+
+    // Monthly summary
+    document.getElementById('monthly-whitelist').textContent = (monthlyData[monthlyData.length-1].whitelist / 1000).toFixed(1) + 'K';
+    document.getElementById('monthly-submitted').textContent = (monthlyData[monthlyData.length-1].submitted / 1000).toFixed(1) + 'K';
+    document.getElementById('monthly-disbursed').textContent = (monthlyData[monthlyData.length-1].disbursed / 1000).toFixed(1) + 'K';
+    document.getElementById('monthly-gmv').textContent = monthlyData[monthlyData.length-1].gmv.toFixed(1);
+
+    // Chart colors
+    const colors = {
+      whitelist: '#10b981',
+      submitted: '#3b82f6',
+      disbursed: '#8b5cf6',
+      gmv: '#f59e0b',
+      avgTicket: '#ef4444'
+    };
+
+    // Create Daily Chart
+    const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+    new Chart(dailyCtx, {
+      type: 'bar',
+      data: {
+        labels: dailyData.map(d => d.date.substring(5)),
+        datasets: [
+          {
+            label: 'Whitelist',
+            data: dailyData.map(d => d.whitelist),
+            backgroundColor: colors.whitelist + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'Submitted',
+            data: dailyData.map(d => d.submitted),
+            backgroundColor: colors.submitted + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'Disbursed',
+            data: dailyData.map(d => d.disbursed),
+            backgroundColor: colors.disbursed + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'GMV (tỷ)',
+            data: dailyData.map(d => d.gmv),
+            type: 'line',
+            borderColor: colors.gmv,
+            backgroundColor: colors.gmv,
+            tension: 0.3,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: { 
+            type: 'linear', 
+            position: 'left', 
+            title: { display: true, text: 'Users' },
+            min: 0
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            title: { display: true, text: 'GMV (tỷ VND)' },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+
+    // Create Weekly Chart
+    const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+    new Chart(weeklyCtx, {
+      type: 'bar',
+      data: {
+        labels: weeklyData.map(d => 'W ' + d.date.substring(5)),
+        datasets: [
+          {
+            label: 'Whitelist',
+            data: weeklyData.map(d => d.whitelist),
+            backgroundColor: colors.whitelist + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'Submitted',
+            data: weeklyData.map(d => d.submitted),
+            backgroundColor: colors.submitted + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'Disbursed',
+            data: weeklyData.map(d => d.disbursed),
+            backgroundColor: colors.disbursed + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'GMV (tỷ)',
+            data: weeklyData.map(d => d.gmv),
+            type: 'line',
+            borderColor: colors.gmv,
+            backgroundColor: colors.gmv,
+            tension: 0.3,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: { 
+            type: 'linear', 
+            position: 'left', 
+            title: { display: true, text: 'Users' },
+            min: 0
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            title: { display: true, text: 'GMV (tỷ VND)' },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+
+    // Create Monthly Chart
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(monthlyCtx, {
+      type: 'bar',
+      data: {
+        labels: monthlyData.map(d => d.date),
+        datasets: [
+          {
+            label: 'Whitelist',
+            data: monthlyData.map(d => d.whitelist),
+            backgroundColor: colors.whitelist + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'Submitted',
+            data: monthlyData.map(d => d.submitted),
+            backgroundColor: colors.submitted + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'Disbursed',
+            data: monthlyData.map(d => d.disbursed),
+            backgroundColor: colors.disbursed + '80',
+            yAxisID: 'y'
+          },
+          {
+            label: 'GMV (tỷ)',
+            data: monthlyData.map(d => d.gmv),
+            type: 'line',
+            borderColor: colors.gmv,
+            backgroundColor: colors.gmv,
+            tension: 0.3,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: { 
+            type: 'linear', 
+            position: 'left', 
+            title: { display: true, text: 'Users' },
+            min: 0
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            title: { display: true, text: 'GMV (tỷ VND)' },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.chart-section').forEach(s => s.classList.remove('active'));
+      document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>
