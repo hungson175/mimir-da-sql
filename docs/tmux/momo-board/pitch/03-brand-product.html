@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand & Product Strategy — MoMo Sinh Lời</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0b;--surface:#131316;--surface2:#1a1a1f;--surface3:#222228;
+  --border:#25252b;--border2:#35353d;
+  --text:#ededef;--text2:#7a7a85;--text3:#4a4a55;
+  --magenta:#a50064;--green:#10b981;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Be Vietnam Pro',system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;opacity:0.03;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.container{max-width:1100px;margin:0 auto;padding:2.5rem}
+a{color:var(--magenta);text-decoration:none}a:hover{text-decoration:underline}
+.nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:1.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+.nav a{font-size:0.82rem;color:var(--text2);display:flex;align-items:center;gap:0.4rem;transition:color 0.2s}
+.nav a:hover{color:var(--text);text-decoration:none}
+.nav-title{font-size:0.78rem;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+.header{margin-bottom:3rem}
+.header h1{font-family:var(--serif);font-size:clamp(2.5rem,5vw,3.8rem);font-weight:600;letter-spacing:-0.02em;margin-bottom:0.6rem}
+.header p{color:var(--text2);font-size:1rem}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:0.85rem 1.25rem;font-size:0.82rem;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.25s}
+.tab:hover{color:var(--text2)}.tab.active{color:var(--text);border-bottom-color:var(--magenta)}
+.panel{display:none;animation:fadeIn 0.3s ease}.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem}
+.card h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin-bottom:1rem}
+.card-text{color:var(--text2);font-size:0.92rem;line-height:1.85}
+.card-text strong{color:var(--text)}
+.mr{display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);font-size:0.9rem}
+.mr:last-child{border-bottom:none}
+.mr .k{color:var(--text2)}.mr .v{font-weight:600}
+table.dt{width:100%;border-collapse:collapse;font-size:0.88rem}
+table.dt th{text-align:left;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0.8rem 0.75rem;border-bottom:2px solid var(--border)}
+table.dt td{padding:0.75rem;border-bottom:1px solid var(--border)}
+table.dt tr:last-child td{border-bottom:none}
+table.dt .dim{color:var(--text2)}
+table.dt tfoot td{border-top:2px solid var(--border);font-weight:700}
+.quote{border-left:3px solid var(--blue);padding:1.25rem 1.75rem;background:var(--surface);border-radius:0 12px 12px 0;margin:1.5rem 0}
+.quote em{font-family:var(--serif);font-style:italic;color:var(--text);font-size:1.15rem}
+.quote .attr{color:var(--text3);font-size:0.82rem;margin-top:0.5rem}
+
+/* Language cards */
+.lang-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0}
+.lang-card{padding:1.75rem;border-radius:14px;text-align:center;position:relative;overflow:hidden}
+.lang-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.lang-card.reject{background:rgba(74,74,85,0.06);border:1px solid var(--border)}
+.lang-card.reject::before{background:linear-gradient(90deg,transparent,var(--text3),transparent)}
+.lang-card.chosen{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.2)}
+.lang-card.chosen::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.lang-word{font-family:var(--serif);font-size:1.7rem;font-weight:700;margin-bottom:0.3rem}
+.lang-card.reject .lang-word{color:var(--text3)}
+.lang-card.chosen .lang-word{color:var(--green)}
+.lang-meaning{font-size:0.82rem;color:var(--text2);margin-bottom:0.75rem}
+.lang-why{font-size:0.82rem;color:var(--text3);line-height:1.5}
+.lang-badge{display:inline-block;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem}
+.lang-card.reject .lang-badge{background:rgba(74,74,85,0.15);color:var(--text3)}
+.lang-card.chosen .lang-badge{background:rgba(16,185,129,0.15);color:var(--green)}
+
+/* UX mock comparison */
+.ux-compare{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0}
+.ux-mock{border-radius:14px;padding:2rem;position:relative;overflow:hidden}
+.ux-mock::before{content:'';position:absolute;top:0;left:0;right:0;height:1px}
+.ux-mock.ttt{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15)}
+.ux-mock.ttt::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.ux-mock.sinhloi{background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.15)}
+.ux-mock.sinhloi::before{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.ux-mock h4{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1.25rem}
+.ux-mock.ttt h4{color:var(--green)}.ux-mock.sinhloi h4{color:var(--blue)}
+.ux-balance{font-family:var(--serif);font-size:2rem;font-weight:800;margin-bottom:0.5rem}
+.ux-mock.ttt .ux-balance{color:var(--green)}.ux-mock.sinhloi .ux-balance{color:var(--blue)}
+.ux-label{font-size:0.82rem;color:var(--text2);margin-bottom:0.25rem}
+.ux-detail{font-size:0.78rem;color:var(--text3)}
+.ux-rules{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.ux-rules li{font-size:0.82rem;color:var(--text2);padding:0.2rem 0;list-style:none;padding-left:1rem;position:relative}
+.ux-rules li::before{content:'';width:4px;height:4px;border-radius:50%;position:absolute;left:0;top:0.65rem}
+.ux-mock.ttt .ux-rules li::before{background:var(--green)}.ux-mock.sinhloi .ux-rules li::before{background:var(--blue)}
+
+/* Segment cards */
+.seg-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0}
+.seg{padding:1.75rem;border-radius:14px;position:relative;overflow:hidden}
+.seg::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.seg.primary{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15)}
+.seg.primary::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.seg.secondary{background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.15)}
+.seg.secondary::before{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.seg.suppressed{background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.15)}
+.seg.suppressed::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.seg-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.75rem}
+.seg.primary .seg-label{color:var(--green)}.seg.secondary .seg-label{color:var(--blue)}.seg.suppressed .seg-label{color:var(--red)}
+.seg-num{font-family:var(--serif);font-size:2.2rem;font-weight:700;margin-bottom:0.3rem}
+.seg-desc{font-size:0.85rem;color:var(--text2);line-height:1.6}
+.seg-risk{margin-top:0.75rem;font-size:0.78rem;padding:0.35rem 0.75rem;border-radius:4px;display:inline-block}
+.seg.primary .seg-risk{background:rgba(16,185,129,0.1);color:var(--green)}
+.seg.secondary .seg-risk{background:rgba(59,130,246,0.1);color:var(--blue)}
+.seg.suppressed .seg-risk{background:rgba(239,68,68,0.1);color:var(--red)}
+
+/* Phase timeline */
+.phase-tl{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0}
+.phase{padding:1.75rem;border-radius:14px;background:var(--surface);border:1px solid var(--border);position:relative}
+.phase::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--magenta),transparent)}
+.phase-num{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--magenta);margin-bottom:0.5rem}
+.phase-title{font-family:var(--serif);font-size:1.3rem;font-weight:700;margin-bottom:0.75rem}
+.phase-products{font-size:0.85rem;color:var(--text2);line-height:1.7}
+.phase-products strong{color:var(--text)}
+
+@media(max-width:768px){
+  .lang-grid,.seg-cards,.phase-tl{grid-template-columns:1fr}
+  .ux-compare{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a href="index.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 12L6 8l4-4"/></svg> Index</a>
+    <div class="nav-title">03 / Brand & Product</div>
+  </nav>
+
+  <div class="header">
+    <h1>Brand & Product Strategy</h1>
+    <p>CMO's positioning, UX architecture, segment targeting, and product ladder.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="positioning">Sinh Lời Positioning</div>
+    <div class="tab" data-tab="ux">UX Architecture</div>
+    <div class="tab" data-tab="segments">Segments</div>
+    <div class="tab" data-tab="funnel">Conversion Funnel</div>
+    <div class="tab" data-tab="ladder">Product Ladder</div>
+  </div>
+
+  <!-- POSITIONING -->
+  <div class="panel active" id="tab-positioning">
+    <div class="card">
+      <h3>The Language Decision</h3>
+      <p class="card-text">Vietnamese users think in three mental buckets. The word we choose determines which bucket — and which emotional reaction — we trigger:</p>
+    </div>
+
+    <div class="lang-grid">
+      <div class="lang-card reject">
+        <div class="lang-badge">Rejected</div>
+        <div class="lang-word">"Đầu tư"</div>
+        <div class="lang-meaning">Investment</div>
+        <div class="lang-why">Scares users. Implies expertise needed, risk, stocks. Mental model: "Tôi có thể mất tiền."</div>
+      </div>
+      <div class="lang-card reject">
+        <div class="lang-badge">Rejected</div>
+        <div class="lang-word">"Tiết kiệm"</div>
+        <div class="lang-meaning">Savings</div>
+        <div class="lang-why">Misleads. Implies guaranteed returns like bank deposits. Regulatory risk if returns aren't guaranteed.</div>
+      </div>
+      <div class="lang-card chosen">
+        <div class="lang-badge">Chosen</div>
+        <div class="lang-word">"Sinh lời"</div>
+        <div class="lang-meaning">Earn returns</div>
+        <div class="lang-why">Emotionally neutral, aspirational, accurate. "Tiền của tôi đang sinh lời." No expertise implied.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Product Naming</h3>
+      <div class="mr"><span class="k">Product name</span><span class="v" style="color:var(--green)">"MoMo Sinh Lời" / "Vi Sinh Lời"</span></div>
+      <div class="mr"><span class="k">Tagline</span><span class="v" style="font-style:italic">"Tiền trong MoMo của bạn đang sinh lời mỗi ngày"</span></div>
+      <div class="mr"><span class="k">English</span><span class="v dim">"Tiền trong MoMo của bạn đang sinh lời mỗi ngày"</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Phase 1 Messaging Rules</h3>
+      <div class="mr"><span class="k">Lead with</span><span class="v">The RATE: "Earn 5.8-6.2%/year, withdraw anytime"</span></div>
+      <div class="mr"><span class="k">Show daily</span><span class="v">"You earned 4,521d today"</span></div>
+      <div class="mr"><span class="k">Compare to familiar</span><span class="v">"Như gửi tiết kiệm, nhưng rút bất kỳ lúc nào"</span></div>
+      <div class="mr"><span class="k">Home screen</span><span class="v">Cumulative returns only (always positive)</span></div>
+      <div class="mr"><span class="k">Never say</span><span class="v" style="color:var(--red)">"đầu tư" or "chứng chỉ quỹ" in user copy</span></div>
+    </div>
+  </div>
+
+  <!-- UX -->
+  <div class="panel" id="tab-ux">
+    <div class="card">
+      <h3>Architectural Separation, Not Messaging</h3>
+      <p class="card-text">TTT = safe, guaranteed. Investment = risk, volatility. <strong>Opposite emotions in one app.</strong> The solution isn't messaging — it's architecture. They must never touch each other visually.</p>
+    </div>
+
+    <div class="ux-compare">
+      <div class="ux-mock ttt">
+        <h4>TTT Sanctuary (unchanged)</h4>
+        <div class="ux-label">Số dư Túi Tiết Kiệm</div>
+        <div class="ux-balance">12,450,000d</div>
+        <div class="ux-detail">Lãi suất: 3.65%/năm &bull; Bảo đảm</div>
+        <ul class="ux-rules">
+          <li>Same green color palette</li>
+          <li>Same "guaranteed" language</li>
+          <li>Nothing changes for existing users</li>
+          <li>No investment UI visible here</li>
+        </ul>
+      </div>
+      <div class="ux-mock sinhloi">
+        <h4>Sinh Lời Tab (new, opt-in)</h4>
+        <div class="ux-label">Sinh Lời của bạn</div>
+        <div class="ux-balance">+187,230d</div>
+        <div class="ux-detail">5.9%/năm &bull; Rút bất kỳ lúc nào</div>
+        <ul class="ux-rules">
+          <li>Blue palette (growth, calm)</li>
+          <li>Separate tab — opt-in gated</li>
+          <li>Financial literacy entry module</li>
+          <li>Cumulative returns shown (always positive)</li>
+          <li>Daily NAV in "details" — not on home</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote">
+      <em>Never cross-contaminate the home screen. Red portfolio numbers must never appear next to a green TTT balance.</em>
+      <div class="attr">— Core UX principle, board-approved</div>
+    </div>
+  </div>
+
+  <!-- SEGMENTS -->
+  <div class="panel" id="tab-segments">
+    <div class="seg-cards">
+      <div class="seg primary">
+        <div class="seg-label">Primary Target</div>
+        <div class="seg-num">935K</div>
+        <div class="seg-desc">External investors already on MoMo. Tagged via QLCT data. Moving $170M/mo through external platforms.</div>
+        <div class="seg-risk">Zero TTT Risk</div>
+      </div>
+      <div class="seg secondary">
+        <div class="seg-label">Secondary Target</div>
+        <div class="seg-num">12M</div>
+        <div class="seg-desc">New-to-investing MoMo users. Education funnel converts them into first-time investors.</div>
+        <div class="seg-risk">Zero TTT Risk</div>
+      </div>
+      <div class="seg suppressed">
+        <div class="seg-label">Suppressed — Do Not Target</div>
+        <div class="seg-num">86,700</div>
+        <div class="seg-desc">TTT whales (>50M VND). Only 0.7% of users but 60.8% of TTT AUM. $63/yr loss per migrating whale.</div>
+        <div class="seg-risk">No Sinh Lời Targeting</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Why This Ordering Matters</h3>
+      <p class="card-text">The <strong style="color:var(--blue)">2.13x offset ratio</strong> means MoMo needs $2.13 of new money for every $1 leaving TTT. By targeting external investors first, we bring <strong>pure new AUM</strong> — zero cannibalization. The suppression list protects the whale concentration that generates 60.8% of TTT revenue.</p>
+    </div>
+
+    <div class="card">
+      <h3>TTT Upgraders — Refined</h3>
+      <p class="card-text">Only users with TTT balances <strong>under 5M VND</strong> are eligible for Sinh Lời cross-sell. Above 5M VND, migration economics hurt P&L. ~400K users in this tier — enough for 48K trials in Y1.</p>
+    </div>
+  </div>
+
+  <!-- FUNNEL -->
+  <div class="panel" id="tab-funnel">
+    <div class="card">
+      <h3>Y1 Conversion Funnel (Bottom-Up, Board-Approved)</h3>
+      <table class="dt">
+        <thead><tr><th>Source</th><th class="right">Pool</th><th class="right">Try</th><th class="right">Stick (90d)</th><th class="right">Avg Balance</th><th class="right">AUM</th></tr></thead>
+        <tbody>
+          <tr><td>External investors</td><td class="right dim">935K</td><td class="right">78K</td><td class="right">39K</td><td class="right">$600</td><td class="right">$23M</td></tr>
+          <tr><td>TTT upgraders (&lt;5M)</td><td class="right dim">400K</td><td class="right">48K</td><td class="right">29K</td><td class="right">$800</td><td class="right">$23M</td></tr>
+          <tr><td>New-to-investing</td><td class="right dim">12M</td><td class="right">54K</td><td class="right">22K</td><td class="right">$200</td><td class="right">$4.4M</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td><strong>Y1 Total</strong></td><td></td><td class="right" style="font-weight:700">180K</td><td class="right" style="font-weight:700">90K</td><td></td><td class="right" style="font-weight:700;color:var(--green)">$50M</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Funnel Assumptions</h3>
+      <div class="mr"><span class="k">External investor conversion</span><span class="v">8.3% try rate, 50% stick</span></div>
+      <div class="mr"><span class="k">TTT upgrader conversion</span><span class="v">12% try rate, 60% stick (familiar with MoMo savings)</span></div>
+      <div class="mr"><span class="k">New-to-investing conversion</span><span class="v">0.45% try rate, 41% stick</span></div>
+      <div class="mr"><span class="k">Retention driver</span><span class="v">Daily earnings notification + rate comparison</span></div>
+    </div>
+  </div>
+
+  <!-- PRODUCT LADDER -->
+  <div class="panel" id="tab-ladder">
+    <div class="phase-tl">
+      <div class="phase">
+        <div class="phase-num">Phase 1 — M1-12</div>
+        <div class="phase-title">Capital Preservation</div>
+        <div class="phase-products">
+          <strong>DCIP</strong> — Short-term bonds, 24hr liquidity, ~5.8-6.2%/yr<br>
+          <strong>DCBF</strong> — Fixed income bonds, slightly higher yield<br><br>
+          Blended trail: 28-30 bps<br>
+          Target: 90K users, $50M AUM
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">Phase 2 — M13-24</div>
+        <div class="phase-title">Balanced Growth</div>
+        <div class="phase-products">
+          <strong>DCDE</strong> — Dividend equity, moderate risk<br>
+          Continue DCIP + DCBF<br><br>
+          Blended trail: 40-45 bps<br>
+          Target: 250K users, $175M AUM
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">Phase 3 — M25-36</div>
+        <div class="phase-title">Full Shelf</div>
+        <div class="phase-products">
+          <strong>DCDS</strong> — Growth equity (flagship, +32% YTD)<br>
+          + CV Securities stocks<br><br>
+          Blended trail: 55-65 bps<br>
+          Target: 400K+ users, $500M AUM
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Product Ladder Logic</h3>
+      <p class="card-text">Start with what feels like <em>gửi tiết kiệm</em> (bank deposit) — guaranteed-feeling, low risk, instant liquidity. Build trust. Then offer higher-return products as users gain confidence. <strong>Never start with equity.</strong> The ladder mirrors how Vietnamese people actually learn to invest: savings → bonds → stocks.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

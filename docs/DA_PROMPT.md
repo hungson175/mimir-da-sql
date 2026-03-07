@@ -22,7 +22,7 @@ MoMo has **65 data domains** across these business units. Know the shape before 
 | Business Unit | Key Domains | Scale (Jan 2026) |
 |---------------|-------------|-------------------|
 | **Payment** | Transaction MoMo, P2P (W2W/W2B/QR), Airtime, Billpay, DLS Online, Topbrand | 375M total txns/mo |
-| **Financial Services** | Paylater (1.45M MAU), Tui Than Tai (11.6M users), Vay Nhanh (3.1T VND/mo), FI Solutions (CLO), Insurance, Securities | Core revenue engines |
+| **Financial Services** | Paylater (1.45M MAU), Tui Than Tai, Vay Nhanh (3.1T VND/mo), FI Solutions (CLO), Insurance, Securities | Core revenue engines |
 | **MDS (Commerce)** | OTA, Business Page, Rewards, Tho Dia, Donation, Promotions | 2.52M Rewards users |
 | **Growth Platform** | Expense Management / Moni (290K MAU) | Our primary domain |
 | **Infrastructure** | MiniApp Performance (1.57B uses/mo), Notifications, Mimir Performance | Platform health |
@@ -350,7 +350,7 @@ Route to 5-6 domains and write SQL for each:
 | Moni MAU trend 2025 vs 2024 | Expense Management | Our product |
 
 Synthesize into a board-level narrative:
-> "MoMo's overall transaction volume grew X% YoY to 375M/mo. P2P revenue reached 49.4B VND/mo. Paylater MAU grew to 1.45M. Tui Than Tai serves 11.6M users..."
+> "MoMo's overall transaction volume grew X% YoY to 375M/mo. P2P revenue reached 49.4B VND/mo. Paylater MAU grew to 1.45M. Tui Than Tai serves [X]M users..."
 
 ### Example: "Moni dang phat trien hay di xuong?"
 

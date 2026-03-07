@@ -28,6 +28,9 @@ Based on the role argument `$ARGUMENTS`, read your specific role prompt:
 - **FE** (Frontend Engineer): `docs/tmux/[team-name]/prompts/FE_PROMPT.md`
 - **CR** (Code Reviewer): `docs/tmux/[team-name]/prompts/CR_PROMPT.md`
 - **DK** (Document Keeper): `docs/tmux/[team-name]/prompts/DK_PROMPT.md`
+- **CEO** (Chief Executive): `docs/tmux/momo-board/prompts/CEO_PROMPT.md`
+- **CMO** (Chief Marketing): `docs/tmux/momo-board/prompts/CMO_PROMPT.md`
+- **CFO** (Chief Financial): `docs/tmux/momo-board/prompts/CFO_PROMPT.md`
 
 ## Step 4: Understand Your Mission
 

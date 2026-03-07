@@ -20,7 +20,7 @@
 | **EDC device payments** | EDC | `fa727a68-...` | 8.6K txns/mo |
 | **Moni / Expense Management** | Expense Management | `af241589-...` | 290K MAU |
 | **Paylater / Vi Tra Sau** | CreditTech Paylater | `7e23d41a-...` | 1.45M MAU |
-| **Tui Than Tai (money market)** | Tui Than Tai | `fa0fb3af-...` | 11.6M users |
+| **Tui Than Tai (money market)** | Tui Than Tai | `fa0fb3af-...` | [verify - old 11.6M was wrong] |
 | **Vay Nhanh (quick loans)** | Vay Nhanh | `bb231763-...` | 3.1T VND/mo disbursement |
 | **CLO lending** | FI Solutions | `5cd09ae2-...` | 124.6B VND/mo |
 | **Merchant financing** | CreditTech Merchant | `076f32ab-...` | (not probed) |

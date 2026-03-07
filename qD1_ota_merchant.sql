@@ -1,0 +1,13 @@
+-- D1b: OTA top merchants Jan 2026
+SELECT
+  MERCHANT,
+  sub_cate,
+  COUNT(DISTINCT user_payment) AS unique_users,
+  SUM(TOTAL_AMOUNT) AS gmv
+FROM `momovn-prod.REPORT.2023_TAN_OTA_COMPREHENSIVE_ALL_WITH_INCENTIVE`
+WHERE DATE BETWEEN '2026-01-01' AND '2026-01-31'
+  AND STATUSID = 2
+  AND (sub_cate = '01. AIRLINE' OR group_sub_cate = '03. HOTEL')
+GROUP BY 1, 2
+ORDER BY unique_users DESC
+LIMIT 15;

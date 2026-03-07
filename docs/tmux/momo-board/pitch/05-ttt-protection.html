@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTT Protection System — MoMo Sinh Lời</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0b;--surface:#131316;--surface2:#1a1a1f;--surface3:#222228;
+  --border:#25252b;--border2:#35353d;
+  --text:#ededef;--text2:#7a7a85;--text3:#4a4a55;
+  --magenta:#a50064;--green:#10b981;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Be Vietnam Pro',system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;opacity:0.03;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.container{max-width:1100px;margin:0 auto;padding:2.5rem}
+a{color:var(--magenta);text-decoration:none}a:hover{text-decoration:underline}
+.nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:1.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+.nav a{font-size:0.82rem;color:var(--text2);display:flex;align-items:center;gap:0.4rem;transition:color 0.2s}
+.nav a:hover{color:var(--text);text-decoration:none}
+.nav-title{font-size:0.78rem;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+.header{margin-bottom:3rem}
+.header h1{font-family:var(--serif);font-size:clamp(2.5rem,5vw,3.8rem);font-weight:600;letter-spacing:-0.02em;margin-bottom:0.6rem}
+.header p{color:var(--text2);font-size:1rem}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:0.85rem 1.25rem;font-size:0.82rem;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.25s}
+.tab:hover{color:var(--text2)}.tab.active{color:var(--text);border-bottom-color:var(--magenta)}
+.panel{display:none;animation:fadeIn 0.3s ease}.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem}
+.card h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin-bottom:1rem}
+.card-text{color:var(--text2);font-size:0.92rem;line-height:1.85}
+.card-text strong{color:var(--text)}
+.mr{display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);font-size:0.9rem}
+.mr:last-child{border-bottom:none}
+.mr .k{color:var(--text2)}.mr .v{font-weight:600}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem}
+.chart-wrap h3{font-family:var(--serif);font-size:1.25rem;font-weight:600;margin-bottom:1.25rem}
+.chart-wrap canvas{max-height:320px}
+.quote{border-left:3px solid var(--red);padding:1.25rem 1.75rem;background:var(--surface);border-radius:0 12px 12px 0;margin:1.5rem 0}
+.quote em{font-family:var(--serif);font-style:italic;color:var(--text);font-size:1.15rem}
+.quote .attr{color:var(--text3);font-size:0.82rem;margin-top:0.5rem}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center}
+.kpi .val{font-family:var(--serif);font-size:2.1rem;font-weight:700;letter-spacing:-0.02em}
+.kpi .lbl{font-size:0.75rem;color:var(--text2);margin-top:0.3rem}
+.kpi.c-red .val{color:var(--red)}.kpi.c-amber .val{color:var(--amber)}.kpi.c-green .val{color:var(--green)}.kpi.c-blue .val{color:var(--blue)}
+
+/* Tier cards */
+.tier-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0}
+.tier{padding:1.75rem;border-radius:14px;position:relative;overflow:hidden}
+.tier::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.tier.t1{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15)}
+.tier.t1::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.tier.t2{background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.15)}
+.tier.t2::before{background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.tier.t3{background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.15)}
+.tier.t3::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.tier-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem}
+.tier.t1 .tier-label{color:var(--green)}.tier.t2 .tier-label{color:var(--amber)}.tier.t3 .tier-label{color:var(--red)}
+.tier-range{font-family:var(--serif);font-size:1.6rem;font-weight:700;margin-bottom:0.5rem}
+.tier-stats{font-size:0.82rem;color:var(--text2);line-height:1.6;margin-bottom:0.75rem}
+.tier-policy{font-size:0.82rem;padding:0.5rem 0.75rem;border-radius:6px;background:var(--surface2);line-height:1.5}
+
+/* Throttle steps */
+.throttle{display:grid;gap:0.75rem;margin:1.5rem 0}
+.step{display:flex;gap:1.25rem;padding:1.25rem 1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;align-items:flex-start}
+.step-n{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;flex-shrink:0}
+.step:nth-child(1) .step-n{background:rgba(16,185,129,0.15);color:var(--green)}
+.step:nth-child(2) .step-n{background:rgba(245,158,11,0.15);color:var(--amber)}
+.step:nth-child(3) .step-n{background:rgba(239,68,68,0.15);color:var(--red)}
+.step:nth-child(4) .step-n{background:rgba(165,0,100,0.15);color:var(--magenta)}
+.step-title{font-weight:600;font-size:0.92rem;margin-bottom:0.2rem}
+.step-desc{font-size:0.85rem;color:var(--text2);line-height:1.5}
+
+@media(max-width:768px){.tier-cards{grid-template-columns:1fr}.kpi-strip{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a href="index.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 12L6 8l4-4"/></svg> Index</a>
+    <div class="nav-title">05 / TTT Protection</div>
+  </nav>
+
+  <div class="header">
+    <h1>TTT Protection System</h1>
+    <p>How we protect $490M AUM and $11.5M/yr revenue while launching Sinh Lời.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="risk">The Risk</div>
+    <div class="tab" data-tab="guardrails">3-Tier Guardrails</div>
+    <div class="tab" data-tab="alarm">Fire Alarm</div>
+    <div class="tab" data-tab="throttle">Throttle Mechanism</div>
+    <div class="tab" data-tab="expansion">Wallet Expansion</div>
+    <div class="tab" data-tab="instrument">Instrumentation</div>
+  </div>
+
+  <!-- RISK -->
+  <div class="panel active" id="tab-risk">
+    <div class="kpi-strip">
+      <div class="kpi c-red"><div class="val">$490M</div><div class="lbl">TTT AUM at Risk</div></div>
+      <div class="kpi c-red"><div class="val">$11.5M</div><div class="lbl">Annual Spread Revenue</div></div>
+      <div class="kpi c-amber"><div class="val">$2.72</div><div class="lbl">Cost per Migrating User/yr</div></div>
+      <div class="kpi c-amber"><div class="val">$63</div><div class="lbl">Cost per Migrating Whale/yr</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Why TTT Protection Is Non-Negotiable</h3>
+      <p class="card-text">TTT (Tui Tiet Kiem) holds <strong>12.46T VND ($490M)</strong> from <strong>2.88M funded users</strong>. It generates <strong style="color:var(--red)">$11.5M/year</strong> in spread revenue (2.35% net). This took <strong>14 years of trust</strong> to build. If users see their TTT balance decline because they moved money to investment — and that investment dips even temporarily — trust erodes. The moment a user sees red where green used to be, we've damaged something money can't fix.</p>
+    </div>
+
+    <div class="card">
+      <h3>Whale Concentration Risk</h3>
+      <p class="card-text"><strong style="color:var(--red)">86,700 users</strong> (0.7% of TTT) hold <strong style="color:var(--red)">60.8% of AUM</strong>. Each whale migration costs <strong>$63/year</strong> in lost spread. If just <strong>10% of whales migrate</strong>, that's $545K/year in lost revenue. This is why whales are on the suppression list — no Sinh Lời targeting, ever.</p>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>TTT AUM Concentration</h3>
+      <canvas id="chartConc"></canvas>
+    </div>
+  </div>
+
+  <!-- GUARDRAILS -->
+  <div class="panel" id="tab-guardrails">
+    <div class="tier-cards">
+      <div class="tier t1">
+        <div class="tier-label">Tier 1 — Free Migration</div>
+        <div class="tier-range">&lt;3M VND</div>
+        <div class="tier-stats">89% of users &bull; 4.3% of AUM<br>~2.56M users</div>
+        <div class="tier-policy"><strong>Policy:</strong> Free to migrate. Low revenue impact. These users gain more from engagement than from spread.</div>
+      </div>
+      <div class="tier t2">
+        <div class="tier-label">Tier 2 — Monitor</div>
+        <div class="tier-range">3M-50M VND</div>
+        <div class="tier-stats">3.2% of users &bull; 39% of AUM<br>~92K users</div>
+        <div class="tier-policy"><strong>Policy:</strong> Alert at 10% migration within 30 days. Track total wallet (TTT + Sinh Lời). No hard blocks.</div>
+      </div>
+      <div class="tier t3">
+        <div class="tier-label">Tier 3 — Premium Service</div>
+        <div class="tier-range">&gt;50M VND</div>
+        <div class="tier-stats">0.4% of users &bull; 36%+ of AUM<br>~86,700 users (whales)</div>
+        <div class="tier-policy"><strong>Policy:</strong> Red flag at 5% migration within 30 days. Premium service model — don't restrict, but offer VIP TTT benefits to retain.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Guardrail Philosophy</h3>
+      <p class="card-text"><strong>Never block users.</strong> Blocking creates resentment and pushes users to competitors. Instead: <strong style="color:var(--green)">monitor, alert, and offer better alternatives</strong>. If a whale wants to move money, give them a VIP experience in TTT (higher rate, dedicated support) rather than a wall.</p>
+    </div>
+  </div>
+
+  <!-- FIRE ALARM -->
+  <div class="panel" id="tab-alarm">
+    <div class="card" style="border-color:rgba(239,68,68,0.3)">
+      <h3 style="color:var(--red)">Global Fire Alarm: -5% TTT Spread</h3>
+      <div class="mr"><span class="k">Trigger</span><span class="v" style="color:var(--red)">-5% drop in TTT spread revenue vs baseline</span></div>
+      <div class="mr"><span class="k">Dollar value</span><span class="v">$575K/year = $47.9K/month</span></div>
+      <div class="mr"><span class="k">AUM equivalent</span><span class="v">~7% of total TTT AUM migrating</span></div>
+      <div class="mr"><span class="k">Who gets alerted</span><span class="v">CEO + CFO + President (immediate)</span></div>
+      <div class="mr"><span class="k">Response</span><span class="v">Pause Sinh Lời growth, activate throttle</span></div>
+    </div>
+
+    <div class="card">
+      <h3>What It Looks Like in Practice</h3>
+      <p class="card-text">Dashboard shows TTT spread revenue baseline established pre-launch. If monthly spread drops below <strong>$47.9K/month</strong> below baseline, the fire alarm triggers automatically. This is not a manual review — it's an <strong>automated alert</strong> that goes to CEO and CFO simultaneously. Response within 24 hours required.</p>
+    </div>
+
+    <div class="quote">
+      <em>"If this puts TTT's reputation at risk, nothing else in this deck matters."</em>
+      <div class="attr">— CEO Tuong, board session</div>
+    </div>
+  </div>
+
+  <!-- THROTTLE -->
+  <div class="panel" id="tab-throttle">
+    <div class="card">
+      <h3>4-Step Graduated Throttle</h3>
+      <p class="card-text" style="margin-bottom:1.5rem">Each step requires explicit escalation. Steps 3-4 require <strong>CEO + CFO joint approval</strong>.</p>
+    </div>
+
+    <div class="throttle">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div><div class="step-title">Remove Default Prompts</div><div class="step-desc">Stop showing Sinh Lời suggestions to TTT users on home screen. Keep tab accessible but don't push. Reduces casual migration.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div><div class="step-title">Add Friction</div><div class="step-desc">TTT-to-Sinh-Loi transfers require explicit confirmation + 24hr cooling period. "Are you sure? Your TTT earns guaranteed 3.65%." Educational interstitial.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div><div class="step-title">Cap Migration Volume</div><div class="step-desc">Daily/weekly cap on TTT-to-Sinh-Loi transfers. New external money unrestricted. Requires CEO + CFO joint approval to activate.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-n">4</div>
+        <div><div class="step-title">Pause Sinh Lời Growth</div><div class="step-desc">No new Sinh Lời acquisitions from TTT base. External investor acquisition continues. Full board review within 48 hours. CEO + CFO joint approval required.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WALLET EXPANSION -->
+  <div class="panel" id="tab-expansion">
+    <div class="card">
+      <h3>The Net Positive Scenario</h3>
+      <p class="card-text">If a user <strong>adds 50M VND to investment</strong> while keeping <strong>30M VND in TTT</strong> (moving only 20M from TTT), the ratio is 50M / 20M = <strong style="color:var(--green)">2.5x</strong> — above the 2.13x threshold. Net result: <strong style="color:var(--green)">+$2.19/year per user</strong>. The wallet GROWS.</p>
+    </div>
+
+    <div class="kpi-strip">
+      <div class="kpi c-blue"><div class="val">2.13x</div><div class="lbl">Break-even Ratio</div></div>
+      <div class="kpi c-green"><div class="val">2.5x</div><div class="lbl">Target Ratio</div></div>
+      <div class="kpi c-green"><div class="val">+$2.19</div><div class="lbl">Net Gain per User/yr</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Strategy: Track Total AUM, Not Just TTT</h3>
+      <p class="card-text">The key metric is <strong>total wallet size</strong> (TTT + Sinh Lời), not just TTT alone. If a user's total financial relationship with MoMo grows — even if TTT shrinks slightly — we're winning. The dashboard must show <strong>net financial wallet per user</strong>, not just TTT AUM.</p>
+    </div>
+
+    <div class="card">
+      <h3>Premium Service for Whales</h3>
+      <p class="card-text">Tier 3 users (>50M VND) who show interest in investing get a <strong>premium service experience</strong>: dedicated support, higher TTT rates, first access to new products. The goal is retention through better value, not restriction through walls. <em>"Does this make users stay, or just prevent them from leaving?"</em></p>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>Migration Impact Scenarios</h3>
+      <canvas id="chartMigration"></canvas>
+    </div>
+  </div>
+
+  <!-- INSTRUMENTATION -->
+  <div class="panel" id="tab-instrument">
+    <div class="kpi-strip">
+      <div class="kpi c-amber"><div class="val">$50K</div><div class="lbl">Dashboard Build Cost</div></div>
+      <div class="kpi c-blue"><div class="val">2-3 wks</div><div class="lbl">Build Time</div></div>
+      <div class="kpi c-green"><div class="val">Pre-launch</div><div class="lbl">Must Be Ready</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Pre-Launch Dashboard Spec</h3>
+      <p class="card-text" style="margin-bottom:1rem">This dashboard must be <strong>live before Sinh Lời launches</strong>. No launch without instrumentation — this is Condition #3.</p>
+      <div class="mr"><span class="k">TTT AUM baseline</span><span class="v">Daily, by tier (T1/T2/T3)</span></div>
+      <div class="mr"><span class="k">TTT → Sinh Lời flow</span><span class="v">Real-time, by user tier</span></div>
+      <div class="mr"><span class="k">External → Sinh Lời flow</span><span class="v">Real-time, by source</span></div>
+      <div class="mr"><span class="k">Wallet expansion ratio</span><span class="v">Per user, rolling 30d</span></div>
+      <div class="mr"><span class="k">Fire alarm status</span><span class="v">Automated, CEO+CFO alert</span></div>
+      <div class="mr"><span class="k">Tier migration rates</span><span class="v">30d rolling, with early warning</span></div>
+      <div class="mr"><span class="k">Net financial wallet</span><span class="v">TTT + Sinh Lời per user cohort</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Data Sources</h3>
+      <p class="card-text">Built on existing <strong>BigQuery + Mimir</strong> infrastructure. TTT data already flows daily. Sinh Lời transaction data added as new event stream. Dashboard hosted on internal BI (Looker/Metabase). <strong>No new infrastructure needed</strong> — just new queries and alerts.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+Chart.defaults.color='#7a7a85';Chart.defaults.borderColor='#25252b';
+Chart.defaults.font.family="'Be Vietnam Pro',system-ui,sans-serif";Chart.defaults.font.size=12;
+
+// Concentration chart
+new Chart(document.getElementById('chartConc'),{
+  type:'bar',
+  data:{
+    labels:['Tier 1: <3M VND','Tier 2: 3M-50M','Tier 3: >50M (Whales)'],
+    datasets:[
+      {label:'% of Users',data:[89,3.2,0.4],backgroundColor:'rgba(59,130,246,0.6)',borderRadius:6},
+      {label:'% of AUM',data:[4.3,39,36],backgroundColor:'rgba(239,68,68,0.6)',borderRadius:6}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:true,aspectRatio:2.2,plugins:{legend:{position:'bottom',labels:{padding:16,usePointStyle:true}}},scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'#1a1a1f'}},x:{grid:{display:false}}}}
+});
+
+// Migration scenario waterfall
+new Chart(document.getElementById('chartMigration'),{
+  type:'bar',
+  data:{
+    labels:['TTT Revenue\n(Baseline)','5% Migration\nLoss','10% Migration\nLoss','New Investment\nRevenue','Net (5%\nScenario)','Net (10%\nScenario)'],
+    datasets:[{
+      data:[11500,-575,-1150,700,11625,11050],
+      backgroundColor:ctx=>ctx.dataIndex<1?'rgba(59,130,246,0.6)':ctx.raw<0?'rgba(239,68,68,0.6)':ctx.dataIndex===3?'rgba(16,185,129,0.6)':'rgba(245,158,11,0.6)',
+      borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:true,aspectRatio:2.2,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+(c.raw/1000).toFixed(1)+'M'}}},scales:{y:{ticks:{callback:v=>'$'+(v/1000).toFixed(1)+'M'},grid:{color:'#1a1a1f'}},x:{grid:{display:false}}}}
+});
+</script>
+</body>
+</html>

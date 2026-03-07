@@ -149,7 +149,7 @@ Only P2P Revenue and InsurTech give actual fee/commission revenue. Everything el
 | P2P revenue | 49.4B VND/mo | P2P Revenue |
 | DLS txns | 113.5M/mo | DLS Online |
 | Paylater MAU | 1.45M | CreditTech Paylater |
-| TTT users | 11.6M individual | Tui Than Tai |
+| TTT users | [verify - old 11.6M was wrong] | Tui Than Tai |
 | Vay Nhanh disbursement | 3.1T VND/mo | Vay Nhanh |
 | FI Solutions disbursement | 124.6B VND/mo | FI Solutions |
 | InsurTech orders | 127K/mo | InsurTech |

@@ -33,8 +33,17 @@ Ramp: Nov 2 → Dec 598 → Jan 687 → **Feb 3,830 (+457%)**
 SHB take rate 4.09% > HC's 3.80% → MoMo earns more from SHB.
 Revenue trajectory: Jan ~4.83B → Feb ~6.1B (+26% MoM).
 
-### SHB Monthly Batch Processing? (2026-03-04)
-Mar 1-2 showed 0 contracts. May be batch processing. Don't alarm until Mar 7+ data available.
+### SHB March 2026: CREDIT POLICY TIGHTENING (2026-03-06)
+Mar 1-5: 0 contracts. NOT batch processing. FIS_TCST shows 1,202 OFFER_REJECTED on Mar 3.
+Applications ARE coming in but rejected at credit scoring stage (before APPLICATION_SUBMITTED).
+This = credit policy reset, not system failure. SHB tightened underwriting post-Tet.
+Escalation needed to CLO/SHB partnership team. No BQ NPL data available to diagnose root cause.
+
+### Correct CLO table: FIS_TCST (not FIS_CLO) (2026-03-06)
+FIS_CLO max date = Jan 2025 (archived). Current data is in FIS_TCST.
+Key columns: PARTNER_ID, STATUS_CODE, DATE_REQUESTED, CONTRACT_AMOUNT, REVENUE, SERVICE_TYPE.
+Filter: SERVICE_TYPE='CLO', STATUS_CODE IN ('CONTRACT_SIGNED','DISBURSED').
+Disbursement amount = CONTRACT_AMOUNT (not DISBURSED_CREDIT_AMOUNT).
 
 ## Mimir Trust
 - DATE_MODIFIED usage: LOW (persistently wrong)

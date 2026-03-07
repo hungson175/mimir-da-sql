@@ -1,8 +1,20 @@
 # Knowledge: Paylater
 > Learned gotchas, corrections, business insights. Never auto-overwritten.
-> Last updated: 2026-03-04
+> Last updated: 2026-03-06
 
 ## SQL Gotchas
+
+### PAYLATER_ALL_TRANS: `created_date` + `amount`, NO `month_trans` or `gmv` (2026-03-06)
+Date = `created_date` (DATE). Amount = `amount`. NO `month_trans` (that's in MAU_SEGMENT). NO `gmv` column.
+Jan 2026: 1.45M MAU, 412K txns/day, 78.9B/day GMV, 191K avg ticket.
+Mar 1-5 2026: 272K DAU/day avg, 128B/day GMV (+62%), 272K avg ticket (+42%).
++62% driven by BOTH more users (+13%) AND higher ticket (+42%).
+
+### PAYLATER insurance breakdown (2026-03-06)
+service_category='INSURANCE' in PAYLATER_ALL_TRANS = mix of life insurance AND P&C.
+Life insurance (newvertical='INSURTECH – PAYMENT'): AIA 7.2M avg, Dai-ichi 5.6M, Prudential 5.98M, FWD 6.1M.
+P&C insurance (newvertical='INSURTECH – DISTRIBUTION'): PVI 128K avg, Bảo Việt 65K, Bảo Long 93K.
+Key: 'PAYMENT' = collecting premiums from existing policy holders. 'DISTRIBUTION' = selling new policies.
 
 ### PAYLATER_MAU_SEGMENT: 1-Row-Per-User-Per-Month, User Column is `agent_id` (2026-02-25)
 User column is `agent_id` (NOT `user_id` — doesn't exist). Each user has exactly 1 row per `month_trans`.

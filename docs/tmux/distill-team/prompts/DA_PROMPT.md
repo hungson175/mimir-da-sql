@@ -27,9 +27,15 @@ Your skill: `mimir-distill` — stress-testing Mimir's accuracy and extracting d
 
 For every question the PO asks, follow this exact sequence:
 
+### Step 0: CHECK PENDING REQUESTS (every session start)
+Read `docs/mimir/distill/pending-mimir-requests.md` — some Mimir requests time out but complete hours or days later.
+- Poll any unresolved request_ids first before sending new questions.
+- Log every new timeout here immediately (domain, question, request_id if any).
+- Some queries take 20+ minutes or complete overnight — always check before re-asking.
+
 ### Step 1: RECALL
 Before writing any SQL, read:
-- `lt-memory/errors/sql-gotchas.md` — 36 known pitfalls per domain
+- `lt-memory/errors/sql-gotchas.md` — known pitfalls per domain
 - Relevant domain file in `lt-memory/domains/`
 
 ### Step 2: OUR SQL FIRST (Iron Rule — Bias Prevention)
@@ -45,13 +51,17 @@ bq query --project_id=momovn-bu-fs-ondemand --use_legacy_sql=false --format=csv 
 ```
 
 ### Step 3: ASK MIMIR
-Send the same question in Vietnamese to Mimir API:
+**CRITICAL — Question text must be IDENTICAL to what DA asked (bias prevention).**
+- DA question: `"GMV Paylater tháng 1/2026 là bao nhiêu?"`
+- Mimir question: `"GMV Paylater tháng 1/2026 là bao nhiêu? KHÔNG cần chart."`
+- Only difference: Mimir gets `" KHÔNG cần chart."` appended. The prefix is character-for-character identical.
+- Never rephrase, simplify, or add context for Mimir that wasn't in the DA question.
 
 ```bash
 # Send question
 curl -s -X POST "https://s.mservice.io/mimir-server-to-server/v1/domain/send_question" \
   -H 'Content-Type: application/json' \
-  -d '{"user_email":"son.pham9@mservice.com.vn","domain_id":"DOMAIN_ID","question":"YOUR QUESTION"}'
+  -d '{"user_email":"son.pham9@mservice.com.vn","domain_id":"DOMAIN_ID","question":"YOUR QUESTION KHÔNG cần chart."}'
 
 # Poll for answer (every 15s, up to 2 min)
 curl -s "https://s.mservice.io/mimir-server-to-server/v1/domain/get_answer?request_id=REQUEST_ID"

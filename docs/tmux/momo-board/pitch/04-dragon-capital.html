@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragon Capital Reactivation — MoMo Sinh Lời</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0b;--surface:#131316;--surface2:#1a1a1f;--surface3:#222228;
+  --border:#25252b;--border2:#35353d;
+  --text:#ededef;--text2:#7a7a85;--text3:#4a4a55;
+  --magenta:#a50064;--green:#10b981;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Be Vietnam Pro',system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;opacity:0.03;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.container{max-width:1100px;margin:0 auto;padding:2.5rem}
+a{color:var(--magenta);text-decoration:none}a:hover{text-decoration:underline}
+.nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:1.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+.nav a{font-size:0.82rem;color:var(--text2);display:flex;align-items:center;gap:0.4rem;transition:color 0.2s}
+.nav a:hover{color:var(--text);text-decoration:none}
+.nav-title{font-size:0.78rem;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+.header{margin-bottom:3rem}
+.header h1{font-family:var(--serif);font-size:clamp(2.5rem,5vw,3.8rem);font-weight:600;letter-spacing:-0.02em;margin-bottom:0.6rem}
+.header p{color:var(--text2);font-size:1rem}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:0.85rem 1.25rem;font-size:0.82rem;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.25s}
+.tab:hover{color:var(--text2)}.tab.active{color:var(--text);border-bottom-color:var(--magenta)}
+.panel{display:none;animation:fadeIn 0.3s ease}.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem}
+.card h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin-bottom:1rem}
+.card-text{color:var(--text2);font-size:0.92rem;line-height:1.85}
+.card-text strong{color:var(--text)}
+.mr{display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);font-size:0.9rem}
+.mr:last-child{border-bottom:none}
+.mr .k{color:var(--text2)}.mr .v{font-weight:600}
+table.dt{width:100%;border-collapse:collapse;font-size:0.88rem}
+table.dt th{text-align:left;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0.8rem 0.75rem;border-bottom:2px solid var(--border)}
+table.dt td{padding:0.75rem;border-bottom:1px solid var(--border)}
+table.dt tr:last-child td{border-bottom:none}
+table.dt .dim{color:var(--text2)}
+.quote{border-left:3px solid var(--amber);padding:1.25rem 1.75rem;background:var(--surface);border-radius:0 12px 12px 0;margin:1.5rem 0}
+.quote em{font-family:var(--serif);font-style:italic;color:var(--text);font-size:1.15rem}
+.quote .attr{color:var(--text3);font-size:0.82rem;margin-top:0.5rem}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem}
+.chart-wrap h3{font-family:var(--serif);font-size:1.25rem;font-weight:600;margin-bottom:1.25rem}
+.chart-wrap canvas{max-height:300px}
+
+/* People cards */
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-bottom:1.25rem}
+.person{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
+.person-name{font-family:var(--serif);font-size:1.35rem;font-weight:700;margin-bottom:0.15rem}
+.person-role{font-size:0.82rem;color:var(--amber);margin-bottom:0.75rem}
+.person-bio{font-size:0.85rem;color:var(--text2);line-height:1.7}
+
+/* Comparison */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1.5rem 0}
+.compare-box{padding:1.75rem;border-radius:14px;position:relative;overflow:hidden}
+.compare-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px}
+.compare-box.old{background:rgba(74,74,85,0.08);border:1px solid var(--border)}
+.compare-box.old::before{background:linear-gradient(90deg,transparent,var(--text3),transparent)}
+.compare-box.new{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15)}
+.compare-box.new::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.compare-box h4{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem}
+.compare-box.old h4{color:var(--text3)}.compare-box.new h4{color:var(--green)}
+.compare-box ul{list-style:none;font-size:0.88rem;color:var(--text2)}
+.compare-box ul li{padding:0.3rem 0;padding-left:1rem;position:relative}
+.compare-box ul li::before{content:'';width:5px;height:5px;border-radius:50%;position:absolute;left:0;top:0.65rem}
+.compare-box.old ul li::before{background:var(--text3)}.compare-box.new ul li::before{background:var(--green)}
+
+/* Fee grid */
+.fee-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;font-size:0.85rem}
+.fee-row>div{padding:0.7rem 0.75rem;border-bottom:1px solid var(--border)}
+.fee-row.head>div{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);border-bottom:2px solid var(--border)}
+
+@media(max-width:768px){.compare{grid-template-columns:1fr}.people{grid-template-columns:1fr}.fee-row{font-size:0.78rem}}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a href="index.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 12L6 8l4-4"/></svg> Index</a>
+    <div class="nav-title">04 / Dragon Capital</div>
+  </nav>
+
+  <div class="header">
+    <h1>Dragon Capital Reactivation</h1>
+    <p>Everything the board needs for the Dominic Scriven call. Partnership history, intelligence, and pitch context.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="history">Partnership History</div>
+    <div class="tab" data-tab="intel">DCVFM Intelligence</div>
+    <div class="tab" data-tab="landscape">Distribution Landscape</div>
+    <div class="tab" data-tab="pitch">The Pitch</div>
+    <div class="tab" data-tab="fees">Fee Negotiation</div>
+    <div class="tab" data-tab="market">Fund Market</div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="panel active" id="tab-history">
+    <div class="card">
+      <h3>June 2022: The Partnership That Became Shelfware</h3>
+      <p class="card-text">MoMo (M_Service) signed a distribution partnership with DCVFM in June 2022. MoMo became the <strong>first Vietnamese super-app to offer open-ended fund certificate trading</strong>. Investors could open fund trading accounts in under 1 minute.</p>
+      <p class="card-text" style="margin-top:0.75rem">Luong Thi My Hanh (DCVFM Head of Domestic Asset Management) called it <em>"a breakthrough in Vietnam's financial industry."</em></p>
+    </div>
+
+    <div class="compare">
+      <div class="compare-box old">
+        <h4>2022 — What Went Wrong</h4>
+        <ul>
+          <li><strong style="color:var(--text)">Buried UX</strong> — one of 50+ services, no dedicated entry</li>
+          <li><strong style="color:var(--text)">Zero marketing</strong> — single PR article, no campaign</li>
+          <li><strong style="color:var(--text)">Wrong language</strong> — "chứng chỉ quỹ," "đầu tư" jargon</li>
+          <li><strong style="color:var(--text)">No incentive alignment</strong> — standard trail, no urgency</li>
+          <li>Result: became shelfware</li>
+        </ul>
+      </div>
+      <div class="compare-box new">
+        <h4>2026 — What's Different</h4>
+        <ul>
+          <li><strong style="color:var(--text)">Dedicated UX</strong> — "Sinh Lời" tab, blue palette, opt-in</li>
+          <li><strong style="color:var(--text)">Full marketing push</strong> — 935K investor targeting</li>
+          <li><strong style="color:var(--text)">User language</strong> — "sinh lời," rates, daily earnings</li>
+          <li><strong style="color:var(--text)">C-suite ownership</strong> — CEO, CMO, CFO aligned</li>
+          <li>$1.8M Year 1 commitment, kill gates defined</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Three Blocking Questions (by Tuesday)</h3>
+      <div class="mr"><span class="k">1. Legal entity</span><span class="v">M_Service or CV Securities?</span></div>
+      <div class="mr"><span class="k">2. Trail commission</span><span class="v">Current fee terms?</span></div>
+      <div class="mr"><span class="k">3. Partnership status</span><span class="v">Active or dormant? Current AUM?</span></div>
+    </div>
+  </div>
+
+  <!-- INTEL -->
+  <div class="panel" id="tab-intel">
+    <div class="card">
+      <h3>DCVFM at a Glance</h3>
+      <div class="mr"><span class="k">Full Name</span><span class="v">Dragon Capital Vietfund Management</span></div>
+      <div class="mr"><span class="k">Total AUM</span><span class="v" style="color:var(--amber)">VND 140T (~$5.4B)</span></div>
+      <div class="mr"><span class="k">Market Share</span><span class="v">59% of Vietnam's public fund NAV</span></div>
+      <div class="mr"><span class="k">Ownership</span><span class="v">~65% employee-owned</span></div>
+      <div class="mr"><span class="k">Listing</span><span class="v">UPCoM Jan 2026, ticker: DCV</span></div>
+      <div class="mr"><span class="k">Strategy</span><span class="v">Actively seeking digital distribution partners</span></div>
+    </div>
+
+    <div class="people">
+      <div class="person">
+        <div class="person-name">Dominic Scriven OBE</div>
+        <div class="person-role">Executive Chairman, Dragon Capital</div>
+        <div class="person-bio">British co-founder. In Vietnam since early 1990s. Founded Dragon Capital in 1994 with ~$16M. Publicly supports digital distribution as a structural democratizer. Thuan knows him personally.</div>
+      </div>
+      <div class="person">
+        <div class="person-name">Le Anh Tuan</div>
+        <div class="person-role">CEO, DCVFM (appointed Oct 2025)</div>
+        <div class="person-bio">New operational leader. Publicly proposed tax deductions for long-term fund investments. The day-to-day counterpart for the reactivation deal.</div>
+      </div>
+      <div class="person">
+        <div class="person-name">Luong Thi My Hanh</div>
+        <div class="person-role">Head of Domestic Asset Management, DCVFM</div>
+        <div class="person-bio">Quoted on the original MoMo 2022 partnership launch. Called it "a breakthrough." Key relationship contact on the DCVFM side.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Fund Products — Phase Mapping</h3>
+      <table class="dt">
+        <thead><tr><th>Product</th><th>Type</th><th>Phase</th><th>Trail Target</th></tr></thead>
+        <tbody>
+          <tr><td><strong>DCIP</strong> (DC Income Plus)</td><td class="dim">Short-term bonds, 24hr liquidity, est. 2021</td><td>Phase 1</td><td>25 bps</td></tr>
+          <tr><td><strong>DCBF</strong> (DC Bond Fund)</td><td class="dim">Fixed income, est. 2013</td><td>Phase 1-2</td><td>35 bps</td></tr>
+          <tr><td><strong>DCDE</strong> (DC Dividend Equity)</td><td class="dim">Dividend equity</td><td>Phase 2</td><td>55 bps</td></tr>
+          <tr><td><strong>DCDS</strong> (DC Dynamic Stock)</td><td class="dim">Growth equity, flagship, VND 6.3T, +32% YTD</td><td>Phase 3</td><td>70 bps</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LANDSCAPE -->
+  <div class="panel" id="tab-landscape">
+    <div class="card">
+      <h3>DCVFM Distribution Partners</h3>
+      <table class="dt">
+        <thead><tr><th>Partner</th><th>Type</th><th>Since</th><th>Min Investment</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(165,0,100,0.05)"><td><strong style="color:var(--magenta)">MoMo</strong></td><td>Super-app</td><td>Jun 2022</td><td class="dim">Not disclosed</td></tr>
+          <tr><td>CAKE by VPBank</td><td class="dim">Neo-bank</td><td>Apr 2022</td><td>VND 10,000</td></tr>
+          <tr><td>VPBankS NEO Invest</td><td class="dim">Bank securities</td><td>Oct 2024</td><td class="dim">Not disclosed</td></tr>
+          <tr><td>VNSC by Finhay</td><td class="dim">Fintech</td><td>Aug 2023</td><td>VND 100,000</td></tr>
+          <tr><td>Infina</td><td class="dim">Fintech</td><td>Pre-2023</td><td>VND 500,000</td></tr>
+          <tr><td>Tikop</td><td class="dim">Fintech</td><td class="dim">Not disclosed</td><td>No fee</td></tr>
+          <tr><td>InvestingPro</td><td class="dim">Fintech</td><td>Nov 2025</td><td class="dim">Not disclosed</td></tr>
+          <tr><td>DragonX</td><td class="dim">Own app</td><td>Jul 2021</td><td class="dim">Not disclosed</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="quote">
+      <em>"You gave Finhay your funds at 100K minimum. MoMo offers 60x the retail reach."</em>
+      <div class="attr">— Pitch line for Dragon Capital. MoMo's 30M users vs Finhay's ~500K.</div>
+    </div>
+
+    <div class="card">
+      <h3>MoMo's 60x Advantage</h3>
+      <p class="card-text">MoMo has <strong>30M registered users</strong>, <strong>15M MAU</strong>, and <strong>2.88M TTT savers</strong> who already trust MoMo with their money. Finhay/VNSC has ~500K users. The distribution power difference is <strong style="color:var(--green)">60x</strong>. DCVFM's stated strategy is digital distribution — MoMo is the largest digital channel in Vietnam.</p>
+    </div>
+  </div>
+
+  <!-- PITCH -->
+  <div class="panel" id="tab-pitch">
+    <div class="card" style="border-color:rgba(245,158,11,0.3)">
+      <h3 style="color:var(--amber)">One-Pager Title</h3>
+      <p style="font-family:var(--serif);font-size:1.6rem;font-weight:600;margin-top:0.5rem">"MoMo Sinh Lời: Unlocking the Partnership We Built in 2022"</p>
+    </div>
+
+    <div class="card">
+      <h3>Pitch Structure (7 Sections)</h3>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">1. What We Built Together</span><span class="v dim">First super-app fund distribution, June 2022</span></div>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">2. Why It Hasn't Scaled</span><span class="v dim">Buried UX, no marketing, wrong language. We own this.</span></div>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">3. What's Changed — Sinh Lời</span><span class="v dim">New positioning, dedicated UX, 935K investors, $2B/yr flows</span></div>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">4. The Numbers</span><span class="v dim">30M users, 15M MAU, 2.88M TTT savers</span></div>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">5. The Alignment</span><span class="v dim">2.13x ratio = we capture new money, not cannibalize</span></div>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">6. The Ask</span><span class="v dim">Expand agreement. DCIP + DCBF Phase 1. 30-day timeline.</span></div>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">7. Supporting Data</span><span class="v dim">85% regulatory confidence, phased fees, AUM projection</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Key Talking Points for Thuan</h3>
+      <p class="card-text" style="margin-bottom:1rem">When President Thuan calls Dominic Scriven / Le Anh Tuan:</p>
+      <p class="card-text"><strong style="color:var(--green)">Frame as success story unlocked:</strong> "We were the first super-app to offer your funds. Now we're ready to make it real — dedicated UX, full marketing, C-suite commitment."</p>
+      <p class="card-text" style="margin-top:0.5rem"><strong style="color:var(--green)">Align interests:</strong> "Our economic model requires us to bring in NEW money, not redistribute deposits. Your AUM grows, our fee income grows. Perfect alignment."</p>
+      <p class="card-text" style="margin-top:0.5rem"><strong style="color:var(--green)">Show scale:</strong> "423,000 retail fund holders in all of Vietnam. We have 30 million users. The market is barely born."</p>
+    </div>
+  </div>
+
+  <!-- FEES -->
+  <div class="panel" id="tab-fees">
+    <div class="card">
+      <h3>Fee Negotiation Boundaries</h3>
+      <div class="fee-row head"><div>Product</div><div>Floor</div><div>Target</div><div>Ceiling</div><div>Phase</div></div>
+      <div class="fee-row"><div><strong>DCIP</strong></div><div>20 bps</div><div style="color:var(--green);font-weight:600">25 bps</div><div>30 bps</div><div class="dim">1</div></div>
+      <div class="fee-row"><div><strong>DCBF</strong></div><div>25 bps</div><div style="color:var(--green);font-weight:600">35 bps</div><div>40 bps</div><div class="dim">1</div></div>
+      <div class="fee-row"><div><strong>DCDE</strong></div><div>45 bps</div><div style="color:var(--green);font-weight:600">55 bps</div><div>65 bps</div><div class="dim">2</div></div>
+      <div class="fee-row"><div><strong>DCDS</strong></div><div>55 bps</div><div style="color:var(--green);font-weight:600">70 bps</div><div>80 bps</div><div class="dim">3</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Negotiation Strategy</h3>
+      <div class="mr"><span class="k">Entry fee</span><span class="v" style="color:var(--green)">Zero (Phase 1)</span></div>
+      <div class="mr"><span class="k">Exclusivity</span><span class="v">Non-exclusive preferred partnership</span></div>
+      <div class="mr"><span class="k">Benchmark</span><span class="v">Finhay/VNSC terms (to be confirmed)</span></div>
+      <div class="mr"><span class="k">Leverage point</span><span class="v">60x distribution reach vs Finhay</span></div>
+    </div>
+
+    <div class="card">
+      <h3>What We Don't Know Yet</h3>
+      <p class="card-text">The 2022 agreement contains existing trail terms. Until Thuan's EA pulls it (Tuesday EOD), we don't know if current terms are above or below our floor. The one-pager will be framed as a <strong>delta document</strong> — what we want to ADD or ADJUST, not a from-scratch negotiation.</p>
+    </div>
+  </div>
+
+  <!-- MARKET -->
+  <div class="panel" id="tab-market">
+    <div class="card">
+      <h3>Vietnam Fund Market — Massive Runway</h3>
+      <div class="mr"><span class="k">Retail fund holders (all Vietnam)</span><span class="v" style="color:var(--amber)">423,000</span></div>
+      <div class="mr"><span class="k">Vietnam population</span><span class="v">100,000,000</span></div>
+      <div class="mr"><span class="k">Penetration rate</span><span class="v" style="color:var(--red)">0.42%</span></div>
+      <div class="mr"><span class="k">For comparison: Thailand</span><span class="v">~7%</span></div>
+      <div class="mr"><span class="k">MoMo registered users</span><span class="v" style="color:var(--green)">30,000,000</span></div>
+      <div class="mr"><span class="k">MoMo investor-tagged users</span><span class="v">935,000</span></div>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>The Opportunity Gap</h3>
+      <canvas id="chartMarket"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>DCVFM's Growth Thesis</h3>
+      <p class="card-text">DCVFM publicly states digital distribution is their growth strategy. They've onboarded <strong>8 distribution partners</strong> since 2021. With 59% market share and only 423K holders nationally, DCVFM needs <strong>reach</strong> more than anything. MoMo IS reach — 30M users, 15M MAU, the largest digital financial platform in Vietnam.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+Chart.defaults.color='#7a7a85';Chart.defaults.borderColor='#25252b';
+Chart.defaults.font.family="'Be Vietnam Pro',system-ui,sans-serif";Chart.defaults.font.size=12;
+
+new Chart(document.getElementById('chartMarket'),{
+  type:'bar',
+  data:{
+    labels:['Vietnam Fund Holders','MoMo Investor-Tagged','MoMo TTT Savers','MoMo Total Users'],
+    datasets:[{
+      data:[0.423,0.935,2.88,30],
+      backgroundColor:['rgba(239,68,68,0.6)','rgba(245,158,11,0.6)','rgba(59,130,246,0.6)','rgba(16,185,129,0.6)'],
+      borderRadius:8,borderSkipped:false
+    }]
+  },
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,aspectRatio:2,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'M users'}}},scales:{x:{ticks:{callback:v=>v+'M'},grid:{color:'#1a1a1f'}},y:{grid:{display:false}}}}
+});
+</script>
+</body>
+</html>

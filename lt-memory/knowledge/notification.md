@@ -34,5 +34,17 @@
 - Campaign out-app CTR: 1.00% (2.66× lower than overall)
 - No "open rate" for push — iOS prevents impression tracking
 
+## Jan 2026 In-App CTR by Source (Mimir, 2026-03-06)
+| noti_source | In-app CTR | Rank |
+|-------------|-----------|------|
+| JOURNEY | 7.85% | 1st |
+| TEMPLATE | 7.00% | 2nd |
+| CAMPAIGN | 5.20% | 3rd |
+
+- Out-app CTR = null for ALL sources (FB2_click_read only tracks in-app; outapp push clicks not in this table)
+- Journey CTR 1.51× Campaign CTR
+- Mimir SQL logic matched our expected query exactly
+
 ## Insight
-Templates + Journey drive engagement. Campaign CTR underperforms overall 2.66×.
+Templates + Journey drive engagement. Campaign CTR underperforms Journey by 1.51×.
+Out-app CTR unmeasurable from daily_notification_metrics — FB2 columns are in-app only.

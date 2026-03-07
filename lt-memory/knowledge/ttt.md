@@ -81,6 +81,32 @@ User attrition -8.4%. Weak savers churn months 1-3, power savers remain and comp
 ### Unfunded Users: 53% Ever-Funded vs 47% Never-Funded (2026-03-04)
 Of 1.17M unfunded Individual MAU: 623K (53%) = previously funded (reactivation 3-5× easier), 548K (47%) = never funded.
 
+### TTT User Count: 11.6M is WRONG (2026-03-06)
+The "11.6M users" figure that appeared in DA_PROMPT, domain-router, and research files was a BUG — it counted total-ever accounts (including all churned). Actual metrics:
+- Total accounts ever: ~11.1M (mostly churned)
+- MAU (active): ~3.46M (Individual 3.0M + Money Pool 463K)
+- MFU (funded): ~1.67M
+Never use 11.6M as TTT user count. Always query with MAU_TYPE filter.
+Source: user correction
+
+### TTT Used as Payment Source (FUNDID=6 in FI_TRANS) (2026-03-06)
+4.8% of TTT MAU use TTT balance for direct payments. Top uses:
+- Loan repayment from TTT: 125,870 users, 412.9B Jan 2026 (LARGEST)
+- Credit card repayment: 25,786 users, 109.7B
+- Insurance premium payment from TTT: 3,165 users, 14.9B
+TTT is a savings account (3.3M VND avg balance), not a spending float. The 4.8% payment users
+are a "TTT flywheel" — earn interest in TTT, then repay loans from there. High-value segment.
+
+### TTT Interest Rates — Current (2026-03-06)
+Individual: 3.74–3.89% annual. Money Pool: 3.70–3.91% annual. Both ~3.85% avg.
+Below typical bank savings rates (4-5%). Stickiness = ecosystem convenience, not rate.
+
+### TTT 2025 vs 2026 Seasonal Pattern (2026-03-06)
+2025: Money Pool GREW through Feb-Mar (249B → 469B, no post-Tet dip).
+2026: Money Pool PEAKED Feb 20 at 1.796T, then DECLINING to 1.738T by Mar 5 (-3.2%).
+Pattern is DIFFERENT from 2025 — not purely seasonal, likely maturation of product growth phase.
+2026 Money Pool at 1.74T = 4x of Mar 2025 (430B). Growth normalizing, not structural crisis.
+
 ## Mimir Trust
 - MAU/MFU: HIGH (exact match Feb 2026, correct REGEXP_EXTRACT + MAU_TYPE filter)
 - AUM: HIGH (bug FIXED as of 2026-03-06 — Mimir now uses end-of-month snapshot, not sum across days)

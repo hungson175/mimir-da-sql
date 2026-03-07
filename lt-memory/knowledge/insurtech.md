@@ -1,8 +1,27 @@
 # Knowledge: InsurTech
 > Learned gotchas, corrections, business insights. Never auto-overwritten.
-> Last updated: 2026-03-04
+> Last updated: 2026-03-06
 
 ## SQL Gotchas
+
+### `sp` Column Values: COMPLETE ENUM (BQ-verified Jan 2026) (2026-03-06)
+All distinct SP values confirmed via BQ `att_fi_ins_nl_ver2` Jan 2026:
+| SP | Jan 2026 Txns | Users | GMV |
+|----|---------------|-------|-----|
+| Vehicle Ins | 48,484 | 44,756 | 5.98B |
+| PA Bus | 34,601 | 24,169 | 1.04B |
+| Travel Ins | 30,303 | 23,748 | 2.18B |
+| Cyber Ins | 10,160 | 10,066 | 94M |
+| Property Ins | 3,353 | 2,985 | 10.1B |
+| Health Ins | 323 | 297 | 44M |
+| Claim | 127 | 120 | 138M |
+| Payment Gateway | 1 | 1 | 66K |
+
+**PA Bus = 2nd largest by transactions (34,601) — NOT in domain description! Domain documentation gap.**
+Use EXACT strings above. Wrong values return 0 rows.
+
+### InsurTech Mimir Domain: Times Out on Complex Queries (2026-03-06)
+Domain `800bf3e8` times out on SP enum/analytical questions. Simple MAU/revenue queries work fine.
 
 ### Date Column is `trans_date`, Revenue is `final_rev` (2026-02-25)
 In `att_fi_ins_nl_ver2`: date = `trans_date` (NOT `CC_DATE`), user = `debitor`, revenue = `final_rev` (NOT `REVENUE`).

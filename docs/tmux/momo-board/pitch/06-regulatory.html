@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regulatory Pathway — MoMo Sinh Lời</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0b;--surface:#131316;--surface2:#1a1a1f;--surface3:#222228;
+  --border:#25252b;--border2:#35353d;
+  --text:#ededef;--text2:#7a7a85;--text3:#4a4a55;
+  --magenta:#a50064;--green:#10b981;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Be Vietnam Pro',system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;opacity:0.03;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.container{max-width:1100px;margin:0 auto;padding:2.5rem}
+a{color:var(--magenta);text-decoration:none}a:hover{text-decoration:underline}
+.nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:1.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+.nav a{font-size:0.82rem;color:var(--text2);display:flex;align-items:center;gap:0.4rem;transition:color 0.2s}
+.nav a:hover{color:var(--text);text-decoration:none}
+.nav-title{font-size:0.78rem;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+.header{margin-bottom:3rem}
+.header h1{font-family:var(--serif);font-size:clamp(2.5rem,5vw,3.8rem);font-weight:600;letter-spacing:-0.02em;margin-bottom:0.6rem}
+.header p{color:var(--text2);font-size:1rem}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:0.85rem 1.25rem;font-size:0.82rem;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.25s}
+.tab:hover{color:var(--text2)}.tab.active{color:var(--text);border-bottom-color:var(--magenta)}
+.panel{display:none;animation:fadeIn 0.3s ease}.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem}
+.card h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin-bottom:1rem}
+.card-text{color:var(--text2);font-size:0.92rem;line-height:1.85}
+.card-text strong{color:var(--text)}
+.mr{display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);font-size:0.9rem}
+.mr:last-child{border-bottom:none}
+.mr .k{color:var(--text2)}.mr .v{font-weight:600}
+.quote{border-left:3px solid var(--green);padding:1.25rem 1.75rem;background:var(--surface);border-radius:0 12px 12px 0;margin:1.5rem 0}
+.quote em{font-family:var(--serif);font-style:italic;color:var(--text);font-size:1.15rem}
+.quote .attr{color:var(--text3);font-size:0.82rem;margin-top:0.5rem}
+
+/* License scope */
+.license-items{display:grid;gap:0.75rem;margin:1.25rem 0}
+.li-item{display:flex;gap:1rem;padding:1rem 1.25rem;background:var(--surface2);border-radius:10px;align-items:flex-start}
+.li-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;background:rgba(16,185,129,0.15);color:var(--green)}
+.li-title{font-weight:600;font-size:0.9rem;margin-bottom:0.15rem}
+.li-desc{font-size:0.8rem;color:var(--text2)}
+.li-item.missing .li-num{background:rgba(245,158,11,0.15);color:var(--amber)}
+
+/* Scenario table */
+.scenario-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0}
+.scenario{padding:1.75rem;border-radius:14px;position:relative;overflow:hidden}
+.scenario::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.scenario.a{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15)}
+.scenario.a::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.scenario.b{background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.15)}
+.scenario.b::before{background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.scenario.c{background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.15)}
+.scenario.c::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.sc-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem}
+.scenario.a .sc-label{color:var(--green)}.scenario.b .sc-label{color:var(--amber)}.scenario.c .sc-label{color:var(--red)}
+.sc-prob{font-family:var(--serif);font-size:2.5rem;font-weight:700;margin-bottom:0.5rem}
+.scenario.a .sc-prob{color:var(--green)}.scenario.b .sc-prob{color:var(--amber)}.scenario.c .sc-prob{color:var(--red)}
+.sc-title{font-weight:600;font-size:0.92rem;margin-bottom:0.5rem}
+.sc-desc{font-size:0.82rem;color:var(--text2);line-height:1.6}
+
+/* Action plan */
+.action-grid{display:grid;gap:0.6rem;margin:1.25rem 0}
+.action{display:grid;grid-template-columns:90px 1fr 140px;padding:0.9rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;align-items:center;font-size:0.88rem;gap:1rem}
+.action:hover{border-color:var(--border2)}
+.action-week{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--magenta)}
+.action-owner{font-size:0.82rem;color:var(--text3);text-align:right}
+
+@media(max-width:768px){
+  .scenario-cards{grid-template-columns:1fr}
+  .action{grid-template-columns:1fr;gap:0.25rem}
+  .action-owner{text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a href="index.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 12L6 8l4-4"/></svg> Index</a>
+    <div class="nav-title">06 / Regulatory Pathway</div>
+  </nav>
+
+  <div class="header">
+    <h1>Regulatory Pathway</h1>
+    <p>President Thuan's legal analysis. CV Securities compliance path and 30-day action plan.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="license">CV Securities License</div>
+    <div class="tab" data-tab="legal">Legal Analysis</div>
+    <div class="tab" data-tab="scenarios">Scenario Assessment</div>
+    <div class="tab" data-tab="vnsc">VNSC Precedent</div>
+    <div class="tab" data-tab="partnership">2022 Partnership</div>
+    <div class="tab" data-tab="action">30-Day Action Plan</div>
+  </div>
+
+  <!-- LICENSE -->
+  <div class="panel active" id="tab-license">
+    <div class="card">
+      <h3>CV Securities License Scope</h3>
+      <div class="mr"><span class="k">License number</span><span class="v">No. 26/GPDC-UBCK</span></div>
+      <div class="mr"><span class="k">Last amended</span><span class="v">June 5, 2025</span></div>
+      <div class="mr"><span class="k">MoMo ownership</span><span class="v">49% of CV Securities</span></div>
+    </div>
+
+    <div class="license-items">
+      <div class="li-item">
+        <div class="li-num">1</div>
+        <div><div class="li-title">Môi giới chứng khoán (Securities brokerage)</div><div class="li-desc">Core license activity. By legal definition, covers intermediation of ALL securities transactions.</div></div>
+      </div>
+      <div class="li-item">
+        <div class="li-num">2</div>
+        <div><div class="li-title">Tự doanh chứng khoán (Proprietary trading)</div><div class="li-desc">Added June 2025 amendment. Allows CVS to trade on its own account.</div></div>
+      </div>
+      <div class="li-item">
+        <div class="li-num">3</div>
+        <div><div class="li-title">Tư vấn đầu tư chứng khoán (Investment advisory)</div><div class="li-desc">Allows CVS to advise clients on securities investment decisions.</div></div>
+      </div>
+      <div class="li-item missing">
+        <div class="li-num">?</div>
+        <div><div class="li-title">Phân phối chứng chỉ quỹ (Fund certificate distribution)</div><div class="li-desc">NOT explicitly listed. However, Thuan's analysis: brokerage license legally encompasses fund certificates. See Legal Analysis tab.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGAL ANALYSIS -->
+  <div class="panel" id="tab-legal">
+    <div class="card">
+      <h3>President Thuan's Legal Read</h3>
+      <p class="card-text" style="margin-bottom:1rem">Under <strong>Securities Law 2019</strong> (Luật Chứng Khoán 54/2019/QH14):</p>
+      <div class="mr"><span class="k">Article 4, Clause 1</span><span class="v">Fund certificates (chứng chỉ quỹ mở) ARE securities (chứng khoán)</span></div>
+      <div class="mr"><span class="k">Brokerage definition</span><span class="v">Covers intermediation of ALL securities transactions</span></div>
+      <div class="mr"><span class="k">Implication</span><span class="v">CVS brokerage license = legal capacity to distribute fund certificates</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Circular 98/2020/TT-BTC — The Remaining Step</h3>
+      <p class="card-text">Circular 98 on open-ended fund management requires <strong>distribution agent registration</strong> — this is <strong style="color:var(--green)">administrative, NOT a new license</strong>:</p>
+      <div class="mr"><span class="k">Requirement</span><span class="v">Register as distribution agent with each fund company</span></div>
+      <div class="mr"><span class="k">Filing</span><span class="v">Notification to SSC (State Securities Commission)</span></div>
+      <div class="mr"><span class="k">Timeline</span><span class="v" style="color:var(--green)">2-4 weeks per fund company</span></div>
+      <div class="mr"><span class="k">Nature</span><span class="v">Administrative registration, not licensing</span></div>
+    </div>
+
+    <div class="quote">
+      <em>"CVS brokerage license provides the legal CAPACITY to distribute fund certificates. The remaining step is administrative registration — not a new license."</em>
+      <div class="attr">— President Do Quang Thuan, legal analysis</div>
+    </div>
+  </div>
+
+  <!-- SCENARIOS -->
+  <div class="panel" id="tab-scenarios">
+    <div class="scenario-cards">
+      <div class="scenario a">
+        <div class="sc-label">Scenario A</div>
+        <div class="sc-prob">85%</div>
+        <div class="sc-title">Existing license covers it</div>
+        <div class="sc-desc">Brokerage legally encompasses fund certificate distribution. Administrative registration only (2-4 weeks). <strong style="color:var(--green)">Best case: already cleared via 2022 DCVFM deal.</strong></div>
+      </div>
+      <div class="scenario b">
+        <div class="sc-label">Scenario B</div>
+        <div class="sc-prob">15%</div>
+        <div class="sc-title">Registration needed</div>
+        <div class="sc-desc">Distribution agent registration required as separate step. Still administrative, not licensing. <strong>Timeline: 2-4 weeks</strong> per fund company + SSC notification.</div>
+      </div>
+      <div class="scenario c">
+        <div class="sc-label">Scenario C</div>
+        <div class="sc-prob">&lt;5%</div>
+        <div class="sc-title">New license needed</div>
+        <div class="sc-desc">M_Service needs own securities/distribution certificate. <strong>Timeline: 6-9 months.</strong> Effectively off the table given 2022 DCVFM precedent already exists.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Probability Evolution</h3>
+      <p class="card-text">CFO's original assessment was more conservative (60%/30%/10%). President Thuan revised after reviewing Securities Law 2019 text and the 2022 DCVFM precedent. The 2022 partnership existing means <strong>some legal entity already passed regulatory clearance</strong> for fund distribution — we just need to confirm which entity.</p>
+    </div>
+
+    <div class="card">
+      <h3>Revised vs Original Assessment</h3>
+      <div class="mr"><span class="k">Scenario A</span><span class="v">CFO: 60% → Thuan: <strong style="color:var(--green)">85%</strong></span></div>
+      <div class="mr"><span class="k">Scenario B</span><span class="v">CFO: 30% → Thuan: <strong>15%</strong></span></div>
+      <div class="mr"><span class="k">Scenario C</span><span class="v">CFO: 10% → Thuan: <strong style="color:var(--green)">&lt;5%</strong></span></div>
+    </div>
+  </div>
+
+  <!-- VNSC -->
+  <div class="panel" id="tab-vnsc">
+    <div class="card">
+      <h3>VNSC/Finhay Precedent</h3>
+      <p class="card-text">VNSC (formerly Finhay) distributes VCBF fund certificates on their platform. They operate on a <strong>brokerage license</strong> and distribute funds through <strong>distribution agent registration</strong> — not a separate fund distribution license.</p>
+    </div>
+
+    <div class="card">
+      <h3>Mirror Structure</h3>
+      <p class="card-text">VNSC's structure mirrors what CVS would use. This is a <strong style="color:var(--green)">proven regulatory pathway</strong> in Vietnam. Key confirmation needed: pull VNSC's SSC filings to verify their exact structure for our external legal opinion.</p>
+    </div>
+
+    <div class="card">
+      <h3>Why This Matters</h3>
+      <p class="card-text">If VNSC (a fintech-owned securities company) can distribute fund certificates via brokerage license + distribution agent registration, then CVS (MoMo's securities company) can do the same. The regulatory path is <strong>not novel</strong> — it's been walked before. We're following, not pioneering.</p>
+    </div>
+  </div>
+
+  <!-- 2022 PARTNERSHIP -->
+  <div class="panel" id="tab-partnership">
+    <div class="card" style="border-color:rgba(16,185,129,0.3)">
+      <h3 style="color:var(--green)">The 2022 Precedent Changes Everything</h3>
+      <p class="card-text">MoMo and DCVFM signed a distribution partnership in June 2022. This means <strong>some legal entity</strong> (M_Service or CVS) already went through the regulatory process. If the 2022 agreement confirms:</p>
+    </div>
+
+    <div class="card">
+      <h3>If M_Service Is the Distribution Agent</h3>
+      <p class="card-text">M_Service already has SSC clearance as a distribution agent. <strong style="color:var(--green)">Conditions #1 AND #2 collapse simultaneously.</strong> We just need to reactivate the existing framework — no new regulatory work needed.</p>
+    </div>
+
+    <div class="card">
+      <h3>If CVS Is the Distribution Agent</h3>
+      <p class="card-text">CVS already has distribution agent registration with DCVFM. <strong style="color:var(--green)">Condition #1 is confirmed.</strong> Condition #2 still requires reactivation agreement, but the regulatory foundation is proven.</p>
+    </div>
+
+    <div class="card">
+      <h3>Three Answers Needed (Tuesday EOD)</h3>
+      <div class="mr"><span class="k">1. Which entity?</span><span class="v">M_Service or CV Securities?</span></div>
+      <div class="mr"><span class="k">2. Current trail terms?</span><span class="v">Fee structure in 2022 agreement</span></div>
+      <div class="mr"><span class="k">3. Current AUM?</span><span class="v">Active or dormant?</span></div>
+    </div>
+  </div>
+
+  <!-- ACTION PLAN -->
+  <div class="panel" id="tab-action">
+    <div class="card">
+      <h3>30-Day Regulatory Action Plan</h3>
+      <p class="card-text" style="margin-bottom:0.5rem">Regardless of scenario, this work proceeds in parallel:</p>
+    </div>
+
+    <div class="action-grid">
+      <div class="action"><div class="action-week">Week 1</div><div>Pull 2022 DCVFM agreement. Answer 3 blocking questions (entity, terms, status).</div><div class="action-owner">President Thuan</div></div>
+      <div class="action"><div class="action-week">Week 1</div><div>Engage external legal firm for Securities Law opinion ($15-25K).</div><div class="action-owner">CFO + Legal</div></div>
+      <div class="action"><div class="action-week">Week 2</div><div>External legal delivers preliminary opinion on CVS license scope.</div><div class="action-owner">External Legal</div></div>
+      <div class="action"><div class="action-week">Week 2</div><div>Pull VNSC/Finhay SSC filings as precedent reference.</div><div class="action-owner">Legal Team</div></div>
+      <div class="action"><div class="action-week">Week 3</div><div>If Scenario A confirmed: begin distribution agent registration paperwork.</div><div class="action-owner">CVS Compliance</div></div>
+      <div class="action"><div class="action-week">Week 3</div><div>Thuan's accelerated review of external legal opinion.</div><div class="action-owner">President Thuan</div></div>
+      <div class="action"><div class="action-week">Week 4</div><div>Final compliance confirmation. Green light for Condition #1.</div><div class="action-owner">President Thuan</div></div>
+    </div>
+
+    <div class="card">
+      <h3>External Legal Budget</h3>
+      <div class="mr"><span class="k">Estimated cost</span><span class="v" style="color:var(--amber)">$15,000-$25,000</span></div>
+      <div class="mr"><span class="k">Scope</span><span class="v">Securities Law opinion + CVS license scope + distribution agent pathway</span></div>
+      <div class="mr"><span class="k">Status</span><span class="v">Proceeds regardless of scenario assessment</span></div>
+      <div class="mr"><span class="k">Rationale</span><span class="v">Even at 85% probability, President requires external confirmation</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

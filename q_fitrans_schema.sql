@@ -1,0 +1,11 @@
+-- Discover FI_TRANS TRANS_TYPE values for credit (receive) transactions
+SELECT
+  TRANS_TYPE,
+  COUNT(*) AS cnt,
+  SUM(AMOUNT) AS total_amount
+FROM `momovn-prod.BU_FI.FI_TRANS`
+WHERE TRANS_DATE BETWEEN '2026-01-01' AND '2026-01-07'
+  AND TRANS_STATUS = 'SUCCESS'
+GROUP BY TRANS_TYPE
+ORDER BY cnt DESC
+LIMIT 30;

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Model — MoMo Sinh Lời</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0b;--surface:#131316;--surface2:#1a1a1f;--surface3:#222228;
+  --border:#25252b;--border2:#35353d;
+  --text:#ededef;--text2:#7a7a85;--text3:#4a4a55;
+  --magenta:#a50064;--magenta-glow:rgba(165,0,100,0.15);
+  --green:#10b981;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Be Vietnam Pro',system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;opacity:0.03;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.container{max-width:1100px;margin:0 auto;padding:2.5rem}
+a{color:var(--magenta);text-decoration:none}a:hover{text-decoration:underline}
+
+.nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:1.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+.nav a{font-size:0.82rem;color:var(--text2);display:flex;align-items:center;gap:0.4rem;transition:color 0.2s}
+.nav a:hover{color:var(--text);text-decoration:none}
+.nav-title{font-size:0.78rem;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+
+.header{margin-bottom:3rem}
+.header h1{font-family:var(--serif);font-size:clamp(2.5rem,5vw,3.8rem);font-weight:600;letter-spacing:-0.02em;margin-bottom:0.6rem}
+.header p{color:var(--text2);font-size:1rem}
+
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:0.85rem 1.25rem;font-size:0.82rem;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.25s}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--text);border-bottom-color:var(--magenta)}
+
+.panel{display:none;animation:fadeIn 0.3s ease}.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem}
+.card h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin-bottom:1rem}
+.card-text{color:var(--text2);font-size:0.92rem;line-height:1.85}
+.card-text strong{color:var(--text)}
+
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem;position:relative}
+.chart-wrap h3{font-family:var(--serif);font-size:1.25rem;font-weight:600;margin-bottom:1.25rem}
+.chart-wrap canvas{max-height:350px}
+
+/* Table */
+table.dt{width:100%;border-collapse:collapse;font-size:0.88rem}
+table.dt th{text-align:left;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0.8rem 0.75rem;border-bottom:2px solid var(--border)}
+table.dt td{padding:0.75rem;border-bottom:1px solid var(--border)}
+table.dt tr:last-child td{border-bottom:none}
+table.dt .dim{color:var(--text2)}
+table.dt .bold{font-weight:700}
+table.dt .right{text-align:right}
+table.dt .green{color:var(--green)}.dt .red{color:var(--red)}.dt .amber{color:var(--amber)}
+table.dt tfoot td{border-top:2px solid var(--border);font-weight:700}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center}
+.kpi .val{font-family:var(--serif);font-size:2.1rem;font-weight:700;letter-spacing:-0.02em}
+.kpi .lbl{font-size:0.75rem;color:var(--text2);margin-top:0.3rem}
+.kpi.c-green .val{color:var(--green)}.kpi.c-amber .val{color:var(--amber)}.kpi.c-red .val{color:var(--red)}.kpi.c-blue .val{color:var(--blue)}
+
+/* Metric rows */
+.mr{display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);font-size:0.9rem}
+.mr:last-child{border-bottom:none}
+.mr .k{color:var(--text2)}.mr .v{font-weight:600}
+
+/* Fee table highlight */
+.fee-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;font-size:0.85rem}
+.fee-row>div{padding:0.7rem 0.75rem;border-bottom:1px solid var(--border)}
+.fee-row.head>div{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);border-bottom:2px solid var(--border)}
+.fee-row .dim{color:var(--text2)}
+
+@media(max-width:768px){
+  .kpi-strip{grid-template-columns:1fr 1fr}
+  .fee-row{grid-template-columns:1.5fr 1fr 1fr 1fr 1fr;font-size:0.78rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a href="index.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 12L6 8l4-4"/></svg> Index</a>
+    <div class="nav-title">02 / Financial Model</div>
+  </nav>
+
+  <div class="header">
+    <h1>Financial Model</h1>
+    <p>CFO's 6-block analysis. Strategic capex, unit economics, cannibalization, fee structure, break-even.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="capex">Strategic Capex</div>
+    <div class="tab" data-tab="unit">Unit Economics</div>
+    <div class="tab" data-tab="migration">$2.72 Threshold</div>
+    <div class="tab" data-tab="cannibal">Cannibalization</div>
+    <div class="tab" data-tab="fees">Fee Structure</div>
+    <div class="tab" data-tab="breakeven">Break-Even</div>
+  </div>
+
+  <!-- STRATEGIC CAPEX -->
+  <div class="panel active" id="tab-capex">
+    <div class="kpi-strip">
+      <div class="kpi c-amber"><div class="val">$4.5M</div><div class="lbl">Total 3-Year Capex</div></div>
+      <div class="kpi c-green"><div class="val">M42-44</div><div class="lbl">Payback Period</div></div>
+      <div class="kpi c-blue"><div class="val">&lt;1.5%</div><div class="lbl">of Annual Revenue</div></div>
+      <div class="kpi c-red"><div class="val">$4.2M</div><div class="lbl">Bear Case Max Hole</div></div>
+    </div>
+
+    <div class="card">
+      <h3>3-Phase P&L</h3>
+      <table class="dt">
+        <thead><tr><th>Phase</th><th>Timeline</th><th class="right">Spend</th><th class="right">Users</th><th class="right">AUM</th><th class="right">Revenue</th><th class="right">Net</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Phase 1:</strong> Trust-building</td><td class="dim">M1-12</td><td class="right">$1.8M</td><td class="right">90K</td><td class="right">$50M</td><td class="right">$140K</td><td class="right red">-$1.66M</td></tr>
+          <tr><td><strong>Phase 2:</strong> Revenue ramp</td><td class="dim">M13-24</td><td class="right">$1.5M</td><td class="right">250K</td><td class="right">$175M</td><td class="right">$700K</td><td class="right red">-$800K</td></tr>
+          <tr><td><strong>Phase 3:</strong> Break-even</td><td class="dim">M25-36</td><td class="right">$1.2M</td><td class="right">400K+</td><td class="right">$500M</td><td class="right">$4M</td><td class="right green">+$1.5M</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="2"><strong>Total</strong></td><td class="right bold">$4.5M</td><td></td><td></td><td></td><td class="right bold red">~-$1M</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>Cumulative P&L by Phase</h3>
+      <canvas id="chartCapex"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>The $4M Framing</h3>
+      <p class="card-text"><strong>$4.5M over 3 years</strong> is less than 1.5% of MoMo's annual revenue (~$300M). Bear case total downside: $4.4M. Month-6 kill gate limits max loss to <strong style="color:var(--amber)">~$800K</strong>. As CEO Tuong frames it: <em>"Sinh tồn trước"</em> — survive first. A business still alive still has a chance.</p>
+    </div>
+  </div>
+
+  <!-- UNIT ECONOMICS -->
+  <div class="panel" id="tab-unit">
+    <div class="kpi-strip">
+      <div class="kpi c-amber"><div class="val">$14.70</div><div class="lbl">Cost per Funded Account</div></div>
+      <div class="kpi c-blue"><div class="val">$1,200</div><div class="lbl">Min AUM/User Break-even</div></div>
+      <div class="kpi c-green"><div class="val">$8-9</div><div class="lbl">After Month 12 (tech amortized)</div></div>
+    </div>
+
+    <div class="card">
+      <h3>$14.70 Fully Loaded Breakdown</h3>
+      <div class="mr"><span class="k">Customer Acquisition Cost (CAC)</span><span class="v">$6.50</span></div>
+      <div class="mr"><span class="k">KYC / Onboarding</span><span class="v">$1.50</span></div>
+      <div class="mr"><span class="k">Technology (amortized Y1)</span><span class="v">$6.70</span></div>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">Total</span><span class="v" style="color:var(--amber)">$14.70</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Break-even AUM Threshold</h3>
+      <p class="card-text">At 0.8% blended fee (trail commission), each user needs <strong style="color:var(--blue)">$1,200 AUM (30.6M VND)</strong> to cover their acquisition cost within Year 1. This is roughly the equivalent of <strong>6 months' savings</strong> for a mid-tier MoMo user. The Y1 funnel projects average balance of $556 — meaning full unit economics break-even requires AUM growth over 18-24 months.</p>
+    </div>
+
+    <div class="card">
+      <h3>Funnel Math (Y1)</h3>
+      <table class="dt">
+        <thead><tr><th>Source</th><th class="right">Try</th><th class="right">Stick (90d)</th><th class="right">Avg Balance</th><th class="right">AUM</th></tr></thead>
+        <tbody>
+          <tr><td>External investors (935K)</td><td class="right">78K</td><td class="right">39K</td><td class="right">$600</td><td class="right">$23M</td></tr>
+          <tr><td>TTT upgraders (&lt;5M VND)</td><td class="right">48K</td><td class="right">29K</td><td class="right">$800</td><td class="right">$23M</td></tr>
+          <tr><td>New-to-investing (12M)</td><td class="right">54K</td><td class="right">22K</td><td class="right">$200</td><td class="right">$4.4M</td></tr>
+        </tbody>
+        <tfoot><tr><td><strong>Y1 Total</strong></td><td class="right bold">180K</td><td class="right bold">90K</td><td></td><td class="right bold green">$50M</td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- $2.72 MIGRATION -->
+  <div class="panel" id="tab-migration">
+    <div class="kpi-strip">
+      <div class="kpi c-red"><div class="val">$2.72</div><div class="lbl">Net Loss per Migrating User/yr</div></div>
+      <div class="kpi c-amber"><div class="val">$63</div><div class="lbl">Loss per Whale/yr</div></div>
+      <div class="kpi c-blue"><div class="val">2.13x</div><div class="lbl">Offset Ratio</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Derivation</h3>
+      <div class="mr"><span class="k">TTT AUM</span><span class="v">12.46T VND ($490M)</span></div>
+      <div class="mr"><span class="k">TTT MFU (Monthly Funded Users)</span><span class="v">2.88M</span></div>
+      <div class="mr"><span class="k">Average AUM per user</span><span class="v">$170</span></div>
+      <div class="mr"><span class="k">TTT net spread</span><span class="v">2.35% (6% gross - 3.65% to users)</span></div>
+      <div class="mr"><span class="k">Annual TTT revenue per user</span><span class="v">$170 x 2.35% = $3.99</span></div>
+      <div class="mr"><span class="k">Investment fee per migrated user</span><span class="v">$170 x 0.75% = $1.28</span></div>
+      <div class="mr"><span class="k" style="font-weight:600;color:var(--text)">NET LOSS per migrating user</span><span class="v" style="color:var(--red)">$3.99 - $1.28 = $2.72/yr</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Whale Sensitivity</h3>
+      <p class="card-text">High-value users (100M+ VND / $3,937) lose <strong style="color:var(--red)">$63/year</strong> per migrating user ($3,937 x 1.6% spread difference). These 86,700 users hold 60.8% of TTT AUM — they are on the <strong>suppression list</strong>. No Sinh Lời targeting.</p>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>TTT AUM Concentration by Tier</h3>
+      <canvas id="chartTier"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Offset Ratio: 2.13x</h3>
+      <p class="card-text">For every <strong>$1 leaving TTT</strong>, MoMo needs <strong style="color:var(--blue)">$2.13 of NEW external money</strong> entering investment to stay P&L neutral. At 10% TTT migration ($49M), need $104M new external AUM. 5% capture of 935K investor segment's $2B/yr external flow = $100M — achievable.</p>
+    </div>
+  </div>
+
+  <!-- CANNIBALIZATION -->
+  <div class="panel" id="tab-cannibal">
+    <div class="card">
+      <h3>10% TTT Migration Scenario</h3>
+      <table class="dt">
+        <thead><tr><th>Metric</th><th class="right">Value</th></tr></thead>
+        <tbody>
+          <tr><td>AUM migrated from TTT</td><td class="right">$49M</td></tr>
+          <tr><td>Revenue lost (TTT spread)</td><td class="right red">-$1.15M/yr</td></tr>
+          <tr><td>Revenue gained (investment trail)</td><td class="right green">+$367K/yr</td></tr>
+          <tr><td class="bold">Net annual loss</td><td class="right red bold">-$783K/yr</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Offset Ratio Applied</h3>
+      <p class="card-text">The <strong style="color:var(--blue)">2.13x offset ratio</strong> means if users moving $49M from TTT also bring in $104M of NEW money, the economics are neutral. The CMO's segment strategy ensures this by targeting external investors first (zero TTT risk) and suppressing whale targeting.</p>
+    </div>
+
+    <div class="card">
+      <h3>Wallet Expansion — Net Positive Scenario</h3>
+      <p class="card-text">User adds <strong>50M VND investment</strong> + keeps <strong>30M VND TTT</strong> (moves 20M from TTT). Ratio: 50M / 20M = <strong style="color:var(--green)">2.5x</strong> &gt; 2.13x threshold. Net result: <strong style="color:var(--green)">+$2.19/year per user</strong> — the wallet GROWS. This is the design target: grow the pie, don't slice it differently.</p>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>Cannibalization vs Wallet Expansion</h3>
+      <canvas id="chartCannibal"></canvas>
+    </div>
+  </div>
+
+  <!-- FEE STRUCTURE -->
+  <div class="panel" id="tab-fees">
+    <div class="card">
+      <h3>Dragon Capital Fee Negotiation Boundaries</h3>
+      <div class="fee-row head"><div>Product</div><div>Floor</div><div>Target</div><div>Ceiling</div><div>Phase</div></div>
+      <div class="fee-row"><div><strong>DCIP</strong> <span class="dim">(short-term bond)</span></div><div>20 bps</div><div style="color:var(--green)">25 bps</div><div>30 bps</div><div class="dim">1</div></div>
+      <div class="fee-row"><div><strong>DCBF</strong> <span class="dim">(bond fund)</span></div><div>25 bps</div><div style="color:var(--green)">35 bps</div><div>40 bps</div><div class="dim">1</div></div>
+      <div class="fee-row"><div><strong>DCDE</strong> <span class="dim">(dividend equity)</span></div><div>45 bps</div><div style="color:var(--green)">55 bps</div><div>65 bps</div><div class="dim">2</div></div>
+      <div class="fee-row"><div><strong>DCDS</strong> <span class="dim">(growth equity)</span></div><div>55 bps</div><div style="color:var(--green)">70 bps</div><div>80 bps</div><div class="dim">3</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Key Terms</h3>
+      <div class="mr"><span class="k">Entry fee (Phase 1)</span><span class="v" style="color:var(--green)">Zero</span></div>
+      <div class="mr"><span class="k">Exclusivity</span><span class="v">Non-exclusive preferred partnership</span></div>
+      <div class="mr"><span class="k">Phase 1 blended trail</span><span class="v">28-30 bps (DCIP + DCBF mix)</span></div>
+      <div class="mr"><span class="k">Competitive benchmark</span><span class="v">Finhay/VNSC terms (to be confirmed)</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Blended Revenue Projection</h3>
+      <p class="card-text">At <strong>$50M AUM</strong> (Y1 target) with 28-30 bps blended trail: <strong style="color:var(--green)">$125-140K revenue</strong>. At <strong>$500M AUM</strong> (Y3) with higher-trail equity products: <strong style="color:var(--green)">$4M+/yr revenue</strong>. The product ladder (DCIP → DCBF → DCDE → DCDS) progressively improves blended margin.</p>
+    </div>
+  </div>
+
+  <!-- BREAK-EVEN -->
+  <div class="panel" id="tab-breakeven">
+    <div class="kpi-strip">
+      <div class="kpi c-blue"><div class="val">M30-36</div><div class="lbl">Break-even (Base)</div></div>
+      <div class="kpi c-amber"><div class="val">M42+</div><div class="lbl">Break-even (Bear)</div></div>
+      <div class="kpi c-red"><div class="val">$2.45M</div><div class="lbl">Max Cash Hole (Base)</div></div>
+      <div class="kpi c-red"><div class="val">$4.2M</div><div class="lbl">Max Cash Hole (Bear)</div></div>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>AUM Ramp: Base vs Bear</h3>
+      <canvas id="chartAUM"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Monthly Build-Up</h3>
+      <table class="dt">
+        <thead><tr><th>Period</th><th class="right">Cumulative Spend</th><th class="right">Cumulative Revenue</th><th class="right">Net Position</th></tr></thead>
+        <tbody>
+          <tr><td>Month 6 (kill gate)</td><td class="right">$900K</td><td class="right">$35K</td><td class="right red">-$865K</td></tr>
+          <tr><td>Month 12</td><td class="right">$1.8M</td><td class="right">$140K</td><td class="right red">-$1.66M</td></tr>
+          <tr><td>Month 24</td><td class="right">$3.3M</td><td class="right">$840K</td><td class="right red">-$2.46M</td></tr>
+          <tr><td>Month 36</td><td class="right">$4.5M</td><td class="right">$4.84M</td><td class="right green">+$340K</td></tr>
+          <tr><td class="bold">Month 42-44 (payback)</td><td class="right">$4.9M</td><td class="right">$6.5M+</td><td class="right green bold">Break-even</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Kill Criteria</h3>
+      <p class="card-text"><strong>Month 6:</strong> 100K funded accounts + 15% Tui+ bundle rate + NPS &gt; 30. If any gate missed, pause and reassess. Max loss at kill point: <strong style="color:var(--amber)">~$800K</strong>. <em>"A business still alive still has a chance."</em></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Tab logic
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+// Chart defaults
+Chart.defaults.color='#7a7a85';
+Chart.defaults.borderColor='#25252b';
+Chart.defaults.font.family="'Be Vietnam Pro',system-ui,sans-serif";
+Chart.defaults.font.size=12;
+
+// Capex waterfall
+new Chart(document.getElementById('chartCapex'),{
+  type:'bar',
+  data:{
+    labels:['Phase 1 Spend','Phase 1 Revenue','Phase 2 Spend','Phase 2 Revenue','Phase 3 Spend','Phase 3 Revenue','Net'],
+    datasets:[{
+      data:[-1800,140,-1500,700,-1200,4000,-1000],
+      backgroundColor:d=>d.raw<0?'rgba(239,68,68,0.7)':'rgba(16,185,129,0.7)',
+      borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:true,aspectRatio:2.2,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>(c.raw>0?'+':'')+c.raw+'K'}}},scales:{y:{ticks:{callback:v=>v>0?'+$'+v+'K':'-$'+Math.abs(v)+'K'},grid:{color:'#1a1a1f'}},x:{grid:{display:false}}}}
+});
+
+// TTT Tier donut
+new Chart(document.getElementById('chartTier'),{
+  type:'doughnut',
+  data:{
+    labels:['<3M VND (89% users, 4.3% AUM)','3M-50M (3.2% users, 39% AUM)','>50M VND (0.4% users, 36%+ AUM)','Others'],
+    datasets:[{
+      data:[4.3,39,36,20.7],
+      backgroundColor:['rgba(59,130,246,0.7)','rgba(245,158,11,0.7)','rgba(239,68,68,0.7)','rgba(74,74,85,0.4)'],
+      borderWidth:0,borderRadius:4
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:true,aspectRatio:2,cutout:'65%',plugins:{legend:{position:'bottom',labels:{padding:16,usePointStyle:true,pointStyleWidth:10}}}}
+});
+
+// Cannibalization chart
+new Chart(document.getElementById('chartCannibal'),{
+  type:'bar',
+  data:{
+    labels:['Pure Migration\n(Bad)','1.5x Ratio\n(Neutral-ish)','2.13x Ratio\n(Break-even)','2.5x Ratio\n(Target)','3x Ratio\n(Great)'],
+    datasets:[
+      {label:'TTT Revenue Lost',data:[-1150,-1150,-1150,-1150,-1150],backgroundColor:'rgba(239,68,68,0.6)',borderRadius:4},
+      {label:'Investment Revenue Gained',data:[367,551,750,920,1100],backgroundColor:'rgba(16,185,129,0.6)',borderRadius:4}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:true,aspectRatio:2.2,plugins:{legend:{position:'bottom',labels:{padding:16,usePointStyle:true}}},scales:{y:{stacked:false,ticks:{callback:v=>(v>0?'+$':'-$')+Math.abs(v/1000).toFixed(1)+'M'},grid:{color:'#1a1a1f'}},x:{grid:{display:false}}}}
+});
+
+// AUM Ramp
+new Chart(document.getElementById('chartAUM'),{
+  type:'line',
+  data:{
+    labels:['M0','M6','M12','M18','M24','M30','M36'],
+    datasets:[
+      {label:'Base Case',data:[0,20,50,100,175,320,500],borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#10b981'},
+      {label:'Bear Case',data:[0,12,30,55,95,150,250],borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.05)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#ef4444',borderDash:[6,4]}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:true,aspectRatio:2.2,plugins:{legend:{position:'bottom',labels:{padding:16,usePointStyle:true}}},scales:{y:{ticks:{callback:v=>'$'+v+'M'},grid:{color:'#1a1a1f'}},x:{grid:{display:false}}}}
+});
+</script>
+</body>
+</html>

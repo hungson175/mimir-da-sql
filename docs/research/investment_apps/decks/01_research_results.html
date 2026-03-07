@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Apps Research | MoMo Strategic Intelligence</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --momo-pink: #ae2070;
+    --momo-pink-light: #d4478a;
+    --momo-pink-dark: #8a1a5a;
+    --momo-bg: #fdf2f7;
+    --momo-white: #ffffff;
+    --momo-dark: #1a1a2e;
+    --momo-gray: #6b7280;
+    --momo-gray-light: #f3f4f6;
+    --momo-success: #4caf50;
+    --momo-error: #f44336;
+    --momo-warning: #ff9800;
+    --momo-blue: #48c4e7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--momo-bg); color: var(--momo-dark); }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #ae2070, #d4478a); color: white; padding: 24px 32px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(174,32,112,0.2); }
+  .header h1 { font-size: 1.5rem; font-weight: 700; }
+  .header p { font-size: 0.85rem; opacity: 0.85; margin-top: 4px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; background: white; border-bottom: 2px solid var(--momo-gray-light); position: sticky; top: 80px; z-index: 99; overflow-x: auto; }
+  .tab { padding: 14px 24px; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--momo-gray); border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
+  .tab:hover { color: var(--momo-pink); background: var(--momo-bg); }
+  .tab.active { color: var(--momo-pink); border-bottom-color: var(--momo-pink); font-weight: 600; }
+
+  /* Content */
+  .content { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(174,32,112,0.06); }
+  .card h2 { font-size: 1.2rem; color: var(--momo-pink-dark); margin-bottom: 16px; border-left: 4px solid var(--momo-pink); padding-left: 12px; }
+  .card h3 { font-size: 1rem; color: var(--momo-dark); margin: 16px 0 8px; }
+
+  /* KPI Row */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi { background: white; border-radius: 12px; padding: 20px; border-left: 4px solid var(--momo-pink); box-shadow: 0 2px 8px rgba(174,32,112,0.06); }
+  .kpi .label { font-size: 0.75rem; text-transform: uppercase; color: var(--momo-gray); letter-spacing: 0.5px; }
+  .kpi .value { font-size: 1.8rem; font-weight: 700; color: var(--momo-dark); margin: 4px 0; }
+  .kpi .sub { font-size: 0.8rem; color: var(--momo-gray); }
+  .kpi .change { font-size: 0.8rem; font-weight: 600; }
+  .kpi .change.up { color: var(--momo-success); }
+  .kpi .change.down { color: var(--momo-error); }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 12px 0; }
+  thead th { background: var(--momo-pink); color: white; padding: 10px 12px; text-align: left; font-weight: 600; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--momo-gray-light); }
+  tbody tr:nth-child(even) { background: var(--momo-gray-light); }
+  tbody tr:hover { background: #fce4ec; }
+
+  /* Charts */
+  .chart-container { position: relative; height: 350px; margin: 16px 0; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } }
+
+  /* Insight boxes */
+  .insight { background: var(--momo-bg); border-left: 4px solid var(--momo-pink); padding: 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 0.9rem; line-height: 1.6; }
+  .insight strong { color: var(--momo-pink-dark); }
+  .insight.warning { border-left-color: var(--momo-warning); background: #fff8e1; }
+  .insight.success { border-left-color: var(--momo-success); background: #e8f5e9; }
+
+  /* Comparison cards */
+  .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .compare-card { background: white; border-radius: 12px; padding: 20px; border: 2px solid var(--momo-gray-light); transition: border-color 0.2s; }
+  .compare-card:hover { border-color: var(--momo-pink-light); }
+  .compare-card .name { font-size: 1.1rem; font-weight: 700; color: var(--momo-dark); margin-bottom: 12px; }
+  .compare-card .metric { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--momo-gray-light); font-size: 0.85rem; }
+  .compare-card .metric .val { font-weight: 600; color: var(--momo-pink); }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--momo-pink), var(--momo-blue)); border-radius: 2px; }
+  .timeline-item { position: relative; margin-bottom: 24px; }
+  .timeline-item::before { content: ''; position: absolute; left: -26px; top: 4px; width: 14px; height: 14px; background: var(--momo-pink); border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 2px var(--momo-pink); }
+  .timeline-item h4 { font-size: 0.95rem; color: var(--momo-pink-dark); }
+  .timeline-item p { font-size: 0.85rem; color: var(--momo-gray); margin-top: 4px; }
+
+  /* Footer */
+  .footer { text-align: center; padding: 32px; color: var(--momo-gray); font-size: 0.8rem; }
+
+  /* Badge */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+  .badge.high { background: #e8f5e9; color: #2e7d32; }
+  .badge.medium { background: #fff8e1; color: #f57f17; }
+  .badge.low { background: #fce4ec; color: #c62828; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Investment Apps: Global Market Research</h1>
+  <p>Strategic Intelligence for MoMo | Prepared for Do Quang Thuan, President | March 6, 2026</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="overview">Executive Summary</div>
+  <div class="tab" data-tab="stash">Stash Deep Dive</div>
+  <div class="tab" data-tab="competitors">Competitor Landscape</div>
+  <div class="tab" data-tab="sea">SEA & Vietnam</div>
+  <div class="tab" data-tab="internal">MoMo Internal Data</div>
+  <div class="tab" data-tab="superapp">Super-App Lessons</div>
+  <div class="tab" data-tab="strategic">Strategic Analysis</div>
+</div>
+
+<div class="content">
+
+<!-- ============= EXECUTIVE SUMMARY ============= -->
+<div class="section active" id="overview">
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Stash Acquisition</div>
+      <div class="value">$425M</div>
+      <div class="sub">by Grab Holdings, Feb 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Global Robo-Advisory CAGR</div>
+      <div class="value">30.8%</div>
+      <div class="sub">$14.3B (2025) -> $54.7B (2030)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">MoMo TTT AUM</div>
+      <div class="value">$490M</div>
+      <div class="sub">12.46T VND, +31% YoY</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Vietnam Fund Investors</div>
+      <div class="value">400K</div>
+      <div class="sub">vs MoMo's 30M users = 75x gap</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Why This Matters Now</h2>
+    <div class="insight">
+      <strong>Grab just paid $425M for Stash</strong> — MoMo's closest structural competitor in SEA is betting big on embedded investing.
+      Grab explicitly plans to bring Stash's AI investing tools to Southeast Asia. MoMo has a <strong>limited window</strong> to establish
+      the investment habit with its 30M users before Grab arrives with a proven product.
+    </div>
+    <div class="insight success">
+      <strong>MoMo's position is stronger than Stash at acquisition:</strong> 30M users (vs Stash's 1M), native payment rails,
+      full transaction data moat, and an early-stage market with almost no competition (Vietnam has only 400K mutual fund investors).
+    </div>
+    <div class="insight warning">
+      <strong>Cautionary tale:</strong> GrabInvest launched in 2020 and shut down in September 2023. A generic money market fund
+      embedded in a payments app is NOT enough. You need either a compelling yield differential OR a behavioral mechanism
+      (round-ups, stock-back rewards, goal-based saving).
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Key Numbers at a Glance</h2>
+    <div class="chart-row">
+      <div class="chart-container"><canvas id="chartAUM"></canvas></div>
+      <div class="chart-container"><canvas id="chartCompare"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Five Critical Findings</h2>
+    <table>
+      <thead><tr><th>#</th><th>Finding</th><th>Implication for MoMo</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Grab acquired Stash ($425M) for SEA investing expansion</td><td>Direct competitive threat to Vietnam market; urgency to move first</td></tr>
+        <tr><td>2</td><td>935K MoMo users already tag "Investment" in expense tracking</td><td>Built-in demand signal; these users want investment products</td></tr>
+        <tr><td>3</td><td>TTT has $490M AUM but 86% of users hold <300K VND</td><td>Massive untapped base; current product serves savers, not investors</td></tr>
+        <tr><td>4</td><td>Vietnam has 400K mutual fund investors vs 30M MoMo users</td><td>75x distribution advantage; winner-take-most opportunity</td></tr>
+        <tr><td>5</td><td>AI robo-advisory growing at 30.8% CAGR globally</td><td>MoMo's transaction data + AI = unique personalized investment advisor</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============= STASH DEEP DIVE ============= -->
+<div class="section" id="stash">
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Enterprise Value</div>
+      <div class="value">$425M</div>
+      <div class="sub">Acquired by Grab, Feb 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="label">AUM</div>
+      <div class="value">$5B</div>
+      <div class="sub">At time of acquisition</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Revenue (2023)</div>
+      <div class="value">$104M</div>
+      <div class="sub">EBITDA positive</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Subscribers</div>
+      <div class="value">1M+</div>
+      <div class="sub">Paying $3-9/month</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Stash's Product Suite</h2>
+    <table>
+      <thead><tr><th>Product</th><th>Description</th><th>MoMo Equivalent?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Core Investing</strong></td><td>Self-directed stock/ETF, fractional shares from $0.01</td><td>No (TTT = money market only)</td></tr>
+        <tr><td><strong>Automated Investing</strong></td><td>Smart portfolios for hands-off investors</td><td>No</td></tr>
+        <tr><td><strong>Stock-Back Debit Card</strong></td><td>Earn fractional shares (up to 5%) on purchases</td><td>No (huge opportunity)</td></tr>
+        <tr><td><strong>AI Money Coach</strong></td><td>50% users take action same-day; engagement +40%</td><td>Moni AI (290K chatters, growing)</td></tr>
+        <tr><td><strong>StashWorks</strong></td><td>B2B financial wellness for employers</td><td>No</td></tr>
+        <tr><td><strong>Retirement Accounts</strong></td><td>IRA options</td><td>No</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Why Grab Paid $425M</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>2020 — Grab launches GrabInvest</h4>
+        <p>Built in-house after acquiring Bento Invest (Singapore robo-advisor). Products: AutoInvest, Earn+ (1.18%/year return)</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Sep 2023 — GrabInvest shuts down</h4>
+        <p>Failed: low returns, commoditized product, no behavioral hook, users came for transport not investing</p>
+      </div>
+      <div class="timeline-item">
+        <h4>May 2025 — Stash raises $146M Series H</h4>
+        <p>Proving EBITDA-positive unit economics. AI Money Coach driving 40% engagement increase</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Feb 2026 — Grab acquires Stash at $425M</h4>
+        <p>Buy what you can't build. Plans to bring AI investing tools to SEA. Stash continues as independent US brand</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Stash's 5 Success Factors</h2>
+    <table>
+      <thead><tr><th>Factor</th><th>How It Works</th><th>Can MoMo Replicate?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Stock-Back Rewards</strong></td><td>Spend with debit card -> earn fractional shares -> daily habit loop</td><td>YES - MoMo has native payment rails (QR, P2P, bills)</td></tr>
+        <tr><td><strong>Education-first UX</strong></td><td>Positioned as teacher, not broker. Lower cognitive barrier</td><td>YES - Moni AI chatbot could be the teacher</td></tr>
+        <tr><td><strong>Subscription Revenue</strong></td><td>$3-9/month. Stable, predictable, not transaction-dependent</td><td>MAYBE - Vietnam market may resist subscriptions</td></tr>
+        <tr><td><strong>B2B Channel (StashWorks)</strong></td><td>Employer benefits = lower CAC</td><td>LATER - Phase 3 opportunity</td></tr>
+        <tr><td><strong>AI Integration</strong></td><td>AI Money Coach: 50% same-day positive action</td><td>YES - MoMo has transaction data advantage</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============= COMPETITORS ============= -->
+<div class="section" id="competitors">
+  <div class="compare-grid">
+    <div class="compare-card">
+      <div class="name">Stash</div>
+      <div class="metric"><span>AUM</span><span class="val">$5B</span></div>
+      <div class="metric"><span>Users</span><span class="val">1M+ subscribers</span></div>
+      <div class="metric"><span>Revenue</span><span class="val">$104M (2023)</span></div>
+      <div class="metric"><span>Pricing</span><span class="val">$3-9/mo</span></div>
+      <div class="metric"><span>Core</span><span class="val">Self-directed + Stock-Back</span></div>
+      <div class="metric"><span>SEA Relevance</span><span class="val"><span class="badge high">HIGH</span></span></div>
+    </div>
+    <div class="compare-card">
+      <div class="name">Acorns</div>
+      <div class="metric"><span>AUM</span><span class="val">$8.2B</span></div>
+      <div class="metric"><span>Users</span><span class="val">5.7M active</span></div>
+      <div class="metric"><span>Revenue</span><span class="val">$400M+ (2025)</span></div>
+      <div class="metric"><span>Pricing</span><span class="val">$3-12/mo</span></div>
+      <div class="metric"><span>Core</span><span class="val">Round-up automation</span></div>
+      <div class="metric"><span>SEA Relevance</span><span class="val"><span class="badge medium">MEDIUM</span></span></div>
+    </div>
+    <div class="compare-card">
+      <div class="name">Robinhood</div>
+      <div class="metric"><span>AUM</span><span class="val">$150B+</span></div>
+      <div class="metric"><span>Users</span><span class="val">24M+ accounts</span></div>
+      <div class="metric"><span>Revenue</span><span class="val">$1.87B (2024)</span></div>
+      <div class="metric"><span>Pricing</span><span class="val">Free (Gold $5/mo)</span></div>
+      <div class="metric"><span>Core</span><span class="val">Commission-free trading</span></div>
+      <div class="metric"><span>SEA Relevance</span><span class="val"><span class="badge low">LOW</span></span></div>
+    </div>
+    <div class="compare-card">
+      <div class="name">Wealthfront</div>
+      <div class="metric"><span>AUM</span><span class="val">$90B</span></div>
+      <div class="metric"><span>Users</span><span class="val">1.3M</span></div>
+      <div class="metric"><span>Revenue</span><span class="val">$308.9M (2025)</span></div>
+      <div class="metric"><span>Pricing</span><span class="val">0.25% annual</span></div>
+      <div class="metric"><span>Core</span><span class="val">Robo-advisory + tax-loss</span></div>
+      <div class="metric"><span>SEA Relevance</span><span class="val"><span class="badge low">LOW</span></span></div>
+    </div>
+    <div class="compare-card">
+      <div class="name">Ajaib (Indonesia)</div>
+      <div class="metric"><span>AUM</span><span class="val">N/A</span></div>
+      <div class="metric"><span>Users</span><span class="val">3M+</span></div>
+      <div class="metric"><span>Revenue</span><span class="val">$84.2M (2024)</span></div>
+      <div class="metric"><span>Pricing</span><span class="val">Low-fee</span></div>
+      <div class="metric"><span>Core</span><span class="val">Mobile-first stocks + MF</span></div>
+      <div class="metric"><span>SEA Relevance</span><span class="val"><span class="badge high">HIGH</span></span></div>
+    </div>
+    <div class="compare-card">
+      <div class="name">Finhay (Vietnam)</div>
+      <div class="metric"><span>AUM</span><span class="val">N/A</span></div>
+      <div class="metric"><span>Users</span><span class="val">2.7M registered</span></div>
+      <div class="metric"><span>Revenue</span><span class="val">N/A</span></div>
+      <div class="metric"><span>Pricing</span><span class="val">Min VND 50K (~$2)</span></div>
+      <div class="metric"><span>Core</span><span class="val">Mutual funds + robo</span></div>
+      <div class="metric"><span>SEA Relevance</span><span class="val"><span class="badge high">HIGH</span></span></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Revenue Comparison</h2>
+    <div class="chart-container"><canvas id="chartRevenue"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h2>Target User Spectrum</h2>
+    <table>
+      <thead><tr><th>Segment</th><th>Apps</th><th>Behavior</th><th>Vietnam Fit</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Passive Micro-Savers</strong></td><td>Acorns, Tikop</td><td>Set-and-forget, round-ups</td><td><span class="badge high">HIGH</span> — matches 86% of TTT users with <300K</td></tr>
+        <tr><td><strong>First-Time Investors</strong></td><td>Stash, Finhay, Bibit</td><td>Education + guided investing</td><td><span class="badge high">HIGH</span> — 61% of TTT MAU under 28</td></tr>
+        <tr><td><strong>Active Traders</strong></td><td>Robinhood, Ajaib</td><td>Self-directed, frequent trades</td><td><span class="badge medium">MEDIUM</span> — existing via TCBS/SSI</td></tr>
+        <tr><td><strong>Mass-Affluent</strong></td><td>Wealthfront, StashAway</td><td>Robo-advisory, tax optimization</td><td><span class="badge low">LOW</span> — small market in Vietnam</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============= SEA & VIETNAM ============= -->
+<div class="section" id="sea">
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">VN Trading Accounts</div>
+      <div class="value">10M+</div>
+      <div class="sub">85-90% retail speculation</div>
+    </div>
+    <div class="kpi">
+      <div class="label">VN Mutual Fund Investors</div>
+      <div class="value">400K</div>
+      <div class="sub">Open-end fund AUM: $2B</div>
+    </div>
+    <div class="kpi">
+      <div class="label">SEA Wealth Shift</div>
+      <div class="value">$700B</div>
+      <div class="sub">McKinsey: moving to WealthTech</div>
+    </div>
+    <div class="kpi">
+      <div class="label">VN Gov Target</div>
+      <div class="value">10%</div>
+      <div class="sub">Population in stocks by 2030</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Vietnam's Investment Gap</h2>
+    <div class="chart-container"><canvas id="chartVietnamGap"></canvas></div>
+    <div class="insight">
+      <strong>The opportunity:</strong> Vietnam has 10M trading accounts but only 400K mutual fund investors.
+      The gap between speculative trading and managed/automated investing is enormous.
+      MoMo's 30M users represent a 75x distribution advantage over the existing fund industry.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>SEA Investment App Landscape</h2>
+    <table>
+      <thead><tr><th>Country</th><th>Key Players</th><th>Model</th><th>Lessons for MoMo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Indonesia</strong></td><td>Ajaib ($84M rev), Bibit/Stockbit</td><td>Mobile-first stocks + mutual funds</td><td>Largest SEA market; robo-advisor for MF works well for beginners</td></tr>
+        <tr><td><strong>Singapore</strong></td><td>StashAway, Syfe ($27M raised)</td><td>Robo-advisory, ETF portfolios</td><td>Mass-affluent focus; $1K+ minimums too high for Vietnam</td></tr>
+        <tr><td><strong>Thailand</strong></td><td>StockRadars, Jitta</td><td>Stock screening/analytics</td><td>Tools for informed investors, not mass-market</td></tr>
+        <tr><td><strong>Vietnam</strong></td><td>Finhay (2.7M), Tikop, TCBS, SSI</td><td>Brokers + mutual fund platforms</td><td>Finhay = closest competitor but no payment integration</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Regulatory Path for MoMo</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>Current: E-wallet License</h4>
+        <p>MoMo can distribute financial products but cannot directly manage investment funds</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Fastest Path: Fund Management Partnership</h4>
+        <p>Partner with Dragon Capital, VinaCapital, Mirae Asset, or Eastspring. White-label their funds inside MoMo app. Similar to how Finhay works.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Sandbox: Decree 94/2025, Resolution 222/2025</h4>
+        <p>Vietnam's fintech sandbox now allows pilot programs for unregulated fintech products. MoMo could apply for sandbox approval.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Long-term: Own Fund Management License</h4>
+        <p>Capital-intensive and time-consuming but gives full control. Phase 3 (24-48 months).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============= INTERNAL DATA ============= -->
+<div class="section" id="internal">
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">TTT MAU</div>
+      <div class="value">3.45M</div>
+      <div class="sub">Feb 2026 (Individual 3.0M + MP 434K)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">TTT AUM</div>
+      <div class="value">12.46T</div>
+      <div class="sub">VND (~$490M), +31% YoY</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Investment-Tagged Users</div>
+      <div class="value">935K</div>
+      <div class="sub">Self-identified investors in QLCT</div>
+    </div>
+    <div class="kpi">
+      <div class="label">TTT x QLCT Overlap</div>
+      <div class="value">1.2M</div>
+      <div class="sub">40% of TTT also track expenses</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>TTT MAU & AUM Trend (12 Months)</h2>
+    <div class="chart-row">
+      <div class="chart-container"><canvas id="chartTTTmau"></canvas></div>
+      <div class="chart-container"><canvas id="chartTTTaum"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Balance Distribution: The Long Tail Problem</h2>
+    <div class="chart-container"><canvas id="chartBalance"></canvas></div>
+    <div class="insight warning">
+      <strong>86% of TTT users hold less than VND 300K ($12).</strong> These are "savings account" users, not investors.
+      The top 0.7% (87K users with >30M VND) hold 61% of all AUM. TTT is a parking lot for idle cash, not a wealth-building tool.
+      An investment product must convert the 86% long tail into actual investors.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Demographics: Young & Ready</h2>
+    <div class="chart-row">
+      <div class="chart-container"><canvas id="chartDemoAge"></canvas></div>
+      <div class="chart-container"><canvas id="chartDemoOverlap"></canvas></div>
+    </div>
+    <div class="insight success">
+      <strong>61% of TTT MAU is under 28.</strong> This is the global micro-investing sweet spot — young people who earn but don't
+      know how to invest. Stash, Acorns, and Robinhood all built their businesses on this demographic.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>QLCT/Moni Growth: AI Chatbot Explosion</h2>
+    <div class="chart-container"><canvas id="chartMoni"></canvas></div>
+    <div class="insight success">
+      <strong>Moni AI chatters grew 6.7x in 7 months</strong> (48K -> 321K). This proves MoMo users are hungry for financial guidance.
+      Combine this with an investment product = MoMo's version of Stash's AI Money Coach.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Cross-Domain Overlap (Jan 2026)</h2>
+    <table>
+      <thead><tr><th>Segment</th><th>Users</th><th>Implication</th></tr></thead>
+      <tbody>
+        <tr><td>TTT + QLCT overlap</td><td>1,197,596</td><td>Financially engaged — track spending AND save</td></tr>
+        <tr><td>TTT + Moni overlap</td><td>151,719</td><td>AI-engaged savers — prime early adopters</td></tr>
+        <tr><td>All 3 products</td><td>129,337</td><td>Power users — ideal beta testers</td></tr>
+        <tr><td>TTT-only users</td><td>~1.8M</td><td>Save but don't track — need nudges</td></tr>
+        <tr><td>QLCT-only users</td><td>~1.6M</td><td>Track but don't save — need onboarding</td></tr>
+        <tr><td>Combined unique</td><td>~4.6M</td><td>Total financially-engaged MoMo users</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>TTT Economics</h2>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>AUM (Feb 2026)</td><td>12.46T VND ($490M)</td><td>+31% YoY</td></tr>
+        <tr><td>Gross yield (est.)</td><td>~6%/year</td><td>From money market placement</td></tr>
+        <tr><td>Interest paid to users</td><td>~420B VND/year ($16.5M)</td><td>~4% blended rate</td></tr>
+        <tr><td>Net spread revenue</td><td>~293B VND/year ($11.5M)</td><td>~2% net margin on AUM</td></tr>
+        <tr><td>Avg balance/MFU</td><td>4.33M VND ($170)</td><td>Very low — room to grow</td></tr>
+        <tr><td>Money Pool AUM growth</td><td>+230% in 12 months</td><td>Social saving = viral growth</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============= SUPER-APP LESSONS ============= -->
+<div class="section" id="superapp">
+  <div class="card">
+    <h2>Super-App Investment Track Record</h2>
+    <div class="compare-grid">
+      <div class="compare-card" style="border-color: var(--momo-success);">
+        <div class="name">Yu'e Bao (Alipay) <span class="badge high">SUCCESS</span></div>
+        <div class="metric"><span>Peak AUM</span><span class="val">$267 billion</span></div>
+        <div class="metric"><span>Why it worked</span><span class="val">4-5% vs 0.5% bank rate</span></div>
+        <div class="metric"><span>Zero friction</span><span class="val">No new KYC needed</span></div>
+        <div class="metric"><span>Decline reason</span><span class="val">Yield fell to 1.27%</span></div>
+      </div>
+      <div class="compare-card" style="border-color: var(--momo-error);">
+        <div class="name">GrabInvest <span class="badge low">FAILED</span></div>
+        <div class="metric"><span>Duration</span><span class="val">2020-2023 (3 years)</span></div>
+        <div class="metric"><span>Returns offered</span><span class="val">1.18%/year</span></div>
+        <div class="metric"><span>Why it failed</span><span class="val">Low yield, no hook</span></div>
+        <div class="metric"><span>Result</span><span class="val">Shut down, then bought Stash</span></div>
+      </div>
+      <div class="compare-card" style="border-color: var(--momo-success);">
+        <div class="name">KakaoPay (Korea) <span class="badge high">SUCCESS</span></div>
+        <div class="metric"><span>MAU</span><span class="val">46M (88% of Korea)</span></div>
+        <div class="metric"><span>Insurance sold</span><span class="val">1.5M+ policies/year</span></div>
+        <div class="metric"><span>Why it worked</span><span class="val">App IS social infra</span></div>
+        <div class="metric"><span>Lesson</span><span class="val">Distribution = everything</span></div>
+      </div>
+      <div class="compare-card" style="border-color: var(--momo-warning);">
+        <div class="name">GoInvest (Indonesia) <span class="badge medium">MIXED</span></div>
+        <div class="metric"><span>Status</span><span class="val">Still operating</span></div>
+        <div class="metric"><span>Product</span><span class="val">Mutual funds via Bibit</span></div>
+        <div class="metric"><span>Why survived</span><span class="val">Higher yields in Indonesia</span></div>
+        <div class="metric"><span>Lesson</span><span class="val">Partnership model works</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5 Success Factors for Embedded Investing</h2>
+    <table>
+      <thead><tr><th>#</th><th>Factor</th><th>Yu'e Bao</th><th>GrabInvest</th><th>MoMo (Potential)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Compelling Yield</strong></td><td>4-5% vs 0.5%</td><td>1.18% (weak)</td><td>Must beat 4-6% bank deposits</td></tr>
+        <tr><td>2</td><td><strong>Zero-Friction Onboard</strong></td><td>Existing Alipay KYC</td><td>Existing Grab KYC</td><td>Existing MoMo eKYC</td></tr>
+        <tr><td>3</td><td><strong>Behavioral Mechanism</strong></td><td>Idle balance auto-invest</td><td>None (fatal flaw)</td><td>Round-ups + Invest-Back rewards</td></tr>
+        <tr><td>4</td><td><strong>Distribution + Trust</strong></td><td>500M+ Alipay users</td><td>Grab = transport first</td><td>30M users, financial trust</td></tr>
+        <tr><td>5</td><td><strong>Product-Market Fit</strong></td><td>Perfect for China 2013</td><td>Poor for SG 2020</td><td>Strong for VN 2026</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============= STRATEGIC ANALYSIS ============= -->
+<div class="section" id="strategic">
+  <div class="card">
+    <h2>MoMo vs Stash: Position Comparison</h2>
+    <div class="chart-container"><canvas id="chartRadar"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h2>Market Sizing: The Prize</h2>
+    <table>
+      <thead><tr><th>Scenario</th><th>Users</th><th>Avg AUM/User</th><th>Total AUM</th><th>Revenue (0.5% fee)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Conservative (Year 1)</strong></td><td>500K (from 935K investment-tagged)</td><td>2M VND ($80)</td><td>1T VND ($39M)</td><td>5B VND ($195K)</td></tr>
+        <tr><td><strong>Base Case (Year 2)</strong></td><td>2M (from 4.6M financially-engaged)</td><td>5M VND ($200)</td><td>10T VND ($390M)</td><td>50B VND ($1.95M)</td></tr>
+        <tr><td><strong>Optimistic (Year 3)</strong></td><td>5M (from 30M total users)</td><td>10M VND ($390)</td><td>50T VND ($1.95B)</td><td>250B VND ($9.8M)</td></tr>
+        <tr><td><strong>Yu'e Bao Dream (Year 5)</strong></td><td>10M</td><td>20M VND ($780)</td><td>200T VND ($7.8B)</td><td>1T VND ($39M)</td></tr>
+      </tbody>
+    </table>
+    <div class="insight">
+      <strong>Context:</strong> Stash had $5B AUM with 1M subscribers and was valued at $425M.
+      MoMo reaching $2B AUM (base case Year 3) with 5M users would be a comparable achievement
+      in a fraction of the time, thanks to existing distribution.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Recommended Phased Approach</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>Phase 1: Partner & Launch (6-12 months)</h4>
+        <p>White-label partnership with licensed fund management company (Dragon Capital, VinaCapital, Mirae Asset).
+        Launch "MoMo Invest" with: transaction round-ups into money market/bond fund, zero additional KYC,
+        minimum VND 10,000 (~$0.40). Target: 935K users who already tag "Investment" in QLCT.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 2: Differentiate (12-24 months)</h4>
+        <p>MoMo Rewards points -> fractional ETF units ("Invest-Back" like Stash's Stock-Back).
+        Goal-based investing: "Tet fund", "motorbike fund", "emergency buffer".
+        AI Investment Coach powered by Moni + transaction data: personalized savings recommendations.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 3: Own the Stack (24-48 months)</h4>
+        <p>Acquire or build fund management license. Full robo-advisory with portfolio selection + auto-rebalancing.
+        Expand to equities (requires securities license). B2B channel (MoMo Benefits for employers).
+        Target: 5-10M users, $2-8B AUM.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Key Risks & Mitigations</h2>
+    <table>
+      <thead><tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Regulatory</strong></td><td><span class="badge medium">MEDIUM</span></td><td>Start with licensed partner; apply for sandbox</td></tr>
+        <tr><td><strong>Trust erosion from losses</strong></td><td><span class="badge high">HIGH</span></td><td>Start with capital-preservation products (money market, bonds) only</td></tr>
+        <tr><td><strong>Yield compression</strong></td><td><span class="badge medium">MEDIUM</span></td><td>If yields fall, pivot to behavioral hooks (round-ups, goals) over yield messaging</td></tr>
+        <tr><td><strong>Grab competition</strong></td><td><span class="badge high">HIGH</span></td><td>Move NOW; first-mover with 30M users is hard to displace</td></tr>
+        <tr><td><strong>Financial literacy gap</strong></td><td><span class="badge medium">MEDIUM</span></td><td>Education-first UX; Moni AI as financial teacher</td></tr>
+        <tr><td><strong>Cannibalization of TTT</strong></td><td><span class="badge low">LOW</span></td><td>TTT becomes the savings tier; investment product is the growth tier</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+<div class="footer">
+  MoMo Strategic Intelligence | Investment Apps Research | March 6, 2026<br>
+  Data sources: Grab press release, public filings, industry reports, BigQuery internal data
+</div>
+
+<script>
+// Tab navigation
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+const pink = '#ae2070';
+const pinkLight = '#d4478a';
+const blue = '#48c4e7';
+const green = '#4caf50';
+const gray = '#6b7280';
+const orange = '#ff9800';
+
+// Chart: Global AUM comparison
+new Chart(document.getElementById('chartAUM'), {
+  type: 'bar',
+  data: {
+    labels: ['Wealthfront', 'Betterment', 'Acorns', 'MoMo TTT', 'Stash'],
+    datasets: [{
+      label: 'AUM (USD Billions)',
+      data: [90, 65, 8.2, 0.49, 5],
+      backgroundColor: [gray, gray, blue, pink, pinkLight]
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'AUM Comparison (USD Billions)', font: { size: 14 } }, legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+
+// Chart: Revenue comparison
+new Chart(document.getElementById('chartCompare'), {
+  type: 'bar',
+  data: {
+    labels: ['Robinhood', 'Acorns', 'Wealthfront', 'Stash', 'Ajaib'],
+    datasets: [{
+      label: 'Revenue (USD Millions)',
+      data: [1870, 400, 309, 104, 84],
+      backgroundColor: [gray, blue, gray, pink, orange]
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: { title: { display: true, text: 'Revenue Comparison (USD Millions)', font: { size: 14 } }, legend: { display: false } }
+  }
+});
+
+// Chart: Revenue (competitors tab)
+new Chart(document.getElementById('chartRevenue'), {
+  type: 'bar',
+  data: {
+    labels: ['Robinhood\n$1.87B', 'Acorns\n$400M+', 'Wealthfront\n$309M', 'Betterment\n$200M+', 'Stash\n$104M', 'Ajaib\n$84M'],
+    datasets: [{
+      label: 'Annual Revenue (USD M)',
+      data: [1870, 400, 309, 200, 104, 84],
+      backgroundColor: [gray, blue, gray, gray, pink, orange]
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Annual Revenue Comparison' }, legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+
+// Chart: Vietnam investment gap
+new Chart(document.getElementById('chartVietnamGap'), {
+  type: 'bar',
+  data: {
+    labels: ['MoMo Total Users', 'VN Trading Accounts', 'TTT MAU', 'Finhay Registered', 'VN MF Investors'],
+    datasets: [{
+      label: 'Users (Millions)',
+      data: [30, 10, 3.45, 2.7, 0.4],
+      backgroundColor: [pink, gray, pinkLight, orange, blue]
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Vietnam Investment User Landscape (Millions)' }, legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+
+// Chart: TTT MAU trend
+const months = ['Mar 25','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan 26','Feb'];
+new Chart(document.getElementById('chartTTTmau'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: 'Individual MAU', data: [2724,2597,2743,2857,3117,3086,3009,2916,2915,3012,2998,3013], borderColor: pink, backgroundColor: 'rgba(174,32,112,0.1)', fill: true, tension: 0.3 },
+      { label: 'Money Pool MAU', data: [208,243,282,294,334,374,415,433,430,453,463,434], borderColor: blue, backgroundColor: 'rgba(72,196,231,0.1)', fill: true, tension: 0.3 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'TTT MAU Trend (Thousands)' } },
+    scales: { y: { beginAtZero: false } }
+  }
+});
+
+// Chart: TTT AUM trend
+new Chart(document.getElementById('chartTTTaum'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: 'Individual AUM (T VND)', data: [8.97,9.21,9.29,9.48,9.47,9.61,9.61,9.58,9.73,9.80,9.95,10.71], borderColor: pink, backgroundColor: 'rgba(174,32,112,0.1)', fill: true, tension: 0.3 },
+      { label: 'Money Pool AUM (T VND)', data: [0.53,0.68,0.81,0.91,1.00,1.11,1.24,1.32,1.40,1.50,1.62,1.75], borderColor: blue, backgroundColor: 'rgba(72,196,231,0.1)', fill: true, tension: 0.3 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'TTT AUM Trend (Trillion VND)' } },
+    scales: { y: { beginAtZero: false } }
+  }
+});
+
+// Chart: Balance distribution
+new Chart(document.getElementById('chartBalance'), {
+  type: 'bar',
+  data: {
+    labels: ['<300K\n(85.8%)', '300K-3M\n(3.4%)', '3M-30M\n(2.8%)', '30M-50M\n(0.3%)', '50M-100M\n(0.3%)', '100M+\n(0.1%)'],
+    datasets: [
+      { label: '% of Users', data: [85.8, 3.4, 2.8, 0.34, 0.28, 0.13], backgroundColor: blue, yAxisID: 'y' },
+      { label: '% of AUM', data: [0.9, 4.5, 33.8, 15.2, 21.8, 23.8], backgroundColor: pink, yAxisID: 'y' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'TTT Balance Distribution: Users vs AUM Share' } },
+    scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: '%' } } }
+  }
+});
+
+// Chart: Demographics
+new Chart(document.getElementById('chartDemoAge'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Below 22 (30%)', '23-27 (31.5%)', '28-35 (24.1%)', '36-50 (12.3%)', 'Above 50 (2%)'],
+    datasets: [{
+      data: [30, 31.5, 24.1, 12.3, 2],
+      backgroundColor: [pink, pinkLight, blue, orange, gray]
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'TTT MAU by Age Group (Feb 2026)' } }
+  }
+});
+
+// Chart: Cross-domain overlap
+new Chart(document.getElementById('chartDemoOverlap'), {
+  type: 'bar',
+  data: {
+    labels: ['TTT MAU', 'QLCT MAU', 'TTT+QLCT\nOverlap', 'Moni\nChatters', 'All Three'],
+    datasets: [{
+      label: 'Users (K)',
+      data: [2998, 2833, 1198, 290, 129],
+      backgroundColor: [pink, blue, pinkLight, orange, green]
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Product Overlap (Jan 2026, Thousands)' }, legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+
+// Chart: Moni growth
+new Chart(document.getElementById('chartMoni'), {
+  type: 'line',
+  data: {
+    labels: ['Mar 25','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan 26'],
+    datasets: [
+      { label: 'QLCT Visitors (K)', data: [2137,2272,2229,2519,2630,2926,3093,2937,2627,3149,2833], borderColor: blue, tension: 0.3 },
+      { label: 'Moni Chatters (K)', data: [48,44,38,108,180,182,248,321,295,309,290], borderColor: pink, tension: 0.3 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'QLCT & Moni AI Growth Trend (Thousands)' } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+
+// Chart: Radar comparison
+new Chart(document.getElementById('chartRadar'), {
+  type: 'radar',
+  data: {
+    labels: ['User Base', 'Payment Integration', 'Transaction Data', 'Market Opportunity', 'Financial Trust', 'AI Capability'],
+    datasets: [
+      { label: 'MoMo', data: [95, 95, 90, 85, 80, 70], borderColor: pink, backgroundColor: 'rgba(174,32,112,0.15)', pointBackgroundColor: pink },
+      { label: 'Stash (at acquisition)', data: [30, 60, 50, 40, 70, 75], borderColor: blue, backgroundColor: 'rgba(72,196,231,0.15)', pointBackgroundColor: blue }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'MoMo vs Stash: Strategic Position (0-100)' } },
+    scales: { r: { beginAtZero: true, max: 100 } }
+  }
+});
+</script>
+</body>
+</html>

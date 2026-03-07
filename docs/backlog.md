@@ -2,9 +2,9 @@
 
 > Dump for features, to-do tasks, and ideas. Newest items at top.
 
-## Agent System Testing (TOP PRIORITY)
+## Agent System Testing (DONE)
 
-- [ ] **Test the Claude Code-like agent on this system.** Verify the agent runs smoothly end-to-end on the Mimir DA SQL project — can it read memory, write SQL, call APIs, and learn correctly? This is the most urgent item before any new feature work.
+- [x] **Test the Claude Code-like agent on this system.** Verified end-to-end: reads memory, writes SQL, calls APIs, learns correctly. Completed 2026-03-06.
 
 ## Report-Based Learning
 

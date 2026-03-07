@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Summary — MoMo Sinh Lời</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0b;--surface:#131316;--surface2:#1a1a1f;--surface3:#222228;
+  --border:#25252b;--border2:#35353d;
+  --text:#ededef;--text2:#7a7a85;--text3:#4a4a55;
+  --magenta:#a50064;--magenta-glow:rgba(165,0,100,0.15);
+  --green:#10b981;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Be Vietnam Pro',system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;opacity:0.03;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.container{max-width:1100px;margin:0 auto;padding:2.5rem}
+a{color:var(--magenta);text-decoration:none}a:hover{text-decoration:underline}
+
+/* Nav */
+.nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:1.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem;animation:fadeIn 0.4s ease}
+.nav a{font-size:0.82rem;color:var(--text2);display:flex;align-items:center;gap:0.4rem;transition:color 0.2s}
+.nav a:hover{color:var(--text);text-decoration:none}
+.nav-title{font-size:0.78rem;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* Header */
+.header{margin-bottom:3rem;animation:fadeUp 0.5s 0.1s ease both}
+.header h1{font-family:var(--serif);font-size:clamp(2.5rem,5vw,3.8rem);font-weight:600;letter-spacing:-0.02em;line-height:1.15;margin-bottom:0.6rem}
+.header p{color:var(--text2);font-size:1rem;line-height:1.6}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2.5rem;overflow-x:auto;animation:fadeUp 0.5s 0.15s ease both;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:0.85rem 1.5rem;font-size:0.85rem;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.25s;position:relative}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--text);border-bottom-color:var(--magenta)}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:30%;right:30%;height:2px;background:var(--magenta);filter:blur(4px)}
+
+/* Panels */
+.panel{display:none;animation:panelIn 0.35s ease}
+.panel.active{display:block}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Section */
+.section{margin-bottom:2.5rem}
+.section-title{font-family:var(--serif);font-size:1.9rem;font-weight:600;margin-bottom:1.25rem}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:1.25rem;transition:border-color 0.2s}
+.card:hover{border-color:var(--border2)}
+.card h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin-bottom:0.75rem}
+.card-text{color:var(--text2);font-size:0.92rem;line-height:1.85}
+.card-text strong{color:var(--text);font-weight:600}
+
+/* Three Numbers — Hero */
+.three-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:2.5rem}
+.num-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.num-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.num-card.protect::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.num-card.cost::before{background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.num-card.gain::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.num-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.75rem}
+.num-card.protect .num-label{color:var(--red)}
+.num-card.cost .num-label{color:var(--amber)}
+.num-card.gain .num-label{color:var(--green)}
+.num-val{font-family:var(--serif);font-size:clamp(3rem,5vw,4.2rem);font-weight:700;line-height:1;margin-bottom:0.75rem;letter-spacing:-0.02em}
+.num-card.protect .num-val{color:var(--red)}
+.num-card.cost .num-val{color:var(--amber)}
+.num-card.gain .num-val{color:var(--green)}
+.num-desc{color:var(--text2);font-size:0.85rem;line-height:1.6}
+
+/* Quote */
+.quote{border-left:3px solid var(--magenta);padding:1.25rem 1.75rem;background:var(--surface);border-radius:0 12px 12px 0;margin:1.75rem 0;font-size:0.95rem}
+.quote em{font-family:var(--serif);font-style:italic;color:var(--text);font-size:1.15rem}
+.quote .attr{color:var(--text3);font-size:0.82rem;margin-top:0.5rem;font-style:normal}
+
+/* Verdict */
+.verdict-box{background:var(--surface);border:1px solid rgba(16,185,129,0.2);border-radius:14px;padding:2.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.verdict-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.verdict-header{display:flex;align-items:center;gap:1.25rem;margin-bottom:2rem;flex-wrap:wrap}
+.verdict-badge{background:rgba(16,185,129,0.1);color:var(--green);padding:0.5rem 1.25rem;border-radius:8px;font-weight:700;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;border:1px solid rgba(16,185,129,0.2)}
+.verdict-name{color:var(--text2);font-size:0.88rem}
+.cond-list{display:grid;gap:0.7rem}
+.cond{display:flex;gap:1rem;padding:1rem 1.25rem;background:var(--surface2);border-radius:10px;align-items:flex-start;transition:background 0.2s}
+.cond:hover{background:var(--surface3)}
+.cond-n{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0}
+.cond-n.g{background:rgba(16,185,129,0.15);color:var(--green)}
+.cond-n.b{background:rgba(59,130,246,0.15);color:var(--blue)}
+.cond-n.a{background:rgba(245,158,11,0.15);color:var(--amber)}
+.cond-t{font-size:0.9rem;font-weight:600;margin-bottom:0.15rem}
+.cond-d{font-size:0.8rem;color:var(--text2);line-height:1.5}
+
+/* Before/After */
+.change-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:2rem 0}
+.change-box{padding:2rem;border-radius:14px;position:relative;overflow:hidden}
+.change-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px}
+.change-box.before{background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.15)}
+.change-box.before::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.change-box.after{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15)}
+.change-box.after::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.change-box h4{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem}
+.change-box.before h4{color:var(--red)}.change-box.after h4{color:var(--green)}
+.change-box ul{list-style:none;font-size:0.88rem;color:var(--text2)}
+.change-box ul li{padding:0.35rem 0;padding-left:1rem;position:relative}
+.change-box ul li::before{content:'';width:5px;height:5px;border-radius:50%;position:absolute;left:0;top:0.7rem}
+.change-box.before ul li::before{background:var(--red)}.change-box.after ul li::before{background:var(--green)}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0.85rem 1rem;border-bottom:1px solid var(--border)}
+.data-table td{padding:0.85rem 1rem;border-bottom:1px solid var(--border);font-size:0.9rem}
+.data-table tr:last-child td{border-bottom:none}
+.data-table .dim{color:var(--text2)}
+.data-table .val{text-align:right;font-weight:600;font-family:var(--sans)}
+
+/* Key metric row */
+.metric-row{display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid var(--border);font-size:0.92rem}
+.metric-row:last-child{border-bottom:none}
+.metric-row .k{color:var(--text2)}
+.metric-row .v{font-weight:600}
+
+/* Timeline table */
+.tl-row{display:grid;grid-template-columns:120px 1fr 120px;padding:0.9rem 1.25rem;border-bottom:1px solid var(--border);align-items:center;font-size:0.9rem}
+.tl-row:last-child{border-bottom:none}
+.tl-row:hover{background:var(--surface2)}
+.tl-day{font-weight:700;font-size:0.82rem}
+.tl-owner{color:var(--text3);text-align:right;font-size:0.82rem}
+
+/* Open questions */
+.oq{counter-reset:oq}
+.oq li{counter-increment:oq;padding:0.5rem 0;padding-left:2rem;position:relative;color:var(--text2);font-size:0.9rem;line-height:1.6}
+.oq li::before{content:counter(oq);position:absolute;left:0;top:0.5rem;width:20px;height:20px;border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:var(--text3)}
+
+@media(max-width:768px){
+  .three-nums{grid-template-columns:1fr}
+  .change-grid{grid-template-columns:1fr}
+  .tl-row{grid-template-columns:1fr;gap:0.25rem}
+  .tl-owner{text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <a href="index.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 12L6 8l4-4"/></svg> Index</a>
+    <div class="nav-title">01 / Executive Summary</div>
+  </nav>
+
+  <div class="header">
+    <h1>Executive Summary</h1>
+    <p>The one document President Thuan prints. Three numbers, one verdict, one path forward.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="why">The WHY</div>
+    <div class="tab" data-tab="numbers">Three Numbers</div>
+    <div class="tab" data-tab="verdict">Verdict</div>
+    <div class="tab" data-tab="session">Session Summary</div>
+    <div class="tab" data-tab="timeline">Execution</div>
+  </div>
+
+  <!-- WHY -->
+  <div class="panel active" id="tab-why">
+    <div class="quote">
+      <em>"Người dân giữ vàng dưới đệm"</em> — People keep gold under their mattress.<br>
+      30 million Vietnamese trust MoMo with their daily money. 935,000 of them are already investing through competitors. We can be the one who teaches them to grow it.<br>
+      <span class="attr">But we do it right, or we don't do it.</span>
+    </div>
+
+    <div class="card">
+      <h3>The Gap</h3>
+      <p class="card-text">Vietnam has <strong>100 million people</strong> but only <strong style="color:var(--amber)">423,000 retail fund holders</strong>. That's 0.4% penetration — the lowest in ASEAN. Meanwhile, <strong>935,000 MoMo users</strong> are already tagged as investors, moving <strong>$170M per month</strong> through external platforms. They trust us with payments. They trust us with savings. For investment, they go elsewhere — because we gave them nothing.</p>
+    </div>
+    <div class="card">
+      <h3>The Threat</h3>
+      <p class="card-text">Grab Financial Group is <strong>12-18 months</strong> from launching investment products in Vietnam. Finhay (VNSC) already distributes DCVFM funds. Every month we wait, our 935K investor base gets deeper hooks into competitor platforms. TTT's $490M AUM is safe today — but a competing savings+investment product could change that.</p>
+    </div>
+    <div class="card">
+      <h3>The Opportunity</h3>
+      <p class="card-text">MoMo already signed a fund distribution partnership with <strong>Dragon Capital (DCVFM)</strong> in <strong>June 2022</strong> — the first Vietnamese super-app to offer fund trading. It became shelfware due to buried UX, zero marketing, and wrong language. The rails exist. The legal structure exists. This is not "build from scratch." This is <strong style="color:var(--green)">"reactivate, rebrand, and scale."</strong></p>
+    </div>
+  </div>
+
+  <!-- THREE NUMBERS -->
+  <div class="panel" id="tab-numbers">
+    <div class="section-title">Three Numbers That Tell the Story</div>
+    <div class="three-nums">
+      <div class="num-card protect">
+        <div class="num-label">Protecting</div>
+        <div class="num-val">$490M</div>
+        <div class="num-desc">TTT AUM generating $11.5M/yr spread revenue. Every decision must protect this first. 14 years of trust.</div>
+      </div>
+      <div class="num-card cost">
+        <div class="num-label">Cost (Year 1)</div>
+        <div class="num-val">$1.8M</div>
+        <div class="num-desc">Strategic capex. $4.5M total over 3 years. Less than 1.5% of annual revenue. Survivable.</div>
+      </div>
+      <div class="num-card gain">
+        <div class="num-label">Gain (Year 3)</div>
+        <div class="num-val">$4M/yr</div>
+        <div class="num-desc">Revenue at $500M AUM + platform lock-in for 400K+ funded accounts. Payback Month 42-44.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>The Math Behind the Numbers</h3>
+      <div class="metric-row"><span class="k">TTT AUM (Feb 2026)</span><span class="v">12.46T VND ($490M)</span></div>
+      <div class="metric-row"><span class="k">TTT net spread revenue</span><span class="v">$11.5M/yr (2.35%)</span></div>
+      <div class="metric-row"><span class="k">Cost per funded account</span><span class="v">$14.70 fully loaded</span></div>
+      <div class="metric-row"><span class="k">Min AUM/user for break-even</span><span class="v">$1,200 (30.6M VND)</span></div>
+      <div class="metric-row"><span class="k">TTT migration cost per user</span><span class="v">$2.72/yr average</span></div>
+      <div class="metric-row"><span class="k">Max cash hole (bear case)</span><span class="v">$4.2M</span></div>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="panel" id="tab-verdict">
+    <div class="verdict-box">
+      <div class="verdict-header">
+        <span class="verdict-badge">Conditional GO</span>
+        <span class="verdict-name">Do Quang Thuan — President, Financial Services</span>
+      </div>
+      <div class="cond-list">
+        <div class="cond"><div class="cond-n g">1</div><div><div class="cond-t">CV Securities compliance within 30 days</div><div class="cond-d">LIKELY ALREADY MET — 2022 DCVFM partnership may confirm clearance. Brokerage license covers fund distribution (Securities Law 2019 Art.4). 85%+ Scenario A.</div></div></div>
+        <div class="cond"><div class="cond-n g">2</div><div><div class="cond-t">Fund partner agreement within 30 days</div><div class="cond-d">REACTIVATION, NOT NEW LOI — MoMo-DCVFM partnership since June 2022. Revised from 60-day LOI to 30-day reactivation.</div></div></div>
+        <div class="cond"><div class="cond-n b">3</div><div><div class="cond-t">TTT migration tracking from Day 1</div><div class="cond-d">DESIGNED — 3-tier guardrail + global fire alarm at -5% spread. $50K / 2-3 weeks build.</div></div></div>
+        <div class="cond"><div class="cond-n a">4</div><div><div class="cond-t">Phase 1 = capital preservation only</div><div class="cond-d">AGREED — DCIP (short-term bonds) + DCBF (bond fund). No equity in Phase 1.</div></div></div>
+        <div class="cond"><div class="cond-n a">5</div><div><div class="cond-t">Month-6 kill gate (non-negotiable)</div><div class="cond-d">AGREED — 100K funded + 15% Tui+ bundle + NPS>30. Max loss ~$800K.</div></div></div>
+      </div>
+    </div>
+    <div class="quote">
+      <em>"Check what you already have before you build something new."</em>
+      <div class="attr">— President Thuan. The 2022 DCVFM discovery validated this principle.</div>
+    </div>
+  </div>
+
+  <!-- SESSION -->
+  <div class="panel" id="tab-session">
+    <div class="section-title">What Changed</div>
+    <div class="change-grid">
+      <div class="change-box before">
+        <h4>What We Assumed</h4>
+        <ul>
+          <li>Need to build from scratch</li>
+          <li>60-day LOI with new fund partner</li>
+          <li>30-day regulatory review needed</li>
+          <li>Uncertain legal pathway</li>
+          <li>Cold pitch to Dragon Capital</li>
+        </ul>
+      </div>
+      <div class="change-box after">
+        <h4>What We Know Now</h4>
+        <ul>
+          <li>Reactivate existing 2022 partnership</li>
+          <li>30-day reactivation agreement</li>
+          <li>Regulatory likely already cleared</li>
+          <li>85%+ probability Scenario A</li>
+          <li>Warm reactivation with Dominic Scriven</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Key Discovery: MoMo-DCVFM Partnership (June 2022)</h3>
+      <p class="card-text">MoMo signed a distribution deal with DCVFM in June 2022 — the <strong>first Vietnamese super-app to offer open-ended fund trading</strong>. It became shelfware because of:</p>
+      <p class="card-text" style="margin-top:0.75rem"><strong style="color:var(--red)">1.</strong> <strong>Buried UX</strong> — one of 50+ services, no dedicated entry<br>
+      <strong style="color:var(--red)">2.</strong> <strong>Zero marketing</strong> — one PR article, no sustained push<br>
+      <strong style="color:var(--red)">3.</strong> <strong>Wrong language</strong> — "chứng chỉ quỹ," "đầu tư" jargon instead of user language</p>
+    </div>
+    <div class="card">
+      <h3>Critical Correction: DCDS Product</h3>
+      <p class="card-text">DCDS (DC Dynamic Stock) was initially misidentified as a money market fund. It is actually an <strong style="color:var(--amber)">open-ended equity fund</strong> (+32% YTD, VND 6.3T AUM). Phase 1 corrected to <strong style="color:var(--green)">DCIP</strong> (short-term bonds) + <strong style="color:var(--green)">DCBF</strong> (bond fund). Caught before reaching President's desk.</p>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="panel" id="tab-timeline">
+    <div class="section-title">Execution Week</div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="tl-row" style="background:var(--surface2)"><div class="tl-day" style="color:var(--magenta)">Monday</div><div>Pull 2022 DCVFM distribution agreement from FS Legal</div><div class="tl-owner">President</div></div>
+      <div class="tl-row"><div class="tl-day" style="color:var(--magenta)">Tue EOD</div><div>Agreement + answers: legal entity, trail terms, current AUM</div><div class="tl-owner">President</div></div>
+      <div class="tl-row" style="background:var(--surface2)"><div class="tl-day" style="color:var(--blue)">Wednesday</div><div>CMO one-pager draft + CFO fee structure delta</div><div class="tl-owner">CMO + CFO</div></div>
+      <div class="tl-row"><div class="tl-day" style="color:var(--amber)">Thu AM</div><div>Both documents to President Thuan for review</div><div class="tl-owner">CEO</div></div>
+      <div class="tl-row" style="background:var(--surface2)"><div class="tl-day" style="color:var(--amber)">Thursday</div><div>Final approval of deliverables</div><div class="tl-owner">President</div></div>
+      <div class="tl-row"><div class="tl-day" style="color:var(--green)">Next Week</div><div>Dominic Scriven / Le Anh Tuan reactivation call</div><div class="tl-owner">President</div></div>
+    </div>
+    <div class="card" style="margin-top:1.25rem">
+      <h3>Open Questions (by Tuesday)</h3>
+      <ol class="oq">
+        <li>What legal entity distributes DCVFM in 2022 — M_Service or CVS?</li>
+        <li>Current trail commission terms with DCVFM?</li>
+        <li>Current AUM under MoMo-DCVFM distribution (active or dormant)?</li>
+        <li>VNSC/Finhay SSC filing structure?</li>
+        <li>What trail does Finhay/VNSC get from DCVFM? (competitive benchmark)</li>
+        <li>DCIP yield data (need directly from Dragon Capital)</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

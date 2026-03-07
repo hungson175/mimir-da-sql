@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoMo Invest | Product Pitch</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --momo-pink: #ae2070;
+    --momo-pink-light: #d4478a;
+    --momo-pink-dark: #8a1a5a;
+    --momo-bg: #fdf2f7;
+    --momo-white: #ffffff;
+    --momo-dark: #1a1a2e;
+    --momo-gray: #6b7280;
+    --momo-gray-light: #f3f4f6;
+    --momo-success: #4caf50;
+    --momo-error: #f44336;
+    --momo-warning: #ff9800;
+    --momo-blue: #48c4e7;
+    --momo-gold: #ffc107;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a1a; color: white; }
+
+  /* Slide container */
+  .deck { scroll-snap-type: y mandatory; overflow-y: scroll; height: 100vh; }
+  .slide { min-height: 100vh; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center; padding: 60px 80px; position: relative; }
+  @media (max-width: 768px) { .slide { padding: 40px 24px; } }
+
+  /* Slide nav */
+  .slide-nav { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); z-index: 100; display: flex; flex-direction: column; gap: 8px; }
+  .slide-nav .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.3s; }
+  .slide-nav .dot:hover, .slide-nav .dot.active { background: var(--momo-pink); transform: scale(1.4); }
+
+  /* Backgrounds */
+  .bg-gradient { background: linear-gradient(135deg, #ae2070 0%, #8a1a5a 40%, #1a1a2e 100%); }
+  .bg-dark { background: #0a0a1a; }
+  .bg-pink-soft { background: linear-gradient(180deg, #1a1a2e 0%, #2a1025 100%); }
+  .bg-white { background: white; color: var(--momo-dark); }
+
+  /* Typography */
+  .slide-number { position: absolute; top: 30px; right: 40px; font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+  .bg-white .slide-number { color: rgba(0,0,0,0.2); }
+  h1.hero { font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+  @media (max-width: 768px) { h1.hero { font-size: 2.2rem; } }
+  h2.slide-title { font-size: 2.2rem; font-weight: 700; margin-bottom: 32px; line-height: 1.2; }
+  @media (max-width: 768px) { h2.slide-title { font-size: 1.5rem; } }
+  .subtitle { font-size: 1.2rem; color: rgba(255,255,255,0.7); margin-bottom: 40px; max-width: 700px; line-height: 1.6; }
+  .bg-white .subtitle { color: var(--momo-gray); }
+  .highlight { color: var(--momo-pink-light); }
+  .bg-white .highlight { color: var(--momo-pink); }
+  .gold { color: var(--momo-gold); }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  /* Cards */
+  .pitch-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 28px; backdrop-filter: blur(10px); }
+  .pitch-card:hover { border-color: var(--momo-pink-light); }
+  .bg-white .pitch-card { background: var(--momo-gray-light); border-color: transparent; }
+  .pitch-card .icon { font-size: 2rem; margin-bottom: 12px; }
+  .pitch-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+  .pitch-card p { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.5; }
+  .bg-white .pitch-card p { color: var(--momo-gray); }
+
+  /* Big number */
+  .big-num { font-size: 5rem; font-weight: 800; background: linear-gradient(135deg, #ae2070, #d4478a, #48c4e7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+  @media (max-width: 768px) { .big-num { font-size: 3rem; } }
+  .big-label { font-size: 1rem; color: rgba(255,255,255,0.5); margin-top: 8px; }
+
+  /* Stat row */
+  .stat-row { display: flex; gap: 48px; margin: 32px 0; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 2.5rem; font-weight: 700; color: var(--momo-pink-light); }
+  .stat .label { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+  /* Timeline */
+  .phase-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  @media (max-width: 768px) { .phase-row { grid-template-columns: 1fr; } }
+  .phase { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 28px; position: relative; overflow: hidden; }
+  .phase::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+  .phase.p1::before { background: var(--momo-blue); }
+  .phase.p2::before { background: var(--momo-pink); }
+  .phase.p3::before { background: var(--momo-gold); }
+  .phase h3 { font-size: 1rem; margin-bottom: 4px; }
+  .phase .time { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+  .phase ul { list-style: none; }
+  .phase ul li { font-size: 0.85rem; color: rgba(255,255,255,0.7); padding: 4px 0; padding-left: 16px; position: relative; }
+  .phase ul li::before { content: ''; position: absolute; left: 0; top: 11px; width: 6px; height: 6px; border-radius: 50%; }
+  .phase.p1 ul li::before { background: var(--momo-blue); }
+  .phase.p2 ul li::before { background: var(--momo-pink); }
+  .phase.p3 ul li::before { background: var(--momo-gold); }
+
+  /* Table */
+  .pitch-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .pitch-table th { text-align: left; padding: 12px 16px; border-bottom: 2px solid var(--momo-pink); color: var(--momo-pink-light); font-weight: 600; }
+  .pitch-table td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .bg-white .pitch-table th { color: var(--momo-pink); border-bottom-color: var(--momo-pink); }
+  .bg-white .pitch-table td { border-bottom-color: var(--momo-gray-light); }
+
+  /* Chart */
+  .chart-box { height: 300px; position: relative; }
+
+  /* CTA */
+  .cta { display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #ae2070, #d4478a); color: white; font-size: 1.1rem; font-weight: 600; border-radius: 50px; text-decoration: none; margin-top: 24px; box-shadow: 0 8px 24px rgba(174,32,112,0.3); }
+
+  /* Quote */
+  .quote { font-size: 1.4rem; font-style: italic; color: rgba(255,255,255,0.7); border-left: 4px solid var(--momo-pink); padding-left: 20px; margin: 32px 0; line-height: 1.6; }
+
+  /* Badge */
+  .tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: rgba(174,32,112,0.2); color: var(--momo-pink-light); margin-right: 8px; }
+
+  /* Comparison bar */
+  .compare-bar { margin: 12px 0; }
+  .compare-bar .bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
+  .compare-bar .bar-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+  .compare-bar .bar-fill { height: 100%; border-radius: 4px; transition: width 1s; }
+
+  .footer-slide { text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.3); padding: 20px; }
+</style>
+</head>
+<body>
+
+<div class="slide-nav">
+  <div class="dot active" data-slide="0"></div>
+  <div class="dot" data-slide="1"></div>
+  <div class="dot" data-slide="2"></div>
+  <div class="dot" data-slide="3"></div>
+  <div class="dot" data-slide="4"></div>
+  <div class="dot" data-slide="5"></div>
+  <div class="dot" data-slide="6"></div>
+  <div class="dot" data-slide="7"></div>
+  <div class="dot" data-slide="8"></div>
+  <div class="dot" data-slide="9"></div>
+  <div class="dot" data-slide="10"></div>
+</div>
+
+<div class="deck">
+
+<!-- ========== SLIDE 0: TITLE ========== -->
+<div class="slide bg-gradient">
+  <div class="slide-number">01 / 11</div>
+  <div class="tag">PRODUCT PROPOSAL</div>
+  <h1 class="hero" style="margin-top:16px">MoMo Invest</h1>
+  <p class="subtitle">Democratizing wealth building for 30 million Vietnamese.<br>
+  A micro-investing product embedded in Vietnam's #1 e-wallet.</p>
+  <div class="stat-row">
+    <div class="stat"><div class="num">30M</div><div class="label">MoMo Users</div></div>
+    <div class="stat"><div class="num">400K</div><div class="label">VN Fund Investors</div></div>
+    <div class="stat"><div class="num">75x</div><div class="label">Distribution Gap</div></div>
+  </div>
+  <p style="font-size:0.85rem;color:rgba(255,255,255,0.4);margin-top:32px;">Prepared for Do Quang Thuan, President of MoMo | March 2026</p>
+</div>
+
+<!-- ========== SLIDE 1: WHY NOW ========== -->
+<div class="slide bg-dark">
+  <div class="slide-number">02 / 11</div>
+  <h2 class="slide-title">Why Now? <span class="highlight">The $425M Signal</span></h2>
+  <div class="grid-2">
+    <div>
+      <p class="subtitle">In February 2026, <strong style="color:white">Grab acquired Stash for $425 million</strong> to bring
+      micro-investing to Southeast Asia.</p>
+      <p class="subtitle">Grab — our closest structural competitor — is betting big on embedded investing.
+      They tried building in-house (GrabInvest, 2020-2023) and <span class="highlight">failed</span>.
+      Now they're buying what they couldn't build.</p>
+      <p class="subtitle"><strong style="color:white">MoMo has a limited window</strong> to establish the investment habit
+      with our users before Grab arrives in Vietnam with a proven, $5B AUM platform.</p>
+    </div>
+    <div>
+      <div class="pitch-card">
+        <h3 style="color:var(--momo-pink-light)">The Clock is Ticking</h3>
+        <div class="compare-bar">
+          <div class="bar-label"><span>Stash AUM</span><span style="color:var(--momo-pink-light)">$5B</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--momo-pink)"></div></div>
+        </div>
+        <div class="compare-bar">
+          <div class="bar-label"><span>MoMo TTT AUM</span><span style="color:var(--momo-blue)">$490M</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:10%;background:var(--momo-blue)"></div></div>
+        </div>
+        <div class="compare-bar">
+          <div class="bar-label"><span>VN Mutual Fund Market</span><span style="color:var(--momo-gold)">$2B</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:40%;background:var(--momo-gold)"></div></div>
+        </div>
+        <p style="margin-top:16px;font-size:0.8rem;color:rgba(255,255,255,0.4)">Grab closing Q3 2026. Expected SEA rollout: 2027.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SLIDE 2: THE OPPORTUNITY ========== -->
+<div class="slide bg-pink-soft">
+  <div class="slide-number">03 / 11</div>
+  <h2 class="slide-title">The Opportunity: <span class="highlight">Vietnam's Investment Gap</span></h2>
+  <div class="grid-3">
+    <div class="pitch-card" style="text-align:center">
+      <div class="big-num">10M</div>
+      <h3>Trading Accounts</h3>
+      <p>85-90% are speculative retail traders. Not investors.</p>
+    </div>
+    <div class="pitch-card" style="text-align:center">
+      <div class="big-num">400K</div>
+      <h3>Fund Investors</h3>
+      <p>Only 400K Vietnamese invest in mutual funds. $2B total AUM.</p>
+    </div>
+    <div class="pitch-card" style="text-align:center">
+      <div class="big-num">30M</div>
+      <h3>MoMo Users</h3>
+      <p>Already financially active. eKYC done. Payment habits built.</p>
+    </div>
+  </div>
+  <div class="quote" style="margin-top:40px">
+    "The gap between Vietnam's 10M trading accounts and 400K fund investors represents the largest
+    untapped wealth-building market in Southeast Asia. MoMo sits on top of it."
+  </div>
+</div>
+
+<!-- ========== SLIDE 3: INTERNAL DATA ========== -->
+<div class="slide bg-dark">
+  <div class="slide-number">04 / 11</div>
+  <h2 class="slide-title">What Our Data Says: <span class="highlight">Demand Already Exists</span></h2>
+  <div class="grid-2">
+    <div>
+      <div class="stat-row" style="flex-direction:column;gap:24px">
+        <div>
+          <div style="font-size:3rem;font-weight:700;color:var(--momo-pink-light)">935K</div>
+          <div style="color:rgba(255,255,255,0.5)">Users already tag "Investment" in expense tracking</div>
+        </div>
+        <div>
+          <div style="font-size:3rem;font-weight:700;color:var(--momo-blue)">3.45M</div>
+          <div style="color:rgba(255,255,255,0.5)">TTT MAU — already saving, not yet investing</div>
+        </div>
+        <div>
+          <div style="font-size:3rem;font-weight:700;color:var(--momo-gold)">290K</div>
+          <div style="color:rgba(255,255,255,0.5)">Moni AI chatters — want financial guidance (6.7x growth)</div>
+        </div>
+        <div>
+          <div style="font-size:3rem;font-weight:700;color:var(--momo-success)">61%</div>
+          <div style="color:rgba(255,255,255,0.5)">of TTT users are under 28 — the micro-investing sweet spot</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="pitch-card">
+        <h3>The Long Tail Problem</h3>
+        <div class="chart-box"><canvas id="deckBalance"></canvas></div>
+        <p style="margin-top:12px">86% of TTT users hold less than VND 300K ($12). They're parking pocket change, not building wealth. An investment product converts this long tail into real investors.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SLIDE 4: PRODUCT VISION ========== -->
+<div class="slide bg-gradient">
+  <div class="slide-number">05 / 11</div>
+  <h2 class="slide-title">Product Vision: <span style="color:white">MoMo Invest</span></h2>
+  <p class="subtitle">Three pillars that turn MoMo from a payments app into a wealth-building platform.</p>
+  <div class="grid-3">
+    <div class="pitch-card">
+      <div class="icon">&#x1F4B0;</div>
+      <h3>Invest-Back Rewards</h3>
+      <p>Every QR payment, bill pay, or P2P transfer earns fractional fund units. Like Stash's Stock-Back, but native to MoMo's payment rails. Spend = save = invest. Daily habit loop.</p>
+    </div>
+    <div class="pitch-card">
+      <div class="icon">&#x1F3AF;</div>
+      <h3>Goal-Based Investing</h3>
+      <p>"Tet Gift Fund", "Motorbike Fund", "Emergency Buffer". Set a goal, MoMo auto-invests. Progress visualized with beautiful animations. Behavioral psychology meets compound returns.</p>
+    </div>
+    <div class="pitch-card">
+      <div class="icon">&#x1F916;</div>
+      <h3>AI Investment Coach</h3>
+      <p>Powered by Moni + your transaction data. "You spent 2M on coffee this month. Invest half of that and in 5 years you'll have..." Personalized, Vietnamese-language, always-on guidance.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SLIDE 5: HOW IT WORKS ========== -->
+<div class="slide bg-dark">
+  <div class="slide-number">06 / 11</div>
+  <h2 class="slide-title">How It Works: <span class="highlight">The User Journey</span></h2>
+  <div class="grid-4">
+    <div class="pitch-card" style="text-align:center">
+      <div style="font-size:3rem;font-weight:800;color:var(--momo-pink-light)">1</div>
+      <h3>Tap to Start</h3>
+      <p>Zero new KYC. eKYC already done. One tap activates MoMo Invest inside the existing app.</p>
+    </div>
+    <div class="pitch-card" style="text-align:center">
+      <div style="font-size:3rem;font-weight:800;color:var(--momo-pink-light)">2</div>
+      <h3>Set a Goal</h3>
+      <p>Pick a goal or skip. AI suggests based on your spending patterns. Min VND 10,000 ($0.40).</p>
+    </div>
+    <div class="pitch-card" style="text-align:center">
+      <div style="font-size:3rem;font-weight:800;color:var(--momo-pink-light)">3</div>
+      <h3>Auto-Invest</h3>
+      <p>Round-ups from every transaction. Invest-Back rewards from payments. Set weekly auto-deposit.</p>
+    </div>
+    <div class="pitch-card" style="text-align:center">
+      <div style="font-size:3rem;font-weight:800;color:var(--momo-pink-light)">4</div>
+      <h3>Watch It Grow</h3>
+      <p>Beautiful portfolio view. Daily returns visible. AI coach sends weekly insights. Instant withdrawal.</p>
+    </div>
+  </div>
+  <div class="pitch-card" style="margin-top:32px">
+    <h3>Product Tiers</h3>
+    <table class="pitch-table">
+      <tr><th>Tier</th><th>Product</th><th>Risk</th><th>Target Return</th><th>Min Investment</th></tr>
+      <tr><td><strong>Save</strong> (Default)</td><td>Money market fund</td><td>Very low</td><td>4-5%/year</td><td>VND 10,000</td></tr>
+      <tr><td><strong>Grow</strong></td><td>Balanced fund (bonds + equity)</td><td>Low-Medium</td><td>8-12%/year</td><td>VND 100,000</td></tr>
+      <tr><td><strong>Thrive</strong></td><td>Equity fund (VN-Index ETF)</td><td>Medium</td><td>15-20%/year</td><td>VND 500,000</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ========== SLIDE 6: COMPETITIVE MOAT ========== -->
+<div class="slide bg-pink-soft">
+  <div class="slide-number">07 / 11</div>
+  <h2 class="slide-title">Our Moat: <span class="highlight">Why Only MoMo Can Do This</span></h2>
+  <div class="grid-2">
+    <div>
+      <table class="pitch-table">
+        <tr><th>Advantage</th><th>MoMo</th><th>Finhay</th><th>TCBS</th></tr>
+        <tr><td><strong>Users</strong></td><td style="color:var(--momo-pink-light)">30M</td><td>2.7M</td><td>N/A</td></tr>
+        <tr><td><strong>eKYC Done</strong></td><td style="color:var(--momo-success)">Yes</td><td>Partial</td><td>Yes</td></tr>
+        <tr><td><strong>Payment Integration</strong></td><td style="color:var(--momo-success)">Native</td><td>None</td><td>None</td></tr>
+        <tr><td><strong>Transaction Data</strong></td><td style="color:var(--momo-success)">Full</td><td>None</td><td>Limited</td></tr>
+        <tr><td><strong>AI Coach</strong></td><td style="color:var(--momo-success)">Moni (290K)</td><td>None</td><td>None</td></tr>
+        <tr><td><strong>Round-ups</strong></td><td style="color:var(--momo-success)">Native</td><td>No</td><td>No</td></tr>
+        <tr><td><strong>Daily Touchpoint</strong></td><td style="color:var(--momo-success)">Payments</td><td>No</td><td>No</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="pitch-card">
+        <h3>The Data Moat</h3>
+        <p style="margin-bottom:16px">MoMo sees where 30M Vietnamese spend money every day. No broker, no fund manager, no fintech startup has this.</p>
+        <p style="margin-bottom:16px">This data powers:</p>
+        <ul style="list-style:none">
+          <li style="padding:6px 0;color:rgba(255,255,255,0.7)">&#x2713; Personalized savings recommendations</li>
+          <li style="padding:6px 0;color:rgba(255,255,255,0.7)">&#x2713; Smart round-up amounts based on income patterns</li>
+          <li style="padding:6px 0;color:rgba(255,255,255,0.7)">&#x2713; Risk profiling from spending behavior</li>
+          <li style="padding:6px 0;color:rgba(255,255,255,0.7)">&#x2713; Life-event detection (marriage, baby, new job)</li>
+          <li style="padding:6px 0;color:rgba(255,255,255,0.7)">&#x2713; Churn prevention via engagement nudges</li>
+        </ul>
+      </div>
+      <div class="chart-box" style="height:220px;margin-top:16px"><canvas id="deckRadar"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SLIDE 7: ROADMAP ========== -->
+<div class="slide bg-dark">
+  <div class="slide-number">08 / 11</div>
+  <h2 class="slide-title">Roadmap: <span class="highlight">Three Phases</span></h2>
+  <div class="phase-row">
+    <div class="phase p1">
+      <h3 style="color:var(--momo-blue)">Phase 1: Partner & Launch</h3>
+      <div class="time">6-12 months | Q3 2026 - Q1 2027</div>
+      <ul>
+        <li>Partner with licensed fund mgmt co (Dragon Capital, VinaCapital, Mirae Asset)</li>
+        <li>White-label money market + bond fund</li>
+        <li>Transaction round-ups (auto-invest spare change)</li>
+        <li>Zero additional KYC</li>
+        <li>Min VND 10,000 ($0.40)</li>
+        <li>Target: 935K investment-tagged users</li>
+      </ul>
+      <div style="margin-top:16px;padding:12px;background:rgba(72,196,231,0.1);border-radius:8px;font-size:0.8rem;">
+        <strong style="color:var(--momo-blue)">Goal:</strong> 500K users, 1T VND AUM ($39M)
+      </div>
+    </div>
+    <div class="phase p2">
+      <h3 style="color:var(--momo-pink-light)">Phase 2: Differentiate</h3>
+      <div class="time">12-24 months | 2027</div>
+      <ul>
+        <li>Invest-Back rewards (QR pay = earn fund units)</li>
+        <li>Goal-based investing (Tet, motorbike, emergency)</li>
+        <li>AI Investment Coach (Moni + transaction data)</li>
+        <li>Balanced + equity fund tiers</li>
+        <li>Social investing (Money Pool for investing)</li>
+        <li>Financial literacy content hub</li>
+      </ul>
+      <div style="margin-top:16px;padding:12px;background:rgba(174,32,112,0.1);border-radius:8px;font-size:0.8rem;">
+        <strong style="color:var(--momo-pink-light)">Goal:</strong> 2M users, 10T VND AUM ($390M)
+      </div>
+    </div>
+    <div class="phase p3">
+      <h3 style="color:var(--momo-gold)">Phase 3: Own the Stack</h3>
+      <div class="time">24-48 months | 2028-2029</div>
+      <ul>
+        <li>Acquire/build fund management license</li>
+        <li>Full robo-advisory (auto-rebalance, tax-optimize)</li>
+        <li>Equity investing (securities license)</li>
+        <li>B2B channel (MoMo Benefits for employers)</li>
+        <li>Cross-border investing (SEA ETFs)</li>
+        <li>Premium tier (subscription model)</li>
+      </ul>
+      <div style="margin-top:16px;padding:12px;background:rgba(255,193,7,0.1);border-radius:8px;font-size:0.8rem;">
+        <strong style="color:var(--momo-gold)">Goal:</strong> 5M+ users, 50T+ VND AUM ($2B)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SLIDE 8: FINANCIALS ========== -->
+<div class="slide bg-pink-soft">
+  <div class="slide-number">09 / 11</div>
+  <h2 class="slide-title">Financial Projections</h2>
+  <div class="grid-2">
+    <div>
+      <div class="chart-box" style="height:320px"><canvas id="deckFinancials"></canvas></div>
+    </div>
+    <div>
+      <table class="pitch-table">
+        <tr><th>Metric</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 5</th></tr>
+        <tr><td><strong>Users</strong></td><td>500K</td><td>2M</td><td>5M</td><td>10M</td></tr>
+        <tr><td><strong>AUM</strong></td><td>$39M</td><td>$390M</td><td>$1.95B</td><td>$7.8B</td></tr>
+        <tr><td><strong>Avg/User</strong></td><td>$80</td><td>$200</td><td>$390</td><td>$780</td></tr>
+        <tr><td><strong>Rev (0.5%)</strong></td><td>$195K</td><td>$1.95M</td><td>$9.8M</td><td>$39M</td></tr>
+        <tr><td><strong>Model</strong></td><td colspan="4">Management fee (0.25-0.5%) + spread income + premium sub</td></tr>
+      </table>
+      <div class="pitch-card" style="margin-top:16px">
+        <h3>Benchmark: Stash Economics</h3>
+        <p>Stash: $5B AUM, 1M subs, $104M revenue = valued at $425M.<br>
+        MoMo reaching $2B AUM (Year 3) with 5M users = comparable value in <strong style="color:white">a fraction of the time</strong> thanks to existing distribution.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SLIDE 9: RISKS ========== -->
+<div class="slide bg-dark">
+  <div class="slide-number">10 / 11</div>
+  <h2 class="slide-title">Risks & Mitigations</h2>
+  <div class="grid-2">
+    <div>
+      <table class="pitch-table">
+        <tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr>
+        <tr><td><strong>Regulatory</strong></td><td style="color:var(--momo-warning)">Medium</td><td>Start with licensed partner; apply for sandbox (Decree 94/2025)</td></tr>
+        <tr><td><strong>Trust erosion</strong></td><td style="color:var(--momo-error)">High</td><td>Start with capital-preservation only (money market). No equity in Phase 1</td></tr>
+        <tr><td><strong>Yield compression</strong></td><td style="color:var(--momo-warning)">Medium</td><td>Behavioral hooks (round-ups, goals) survive yield drops. Yu'e Bao lesson learned</td></tr>
+        <tr><td><strong>Grab competition</strong></td><td style="color:var(--momo-error)">High</td><td>First-mover with 30M users. Establish habit before Grab enters VN</td></tr>
+        <tr><td><strong>Financial literacy</strong></td><td style="color:var(--momo-warning)">Medium</td><td>Moni AI as teacher. Education-first UX (Stash's winning formula)</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="pitch-card">
+        <h3>What We Learned from GrabInvest's Failure</h3>
+        <p style="margin-bottom:12px">GrabInvest (2020-2023) taught the industry 4 lessons:</p>
+        <ul style="list-style:none">
+          <li style="padding:8px 0;color:rgba(255,255,255,0.7);border-bottom:1px solid rgba(255,255,255,0.06)">
+            <span style="color:var(--momo-error)">&#x2717;</span> Generic money market fund is NOT enough
+          </li>
+          <li style="padding:8px 0;color:rgba(255,255,255,0.7);border-bottom:1px solid rgba(255,255,255,0.06)">
+            <span style="color:var(--momo-error)">&#x2717;</span> 1.18% return doesn't move the needle
+          </li>
+          <li style="padding:8px 0;color:rgba(255,255,255,0.7);border-bottom:1px solid rgba(255,255,255,0.06)">
+            <span style="color:var(--momo-error)">&#x2717;</span> No behavioral mechanism = no retention
+          </li>
+          <li style="padding:8px 0;color:rgba(255,255,255,0.7)">
+            <span style="color:var(--momo-success)">&#x2713;</span> <strong style="color:white">MoMo Invest</strong> addresses all four: compelling yields in VN (4-5%+), round-ups, Invest-Back rewards, AI coach
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SLIDE 10: ASK ========== -->
+<div class="slide bg-gradient" style="text-align:center">
+  <div class="slide-number">11 / 11</div>
+  <h2 class="slide-title" style="font-size:2.8rem">The Ask</h2>
+  <p class="subtitle" style="max-width:800px;margin:0 auto 40px">
+    Approve Phase 1 development: Partner with a licensed fund management company and launch
+    MoMo Invest with transaction round-ups by Q4 2026.
+  </p>
+  <div class="grid-3" style="max-width:900px;margin:0 auto">
+    <div class="pitch-card" style="text-align:center">
+      <div style="font-size:2rem;font-weight:700;color:var(--momo-blue)">6 months</div>
+      <p>To market with MVP</p>
+    </div>
+    <div class="pitch-card" style="text-align:center">
+      <div style="font-size:2rem;font-weight:700;color:var(--momo-pink-light)">935K</div>
+      <p>Ready-to-convert users</p>
+    </div>
+    <div class="pitch-card" style="text-align:center">
+      <div style="font-size:2rem;font-weight:700;color:var(--momo-gold)">$2B+</div>
+      <p>AUM potential by Year 3</p>
+    </div>
+  </div>
+  <div class="quote" style="max-width:800px;margin:48px auto 0;border-left-color:white;color:rgba(255,255,255,0.8)">
+    "Every day we wait, Grab gets one day closer to bringing Stash to Vietnam.
+    We have the users, the data, and the trust. We just need to build the product."
+  </div>
+  <p style="margin-top:48px;font-size:0.85rem;color:rgba(255,255,255,0.4)">
+    MoMo Invest | Product Proposal | March 2026
+  </p>
+</div>
+
+</div><!-- end deck -->
+
+<script>
+// Slide navigation
+const dots = document.querySelectorAll('.dot');
+const slides = document.querySelectorAll('.slide');
+const deck = document.querySelector('.deck');
+
+deck.addEventListener('scroll', () => {
+  const scrollTop = deck.scrollTop;
+  const slideHeight = window.innerHeight;
+  const idx = Math.round(scrollTop / slideHeight);
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+});
+
+dots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const idx = parseInt(dot.dataset.slide);
+    slides[idx].scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+const pink = '#ae2070';
+const pinkLight = '#d4478a';
+const blue = '#48c4e7';
+const gold = '#ffc107';
+const grayC = '#6b7280';
+
+// Balance distribution chart
+new Chart(document.getElementById('deckBalance'), {
+  type: 'bar',
+  data: {
+    labels: ['<300K', '300K-3M', '3M-30M', '30M-50M', '50M-100M', '100M+'],
+    datasets: [
+      { label: '% Users', data: [85.8, 3.4, 2.8, 0.34, 0.28, 0.13], backgroundColor: blue, yAxisID: 'y' },
+      { label: '% AUM', data: [0.9, 4.5, 33.8, 15.2, 21.8, 23.8], backgroundColor: pink, yAxisID: 'y' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: 'rgba(255,255,255,0.7)' } }, title: { display: true, text: 'TTT: 86% of users hold <$12', color: 'rgba(255,255,255,0.7)' } },
+    scales: { y: { ticks: { color: 'rgba(255,255,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: 'rgba(255,255,255,0.5)' }, grid: { display: false } } }
+  }
+});
+
+// Radar chart
+new Chart(document.getElementById('deckRadar'), {
+  type: 'radar',
+  data: {
+    labels: ['Users', 'Payments', 'Data', 'Market', 'Trust', 'AI'],
+    datasets: [
+      { label: 'MoMo', data: [95, 95, 90, 85, 80, 70], borderColor: pink, backgroundColor: 'rgba(174,32,112,0.2)', pointBackgroundColor: pink },
+      { label: 'Finhay', data: [40, 10, 10, 70, 50, 10], borderColor: gold, backgroundColor: 'rgba(255,193,7,0.1)', pointBackgroundColor: gold },
+      { label: 'TCBS', data: [50, 20, 30, 60, 70, 20], borderColor: grayC, backgroundColor: 'rgba(107,114,128,0.1)', pointBackgroundColor: grayC }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: 'rgba(255,255,255,0.7)', font: { size: 10 } } } },
+    scales: { r: { ticks: { color: 'rgba(255,255,255,0.3)', backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: 'rgba(255,255,255,0.6)', font: { size: 10 } }, beginAtZero: true, max: 100 } }
+  }
+});
+
+// Financial projections
+new Chart(document.getElementById('deckFinancials'), {
+  type: 'bar',
+  data: {
+    labels: ['Year 1', 'Year 2', 'Year 3', 'Year 5'],
+    datasets: [
+      { label: 'AUM (USD M)', data: [39, 390, 1950, 7800], backgroundColor: pink, yAxisID: 'y' },
+      { label: 'Users (M)', data: [0.5, 2, 5, 10], backgroundColor: blue, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: 'rgba(255,255,255,0.7)' } }, title: { display: true, text: 'AUM & User Growth Projection', color: 'rgba(255,255,255,0.7)' } },
+    scales: {
+      y: { type: 'logarithmic', position: 'left', title: { display: true, text: 'AUM (USD M)', color: 'rgba(255,255,255,0.5)' }, ticks: { color: 'rgba(255,255,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      y1: { position: 'right', title: { display: true, text: 'Users (M)', color: 'rgba(255,255,255,0.5)' }, ticks: { color: 'rgba(255,255,255,0.5)' }, grid: { display: false } },
+      x: { ticks: { color: 'rgba(255,255,255,0.5)' }, grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>

@@ -58,6 +58,8 @@ VietQR fee ~55 VND/txn. Revenue model = volume strategy → FS cross-sell moneti
 P2P W2B net margin: 38.6/42.8 = 90.2% (after network fees).
 
 ## Mimir Trust
-- W2W revenue: MISMATCH (600M× wrong)
-- VietQR fee: HIGH (exact match on specific queries)
-- Overall: LOW (W2W bug is critical)
+- W2W revenue bug: FIXED as of 2026-03-06 — Mimir now correctly filters `service IN ('W2B','CASHOUT')`. Previous bug (filters W2W only → 81 VND) no longer occurs.
+- Jan 2026: MATCH (49,440,277,536 VND = exact BQ)
+- Mar 2026 partial: MATCH (4,356,936,553 VND = exact BQ)
+- VietQR fee: HIGH
+- Overall: HIGH (W2W bug confirmed fixed)

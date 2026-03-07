@@ -47,8 +47,44 @@ Break into simpler sub-questions for derived metrics.
 Mimir reports incomplete month data as complete. Example: Mar 2026 Paylater "MAU 403K" was only 2 days.
 **Always verify MAX(date) for BOTH BQ AND Mimir before accepting current-month figures.**
 
+### PAYLATER_ALL_TRANS: Date Column is `created_date`, Amount is `amount` (2026-03-06)
+NOT `month_trans` (that's in `PAYLATER_MAU_SEGMENT`). NOT `gmv` column — use `amount`.
+Filter: `result_code=0 AND trans_type IN ('pay_pl','pay_ins','send_pl')` (same as before).
+Jan 2026: 1.45M MAU, 12.8M txns, 2.447T total GMV, 78.9B/day avg.
+
+### Mimir Cannot Forecast / Predict Future (2026-03-06)
+Questions like "tổng giải ngân tháng 3/2026 sẽ là bao nhiêu?" → Mimir always refuses: "chỉ có dữ liệu lịch sử."
+For forecasts: use our BQ daily run rate × days remaining.
+
+### Financial Hub: Mimir Uses Wrong Metric for User Count (2026-03-06)
+Mimir queries `SUM(NO_USER_SCREEN)` from `FINHUB_TTTC_QLTK_ENTRY_POINT` → returns ~10.9T (impossible).
+**Correct:** `COUNT(DISTINCT USER) FROM FINHUB_TTTC_QLTK_TRAFFIC WHERE MONTH='2026-01-01'` → 5,967,883.
+`NO_USER_SCREEN` is daily total impressions (NOT distinct users), summing it = meaningless.
+
+### Bank Partnership: Mimir Sums Per-Bank Counts, Not Global Dedup (2026-03-06)
+Mimir reports "total linked users" as sum of per-bank counts (top N only) — no global COUNT(DISTINCT USER).
+Result: 610K (sum of top 5) vs actual 806,426 (globally unique). Per-bank breakdown is exact.
+**Correct total:** `COUNT(DISTINCT USER) FROM BANK_MAP_ERROR WHERE STAGE='03. success_map' AND ERROR_CATEGORY='SUCCESS' AND DATE BETWEEN '2026-01-01' AND '2026-01-31'` → 806,426.
+
 ### Mimir Domain Isolation (2026-03-04)
 Mimir domains are siloed — no cross-product aggregation. Total MoMo MAU must be computed from BQ by UNION-ing all product user tables.
+When asked cross-domain question (e.g. "PL users without TTT"), Mimir says "không có thông tin về Túi Thần Tài" — polite refusal, correct behavior. VERDICT: EXPECTED.
+
+### DomainSchemaHandler TIMEOUT — Not Domain-Specific, Query-Complexity Based (2026-03-06)
+Error: "Timed out after waiting 30000(ms) for a reply... repliedAddress: DomainSchemaHandler/get_domain_send_question"
+This timeout occurs on complex/analytical queries across multiple domains, NOT just specific ones.
+Known to timeout: OTA `7172ddb9`, Moni `9066c2ad`, TTT `fa0fb3af` (complex new-user query), InsurTech `800bf3e8` (SP enum).
+TTT and InsurTech work fine for simple metric queries (MAU, AUM). Fail on complex analytical questions.
+Rule: If Mimir times out, simplify the question or use BQ directly.
+- OTA ALL queries: always timeout → BQ only: `momovn-prod.REPORT.2023_TAN_OTA_COMPREHENSIVE_ALL_WITH_INCENTIVE`
+- Moni ALL queries: always timeout → BQ only: `momovn-prod.MBI_DA.QLCT_CHATBOT_CONVERSATION_LOG`
+- TTT/InsurTech: simple = OK, complex analytical = timeout
+
+### Paylater Mimir: PAYLATER_ALL_TRANS NOT in Schema (2026-03-06)
+When querying Paylater domain `7e23d41a` for transaction-level data, Mimir says table not available.
+Mimir also reveals WRONG column name: it thinks date column = `date_trans` (actual = `created_date`).
+Paylater Mimir domain likely has only PAYLATER_MAU_SEGMENT — not PAYLATER_ALL_TRANS.
+For any transaction/GMV/service_category query → use BQ directly, not Mimir.
 
 ## BQ Access
 
