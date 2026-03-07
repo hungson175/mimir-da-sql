@@ -25,11 +25,11 @@ Load only what you need, when you need it.
 | Level | What | When to Load |
 |-------|------|--------------|
 | **0** | This file | Always (you're reading it) |
-| **1** | `docs/DA_PROMPT.md` | When doing DA work — your full skill instructions |
+| **1** | `docs/prompts/DA_PROMPT.md` | When doing DA work — your full skill instructions |
 | **2** | `lt-memory/_index.md` → deep files | Before/after every query — your accumulated knowledge |
 | **2+** | `docs/ref/` | Reference materials — domain guides, metric defs (loaded by DA_PROMPT.md as needed) |
 | **2+** | `docs/scripts/` | Utility scripts — API helpers, formatters (executed, not read into context) |
-| **3** | `docs/DIS_MIMIR_PROMPT.md` | Only for distillation (comparing BQ vs Mimir) — never for answering questions |
+| **3** | `docs/prompts/DIS_MIMIR_PROMPT.md` | Only for distillation (comparing BQ vs Mimir) — never for answering questions |
 
 ## The Learning Loop
 

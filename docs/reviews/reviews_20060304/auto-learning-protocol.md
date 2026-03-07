@@ -51,7 +51,7 @@ Prove the fix works. Show the user the corrected result.
 
 ## Where to Implement
 
-**Single location:** Add as a top-level mandatory section in `docs/DA_PROMPT.md`.
+**Single location:** Add as a top-level mandatory section in `docs/prompts/DA_PROMPT.md`.
 
 Every DA session loads DA_PROMPT.md, so every user gets this behavior automatically. No hooks, no extra skills, no user training.
 
