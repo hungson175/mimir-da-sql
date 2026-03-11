@@ -124,3 +124,5 @@ Total P2B fees: Jan 45.0B → Mar proj ~33.8B (-25%). Every VietQR txn (38 VND) 
 - MAU: MEDIUM (registered vs transacting definition mismatch)
 - Column names on ALL_TRANS: LOW (3 known errors)
 - MAU_SEGMENT: HIGH (handles correctly)
+
+

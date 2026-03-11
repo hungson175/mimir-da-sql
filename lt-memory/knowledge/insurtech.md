@@ -141,3 +141,9 @@ Dec acquisition push: 46.6% first-time borrowers (12.4K new users). Mar +36% = T
 - CC_STATUS: HIGH (consistently uses English 'SUCCESS' as of 2026-03-06, previously inconsistent)
 - Contract count: HIGH (exact match Feb 2026: 138,727)
 - General: HIGH
+
+## DA Review Knowledge (2026-03-11)
+> From domain review xlsx — DA-written gotchas and rules.
+
+- Bảo Hiểm Xe Máy Bắt Buộc: SP_DETAIL = 'Motor Ins'
+

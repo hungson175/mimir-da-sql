@@ -55,3 +55,40 @@ CLO = 3% of total FS credit volume — SHB freeze is partnership problem, not re
 ## Mimir Trust
 - DATE_MODIFIED usage: LOW (persistently wrong)
 - General: MEDIUM
+
+## DA Review Knowledge (2026-03-11)
+> From domain review xlsx — DA-written gotchas and rules.
+
+- PARTNER_ID aliases: 'home' = 'lending_mp_homecredit', 'FE' = 'clo_fecredit', 'CRO'/'VIB' = 'cro_vib'
+- Exclude user_id: use 'WHERE NOT EXISTS' (not 'user_id NOT IN')
+- Application submitted status_codes: APPLICATION_CANCELED, APPLICATION_REJECTED, APPLICATION_APPROVED, APPLICATION_RESUBMIT, APPLICATION_SUBMITTED, DISBURSED, CONTRACT_SIGNED, RESET
+- User segments: New (first txn), Retention (continuous), Reactive (returned after churn), Churn (stopped)
+- FIS_CLO_TRAFFIC_FLOW: filter by VALUE column (not PARTNER_ID) for partner
+- Avg CONTRACT_AMOUNT: use SUM(CONTRACT_AMOUNT)/COUNT(DISTINCT ticket_id) (not AVG)
+- Home Credit disbursed: CONTRACT_SIGNED + DISBURSED. Other lenders: DISBURSED only.
+
+### FI_TRANS Reference (from DA review)
+BU_GROUP_CODE hierarchy:
+- L1: 'PAYMENT' = all thu hộ
+- L2: 'LOAN COLLECTION' (thu hộ khoản vay), 'CREDIT CARD COLLECTION' (thu hộ thẻ tín dụng), 'PAYOUT' (chi hộ)
+- L3: 'FINCOS' (công ty tài chính), 'BANK' (ngân hàng), 'OTHERS' (giấy phép cầm đồ), 'FM' (Vay Nhanh)
+- L4: 'DISBURSEMENT' (chi hộ), 'COLLECTION' (thu hộ). Deprecated: DISBURSEMENT_VAY+, DISBURSEMENT_BANK
+- statusid: 2 = thành công, 6 = thất bại
+- service_group: 1 = thu hộ, 10/'null' = chi hộ, 5 = thu phí
+- type: 'App MoMo' = app MoMo, 'Paygate' = app đối tác qua MoMo
+- Chi hộ filter: trans_type IN ('transfer','cardcashout_fi','disburse','billpay','m4bpay','cardcashout_disburse')
+- Quick filter TTKV/TTTD: BU_GROUP_CODE_L2 IN ('LOAN COLLECTION','CREDIT CARD COLLECTION') AND STATUSID=2 AND SERVICE_GROUP=1
+- Quick filter exclude VN+CCM: fis_dash IN ('loan','card')
+- Merchant info: https://docs.google.com/spreadsheets/d/1QI6YIIRT4fttWW5IHCP6XISLmGa3MFEmxSVe1CMziq8/
+
+### FIS_TCST Key Columns (from DA review)
+- ticket_id, partner_id, status_code (T-1 snapshot), date_requested (submit time), date_modified (last update)
+- core_id (revenue TID), contract_id, contract_amount (disbursed amount), revenue (CRO không dùng), offer_type (new/reloan)
+- Note: user vào luồng + out WL không thuộc bảng này
+- Note: status_code meanings can change between flow versions → contact ngoc.nguyen18
+
+### FIS_CLO_CHANGE_STATUS (from DA review)
+- Shows offer/app approved/rejected at exact moment (vs FIS_TCST = final status only)
+- offer_rate = OFFER_APPROVED / (OFFER_APPROVED + OFFER_REJECTED)
+- approval_rate = APPLICATION_APPROVED / (APPLICATION_APPROVED + APPLICATION_REJECTED)
+- Future: will switch to APPROVED/SUBMITTED once data is in BQ

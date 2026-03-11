@@ -124,3 +124,17 @@ Cross-sell: Paylater 10.2% (below avg), Vay Nhanh 0.5% (near zero), InsurTech 14
 - AUM: HIGH (bug FIXED as of 2026-03-06 — Mimir now uses end-of-month snapshot, not sum across days)
 - General: HIGH
 - Feb 29 bug: persists but Mimir self-corrects with retry
+
+## DA Review Knowledge (2026-03-11)
+> From domain review xlsx — DA-written gotchas and rules.
+
+- MFU_TYPE: không cần điều kiện IS_MP = 'Individual' (MFU tính cả Individual + Money Pool)
+- PLUS_TYPE: không được bao gồm ('0.Churn', 'None') trong điều kiện WHERE
+- GRASS_MONTH: sử dụng DATE_TRUNC(GRASS_DATE, MONTH) thay vì GRASS_MONTH trực tiếp
+- Tổng tiền lãi (Interest): không cần điều kiện IS_MP = 'Individual'
+- Không có dữ liệu để phân loại ngày user có sở hữu Túi+
+- option_value: không nên sử dụng điều kiện IS NULL
+- Đếm user rút tiền: chỉ tính user có GMV rút tiền > 0
+- MAU SOF: dùng AVG(balance) > 100000 và SUM(CASHOUT_P2P_TRANS) = 0 (không dùng AVG_BAL_GROUP)
+- Traffic home tháng 6: bao gồm cả user chưa đăng ký TTT
+

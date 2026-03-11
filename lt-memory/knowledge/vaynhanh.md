@@ -84,3 +84,9 @@ Updated lender list: VIET_CREDIT (67%) + MCREDIT (14%) + AMBER (10%) + MBV (8.5%
 - Overall: MEDIUM (amount OK, count still wrong)
 - Note: LOAN_AMOUNT = DISBURSED_AMOUNT in BAOTU_VAYNHANH_LOAN_INFO (same values)
 - Vietnamese ambiguity: "tong so giai ngan" = amount. For count, use "tong so khoan giai ngan".
+
+## DA Review Knowledge (2026-03-11)
+> From domain review xlsx — DA-written gotchas and rules.
+
+- A30 = tập user có truy cập vào Vay Nhanh trong vòng 30 ngày gần nhất. A60 = tập user có truy cập vào Vay Nhanh trong vòng 60 ngày gần nhất. A90 = tập user có truy cập vào Vay Nhanh trong vòng 90 ngày gần nhất.
+
