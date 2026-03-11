@@ -1,5 +1,8 @@
 # BU FS: Chứng khoán CV
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `ef8cc111-d13a-4b0b-a1fd-8cccb065fc74`
 
 ## Description

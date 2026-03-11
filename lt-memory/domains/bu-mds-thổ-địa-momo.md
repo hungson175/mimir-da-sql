@@ -1,5 +1,8 @@
 # BU MDS: Thổ Địa MoMo
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `c123d8bc-9569-4dfd-955f-69d587062069`
 
 ## Description

@@ -62,6 +62,17 @@ DO NOT estimate as 2% of disbursement — that = lender's interest, not MoMo's r
 VIET_CREDIT Jan 2026: 64% = RELOAN, 25% = NEW. RELOAN gets 22.1M avg, NEW gets 12.9M avg.
 MoMo = both acquisition (25%) AND retention engine (64%) for lenders.
 
+### VN Approval Rate Formula (2026-03-09)
+```
+approval_rate = DISBURSED / (DISBURSED + PARTNER_REJECTED + PARTNER_CANCELED)
+```
+- Numerator: only `DISBURSED` (NOT LIQUIDATED — those are repaid loans, not current approvals)
+- Denominator: `DISBURSED + PARTNER REJECTED + PARTNER CANCELED` only
+- Exclude from denominator: LIQUIDATED, UNKNOWN, PROCESSING, CANCELLED, LOAN DECIDER REJECTED, KNOCKOUT RULE REJECTED, CONFIRMED, APPROVED
+- MBV Feb 2026: 83.45%
+- VietCredit Feb 2026: 73.79%
+Source: user correction
+
 ### MBV = New Lender Since Nov 2025 (2026-03-04)
 MBV (MB Bank) started VN disbursements 2025-11-17. Mar 2026: 441 loans/day = 8.5% share.
 Updated lender list: VIET_CREDIT (67%) + MCREDIT (14%) + AMBER (10%) + MBV (8.5%)

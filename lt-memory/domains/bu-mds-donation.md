@@ -1,5 +1,8 @@
 # BU MDS: Donation
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `dd5f63eb-9981-4d0b-ba85-bd73ce80f52f`
 
 ## Description

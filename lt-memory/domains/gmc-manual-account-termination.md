@@ -1,5 +1,8 @@
 # GMC: Manual Account Termination
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `f1f9aae9-0343-40c9-8e1b-db35889ac849`
 
 ## Description

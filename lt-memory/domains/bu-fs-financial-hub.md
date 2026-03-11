@@ -1,5 +1,8 @@
 # BU FS: Financial Hub
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `c80e0c61-0d52-4fd6-a2e5-9d2892da7955`
 
 ## Description

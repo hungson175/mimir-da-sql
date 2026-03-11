@@ -1,5 +1,8 @@
 # CDO: Data Ownership
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `51216294-46c7-4058-8ba2-aa53f7409fe6`
 
 ## Description

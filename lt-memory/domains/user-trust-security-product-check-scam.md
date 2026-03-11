@@ -1,5 +1,8 @@
 # User Trust: Security Product - Check Scam
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `4f353121-0b27-437a-9746-e4b8897ad03b`
 
 ## Description

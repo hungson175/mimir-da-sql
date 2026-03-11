@@ -1,5 +1,8 @@
 # ITC: MiniApp Performance
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `a8e52ce3-b404-42fe-afff-30201ea2897e`
 
 ## Description

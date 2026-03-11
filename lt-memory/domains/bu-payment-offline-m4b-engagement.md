@@ -1,5 +1,8 @@
 # BU Payment: OFFLINE M4B ENGAGEMENT
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `68f8f83f-cd21-4efc-9743-5c238b325818`
 
 ## Description

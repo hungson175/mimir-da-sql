@@ -1,5 +1,8 @@
 # Chatbot Moni
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `9066c2ad-5109-4fa9-abc0-06d85c6eed7e`
 
 ## Description

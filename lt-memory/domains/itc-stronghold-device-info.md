@@ -1,5 +1,8 @@
 # ITC: STRONGHOLD - Device Info
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `7994ad65-873f-4c9d-9c90-f49377367892`
 
 ## Description

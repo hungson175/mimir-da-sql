@@ -1,5 +1,8 @@
 # MiMir Performance
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `0affe82b-83ee-47f6-81e3-8a44e74db5f3`
 
 ## Description

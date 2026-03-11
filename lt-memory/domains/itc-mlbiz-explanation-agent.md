@@ -1,5 +1,8 @@
 # ITC MLBIZ: Explanation Agent
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `7e533485-3f9d-45d1-b97c-82eb59aa3d01`
 
 ## Tables

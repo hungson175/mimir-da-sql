@@ -1,5 +1,8 @@
 # BU Payment: Billpay - Business metrics
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `28214cde-da94-48ef-9039-00fa6f448da7`
 
 ## Description

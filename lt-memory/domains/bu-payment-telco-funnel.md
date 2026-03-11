@@ -1,5 +1,8 @@
 # BU Payment: Telco Funnel
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `fdc4e81a-0f8e-4412-b5b4-1602705daae6`
 
 ## Description

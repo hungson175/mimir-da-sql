@@ -49,7 +49,14 @@ The `dpd` column has negative values (before due) and positive values (past due)
 
 ### Paylater DPD30 ETL Stopped (2026-03-03)
 `PAYLATER_RAR_DPD30_RISK_REPORT` exists but ETL stopped ~Feb 2025. Latest data = 13 months old.
-Alternative proxy: penalty_txns / purchase_txns rate (= 6.36% Jan 2026).
+
+### Penalty Rate: Correct Methodology (2026-03-09)
+Penalty trans_types: `pay_pl_fee_penalty`, `record_pl_pen_fee_dpd1/5/10/15`.
+Denominator: users with `trans_type IN ('pay_pl','send_pl')` (purchase txns only, NOT `pay_ins`).
+`pay_ins` = insurance payment, NOT penalty.
+Jan 2026: 308,880 / 1,445,620 = **21.37%**. Feb 2026: 289,134 / 1,388,950 = **20.82%**.
+DPD cascade: DPD1 291K → DPD5 181K (62%) → DPD10 127K (43%) → DPD15 116K (40%).
+Previous "6.36%" figure was penalty_txn_count / purchase_txn_count (tx-level, not user-level). User-level = ~21%.
 
 ### Mimir Paylater MAU Definition (2026-03-04)
 Mimir Paylater MAU = from PAYLATER_MAU_SEGMENT (all registered/approved users).
@@ -97,6 +104,21 @@ Not accelerating. Sep = structural low, Nov = peak. Dormant activation = unteste
 
 ### Campaign Timing: Thursday-Saturday = Peak (2026-03-04)
 Saturday highest GMV (407B), Wednesday lowest (291B). Launch Thursday, target Fri-Sat.
+
+### MBV Growing 35x Faster Than TPB (2026-03-09)
+MoMo revenue share (Oct 25 → Feb 26):
+- TPB: 39.9B → 44.8B (+12%)
+- MBV: 1.1B → 5.5B (+428%)
+MBV share: 2.6% → 11.0% of total PL revenue. MBV = premium segment (6.03M avg limit vs TPB 4.88M).
+MBV joined Nov 17, 2025 — same month as SHB CLO. Revenue tables: `ANHNGUYEN61_PAYLATER_TPB_REVENUE` (audit_month, revenue_shared, revenue_total) and `ANHNGUYEN61_PAYLATER_MBV_REVENUE` (audit_month, revenue_shared, fee_shared).
+
+### Paylater Mar Post-Tet Surge = UTILITIES (2026-03-09)
+Mar 1-8 daily GMV +53% vs Feb. 71% of growth = UTILITIES category (26.8B → 55.5B/day).
+Post-Tet bill payment catch-up (electricity/water/internet). 97% returning users, only 3% new.
+Seasonal, not structural. Expect normalization mid-March.
+
+### P2B Fee Erosion: VietQR Cannibalization (2026-03-09)
+Total P2B fees: Jan 45.0B → Mar proj ~33.8B (-25%). Every VietQR txn (38 VND) replaces Direct P2B (870 VND) = 832 VND revenue loss per migrated txn. VietQR fee/txn RISING (32→38, +15%) but Direct P2B fee/txn FALLING (1,200→870, -30%).
 
 ## Mimir Trust
 - MAU: MEDIUM (registered vs transacting definition mismatch)

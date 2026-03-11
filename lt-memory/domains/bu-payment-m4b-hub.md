@@ -1,5 +1,8 @@
 # BU Payment: M4B HUB
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `5d47c7cc-f998-41c5-ab4c-5caa4b441743`
 
 ## Description

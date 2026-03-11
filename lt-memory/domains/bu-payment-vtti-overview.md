@@ -1,5 +1,8 @@
 # BU Payment: VTTI Overview
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `1d4022aa-85c0-47d9-8f53-e346a8e74437`
 
 ## Description

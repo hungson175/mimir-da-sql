@@ -1,5 +1,8 @@
 # BU FS: Túi Thần Tài
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `fa0fb3af-d3d9-4459-9a82-fb7c6eafab11`
 
 ## Description

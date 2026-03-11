@@ -1,5 +1,8 @@
 # ITC MLBIZ: CREDITTECH
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `cf246f90-8aba-44e5-be6e-d02ddb22b9c1`
 
 ## Description

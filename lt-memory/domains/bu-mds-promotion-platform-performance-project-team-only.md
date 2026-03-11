@@ -1,5 +1,8 @@
 # BU MDS: Promotion - Platform Performance (Project team only)
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `9d86b9d9-bf1e-4bab-8e11-86279716984a`
 
 ## Description

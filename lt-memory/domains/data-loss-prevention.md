@@ -1,5 +1,8 @@
 # Data Loss Prevention
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `7a5b7857-5204-4a8a-a961-f427f228cf99`
 
 ## Description

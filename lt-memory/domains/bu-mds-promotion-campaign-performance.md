@@ -1,5 +1,8 @@
 # BU MDS: Promotion - Campaign Performance
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `e9363d1c-6486-4072-8dc5-8d06260e9c7f`
 
 ## Description

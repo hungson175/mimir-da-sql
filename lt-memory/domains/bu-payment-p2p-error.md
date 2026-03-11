@@ -1,5 +1,8 @@
 # BU Payment: P2P ERROR
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `9e15b462-aa3d-4bdc-80ff-dc86a6f83837`
 
 ## Description

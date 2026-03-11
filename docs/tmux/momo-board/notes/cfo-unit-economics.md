@@ -1,6 +1,19 @@
 # CFO Analysis: Unit Economics — Day 1 to Break-Even
 
-**Author:** CFO | **Date:** 2026-03-06 | **Session:** momo-board Round 2
+**Author:** CFO | **Date:** 2026-03-09 (Updated from 2026-03-06)
+**Session:** momo-board Round 2 + Round 3
+
+---
+
+## UPDATE LOG (2026-03-09)
+
+- Existing DCVFM trail commission confirmed: **40 bps** (product-specific to bond/MM, paid quarterly)
+- 40 bps is product-specific (Scenario Y confirmed by Thuan): equity products unpriced, negotiate fresh
+- Break-even pulls forward from M30-36 to **M26-30** with 40 bps + Tui+
+- Tui+ confirmed NON-NEGOTIABLE for unit economics (CAC payback fails without it for 95% of users)
+- Y1 revenue revised UP from $140K to **$200K** (40 bps x $50M AUM)
+- Volume commitment: 40 bps locked through $200M AUM (3-tier structure approved)
+- See `cfo-dragon-capital-fee-structure.md` for full delta document
 
 ---
 

@@ -1,5 +1,8 @@
 # Lịch sử giao dịch
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `a9b8f0d4-dc8c-428a-ac05-8cbd29fc41e4`
 
 ## Description

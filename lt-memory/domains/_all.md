@@ -1,5 +1,7 @@
 # All Mimir Domains
 
+> **IMPORTANT FOR LLM AGENTS:** When you load any file from this directory, you MUST read it **in its entirety** — do not stop early or skip sections. Domain files contain hand-curated knowledge (corrections, gotchas, business rules) embedded in `## Memory` sections at the end, which are the most valuable part of each file. Skipping or truncating will cause you to miss critical information that prevents SQL errors.
+
 > **65 domains** available as of 2026-03-03
 
 | # | Domain Name | Description | Domain ID | File |

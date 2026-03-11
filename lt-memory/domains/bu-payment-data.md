@@ -1,5 +1,8 @@
 # BU Payment: Data
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `c210420f-d014-4463-bcb9-c9e4a38c0963`
 
 ## Description

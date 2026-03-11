@@ -1,5 +1,8 @@
 # BU MDS: Business Page
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `3220e3ea-a817-4cad-a795-6221771b5956`
 
 ## Description

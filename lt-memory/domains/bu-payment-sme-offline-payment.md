@@ -1,5 +1,8 @@
 # BU Payment: SME OFFLINE PAYMENT
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `03f0b56d-7b56-49d8-9073-6bb94e564fe2`
 
 ## Description

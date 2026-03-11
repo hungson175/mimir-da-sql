@@ -89,6 +89,12 @@ The "11.6M users" figure that appeared in DA_PROMPT, domain-router, and research
 Never use 11.6M as TTT user count. Always query with MAU_TYPE filter.
 Source: user correction
 
+### Mimir REGEXP_EXTRACT Bug: Double-Escaping (2026-03-09)
+When question contains `r'\d+'` regex, Mimir double-escapes to `r"\\d+"` → matches nothing → returns 0.
+**Workaround:** Never include regex patterns in Mimir questions. Ask in plain Vietnamese:
+- BAD: "COUNT DISTINCT REGEXP_EXTRACT(USER_ID, r'\d+') WHERE MAU_TYPE LIKE '%New%'"
+- GOOD: "Bao nhiêu user mới (MAU_TYPE chứa New) trong tháng 1/2026? Đếm unique user."
+
 ### TTT Used as Payment Source (FUNDID=6 in FI_TRANS) (2026-03-06)
 4.8% of TTT MAU use TTT balance for direct payments. Top uses:
 - Loan repayment from TTT: 125,870 users, 412.9B Jan 2026 (LARGEST)
@@ -106,6 +112,12 @@ Below typical bank savings rates (4-5%). Stickiness = ecosystem convenience, not
 2026: Money Pool PEAKED Feb 20 at 1.796T, then DECLINING to 1.738T by Mar 5 (-3.2%).
 Pattern is DIFFERENT from 2025 — not purely seasonal, likely maturation of product growth phase.
 2026 Money Pool at 1.74T = 4x of Mar 2025 (430B). Growth normalizing, not structural crisis.
+
+### TTT Whales: Save+Insure, Don't Borrow (2026-03-09)
+14,721 users with >100M balance = 0.88% of MFU but hold 20.5% of AUM (2.37T / 11.57T).
+Top whale: 1.225B VND (user 33946413). Top 10 = ALL Individual, 9 of 10 use ZERO FS products.
+Cross-sell: Paylater 10.2% (below avg), Vay Nhanh 0.5% (near zero), InsurTech 14.5% (3x above avg).
+85.5% of whales (12,587 users) have NO insurance = premium upsell target.
 
 ## Mimir Trust
 - MAU/MFU: HIGH (exact match Feb 2026, correct REGEXP_EXTRACT + MAU_TYPE filter)

@@ -1,5 +1,8 @@
 # BU MDS: OTA
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `7172ddb9-dc48-40d4-bff7-1aa74f6ff435`
 
 ## Description

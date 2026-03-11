@@ -1,5 +1,8 @@
 # BU Payment: Transaction MoMo
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `e5beb7b6-4273-47ff-9755-a5bcf8d51b97`
 
 ## Description

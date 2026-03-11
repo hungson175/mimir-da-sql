@@ -1,5 +1,8 @@
 # BU Payment: EPS-TOPBRAND
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `72fbb966-0b9b-4205-a433-b14fca48597d`
 
 ## Description

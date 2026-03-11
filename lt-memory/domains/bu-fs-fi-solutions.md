@@ -1,5 +1,8 @@
 # BU FS: FI Solutions
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `5cd09ae2-90b8-4102-a717-0ae6f649ff69`
 
 ## Description

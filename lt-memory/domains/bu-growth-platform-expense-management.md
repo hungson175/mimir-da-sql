@@ -1,5 +1,8 @@
 # BU Growth Platform: Expense Management
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `af241589-f5be-4b97-8928-fe0823c8dc75`
 
 ## Description

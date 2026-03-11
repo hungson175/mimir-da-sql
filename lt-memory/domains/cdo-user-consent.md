@@ -1,5 +1,8 @@
 # CDO: User Consent
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `350f9466-757c-4292-af88-5e7e16e65d6a`
 
 ## Description

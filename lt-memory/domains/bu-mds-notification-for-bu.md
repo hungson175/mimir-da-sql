@@ -1,5 +1,8 @@
 # BU MDS: Notification for BU
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `bcae6a77-3995-49e5-85ca-36b1ed664c13`
 
 ## Description

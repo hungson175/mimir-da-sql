@@ -126,6 +126,16 @@ Jan 2024: 13K → Jan 2025: 6.4K (-51%) → Jan 2026: 3.4K (-47%). Approaching e
 | Health | Skip — declining | -48% in 6 months |
 | **September** | **PAUSE ALL** | Structural annual trough |
 
+### Vehicle Peaked Feb, Travel Accelerating Mar (2026-03-09)
+Daily orders Mar 1-8: Vehicle 2,056→1,261 (-39%), Travel 1,024→1,113 (+9%).
+Vehicle = seasonal (Nov-Feb motorcycle renewal over). Travel = year-round, entering spring peak.
+Orders nearly equal (1.1x gap). Travel likely passes Vehicle on order count by Apr-May.
+Revenue crossover unlikely — Vehicle 2.5x revenue/order (59K vs 27K VND).
+
+### AMBER = Entry-Level VN Lender (2026-03-09)
+Avg loan 14.2M (vs VIET_CREDIT 17.9M). Sweet spot 5-20M (86% of loans). No micro (<5M), no large (>30M).
+Dec acquisition push: 46.6% first-time borrowers (12.4K new users). Mar +36% = Tet rebound, not structural.
+
 ## Mimir Trust
 - MAU: HIGH (< 1% diff from BQ)
 - CC_STATUS: HIGH (consistently uses English 'SUCCESS' as of 2026-03-06, previously inconsistent)

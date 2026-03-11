@@ -1,5 +1,8 @@
 # BU Payment: P2P W2W
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `f3d8838b-5f96-4f78-8c39-2b146978dbd8`
 
 ## Description

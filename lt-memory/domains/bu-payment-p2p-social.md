@@ -1,5 +1,8 @@
 # BU Payment: P2P SOCIAL
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `a7a4abe7-ba98-48dd-b9f0-8d0752c75910`
 
 ## Description

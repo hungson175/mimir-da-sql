@@ -1,5 +1,8 @@
 # BU Payment: SUPPLIER TRACKING
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `0c367c81-99d6-4b01-90e2-e7bab0b77677`
 
 ## Description

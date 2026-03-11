@@ -1,5 +1,8 @@
 # BU FS: Bank Partnership
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `7102da6a-2fdc-4475-a3bf-b66be5bca419`
 
 ## Description

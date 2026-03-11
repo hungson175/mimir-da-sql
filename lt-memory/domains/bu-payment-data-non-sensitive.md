@@ -1,5 +1,8 @@
 # BU Payment: Data (Non Sensitive)
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `be004a0c-5e7c-442d-ab51-a7026eed5433`
 
 ## Description

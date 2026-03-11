@@ -1,5 +1,8 @@
 # BU Payment: P2P QUYNHOM
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `3a52651b-b3a6-4865-8a11-7b06ea99be24`
 
 ## Description

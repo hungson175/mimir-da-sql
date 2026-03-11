@@ -1,5 +1,8 @@
 # Fraud
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `2892bd4e-f624-4d5e-b9b3-1477c5fd9a44`
 
 ## Description

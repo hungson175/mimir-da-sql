@@ -57,6 +57,23 @@ VietQR fee ~55 VND/txn. Revenue model = volume strategy → FS cross-sell moneti
 `HOANG_P2P_ALL_REVENUE_W2B_CASHOUT_TRANSACTION` has `fee` and `cost` columns.
 P2P W2B net margin: 38.6/42.8 = 90.2% (after network fees).
 
+### VietQR Cross-Sell Gap: 377K Active Users, Zero FS Campaigns (2026-03-09)
+Mar 1-8: 2.19M VietQR users. 54% have FS products, 46% (1.01M) = pure QR.
+Of pure-QR users: 37% (377K) are regular/active/power users (4+ txns in 8 days).
+30.6M VietQR campaign notifications in Jan — ALL promote QR usage (vouchers).
+ZERO campaigns cross-sell FS products to VietQR users. Biggest untapped campaign opportunity.
+
+### VietQR Pure-QR User Profile (2026-03-09)
+| Segment | Users | Avg GMV (8d) |
+|---------|-------|-------------|
+| One-time (1 txn) | 342K (34%) | 326K |
+| Light (2-3) | 289K (29%) | 577K |
+| Regular (4-8) | 248K (25%) | 1.0M |
+| Active (9-20) | 114K (11%) | 1.8M |
+| Power (21+) | 16K (1.5%) | 4.2M |
+
+Pure-QR avg ticket 246K vs FS-users 324K (-24%). They spend less per txn but are still engaged.
+
 ## Mimir Trust
 - W2W revenue bug: FIXED as of 2026-03-06 — Mimir now correctly filters `service IN ('W2B','CASHOUT')`. Previous bug (filters W2W only → 81 VND) no longer occurs.
 - Jan 2026: MATCH (49,440,277,536 VND = exact BQ)

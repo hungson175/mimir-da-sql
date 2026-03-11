@@ -1,5 +1,8 @@
 # BU MDS: Journey
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `6471b001-623f-4ce2-a6a5-5bf63b2cf928`
 
 ## Description

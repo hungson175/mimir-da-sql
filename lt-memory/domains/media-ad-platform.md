@@ -1,5 +1,8 @@
 # MEDIA - AD Platform
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `bf6c7cb8-75d4-493a-894c-ffd71d729cb1`
 
 ## Description

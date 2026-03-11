@@ -1,5 +1,8 @@
 # BU Payment: P2P OVERALL
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `838c1168-492d-4751-995d-d356dd8b9a42`
 
 ## Description

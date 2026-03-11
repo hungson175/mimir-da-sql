@@ -1,5 +1,8 @@
 # BU FS: InsurTech - Insurance
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `800bf3e8-a8ba-45c3-90d8-5f54bdaba156`
 
 ## Description

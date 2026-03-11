@@ -1,5 +1,8 @@
 # BU Payment: P2P AIO_QR
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `05cf9a74-c3c0-4b95-923c-71c8d42ed8aa`
 
 ## Description

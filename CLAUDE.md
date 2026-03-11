@@ -65,6 +65,9 @@ lt-memory/
 | Dev | `https://s.dev.mservice.io/mimir-server-to-server` |
 | User | `son.pham9@mservice.com.vn` |
 | API field | `user_email` (NOT `user` — causes 500 error) |
+| Data Catalog | `https://datacatalog.mservice.io` (OpenMetadata, Google OAuth) |
+
+**Fallback for domain schemas:** If Mimir domain API is expired, use OpenMetadata API at `datacatalog.mservice.io/api/v1/`. Requires Google OAuth token from browser session (`om-session.oidcIdToken` in localStorage). Search tables by tag: `GET /api/v1/search/query?q=*&index=table_search_index&query_filter={"query":{"bool":{"must":[{"term":{"tags.tagFQN":"mimir.<TAG>"}}]}}}`. Raw dump: `data/raw/openmetadata_mimir_2026-03-11/`.
 
 **FS Domain IDs (verified 2026-03-03):**
 
@@ -125,6 +128,20 @@ bq query --project_id=momovn-bu-fi-shared --use_legacy_sql=false --format=csv < 
 | **Future** | `docs/backlog.md` | Features, tasks, and ideas |
 
 **Rule:** When you complete a substantial, working segment — commit it with a meaningful message. Git history is the primary progress tracker.
+
+## DA Evaluator Skill (In Progress)
+
+**Goal:** Build a skill that generates evaluation sets and scores DA accuracy.
+
+**Workflow:**
+1. Take golden SQL queries (written by real DAs) as input
+2. Reverse-engineer each into a natural, unambiguous question (no schema leaks, Mimir-compatible)
+3. Feed the same question to both Claude DA and Mimir
+4. Score both against ground truth: SQL similarity (0.5) + numerical match (0.5)
+
+**Knowledge base:** `data/eval_sets/evaluator_skill/` — all learnings from manual rounds accumulate here. Do NOT create the skill until explicitly told. On context compaction, recover by reading that directory.
+
+**Mimir-compatible means:** single-domain, references metrics Mimir's metadata understands, specifies time range, no cross-domain joins.
 
 ## Commands
 

@@ -1,5 +1,8 @@
 # BU FS: Vay Nhanh
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `bb231763-b11c-45c6-9b0d-eb6d24588e3d`
 
 ## Description

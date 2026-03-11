@@ -1,5 +1,8 @@
 # BU Payment: Airtime (Non Sensitive)
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `63e7a2bc-2f9d-4b8f-9a1d-03c5ea7e16e8`
 
 ## Description

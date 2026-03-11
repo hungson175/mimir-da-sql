@@ -1,5 +1,8 @@
 # BU FS: CreditTech Paylater
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `7e23d41a-0baf-4b36-84c3-07fb850bdb6e`
 
 ## Description

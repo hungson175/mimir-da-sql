@@ -1,5 +1,8 @@
 # Customer Experience: CEE USER SUGGESTIONS
 
+> **LLM INSTRUCTION:** Read this file completely — do not truncate or skip sections. Critical knowledge (corrections, gotchas, business rules) may appear in any section, especially `## Memory` at the end.
+
+
 **Domain ID:** `20e405eb-5b2b-4a23-bacc-35196c4e707d`
 
 ## Description

@@ -331,3 +331,65 @@ See po/NOTES.md (board-ready with quantified impacts)
 - 14.7% Jan-Jan Vehicle renewal (expected — most renew in anniversary month not exactly Jan)
 
 **Last Updated**: 2026-03-04 by DA (Batch 26 complete)
+
+---
+
+## SESSION 27 COMPLETE (2026-03-09)
+
+### Distill Scorecard (12 cross-verifications)
+| # | Domain | Metric | Verdict |
+|---|--------|--------|---------|
+| 1 | P2P VietQR | GMV+users+txns Jan | EXACT MATCH |
+| 2 | InsurTech Travel | Orders+rev+users Mar 1-8 | EXACT MATCH |
+| 3 | P2P W2W | GMV+users+txns Jan | EXACT MATCH |
+| 4 | InsurTech Vehicle | Orders+rev+users Jan | EXACT MATCH |
+| 5 | TTT AUM | Balance by IS_MP Jan 31 | EXACT MATCH |
+| 6 | Paylater MAU_SEGMENT | MAU Jan | EXACT MATCH |
+| 7 | TTT Interest Rate | Annual rate by IS_MP | EXACT MATCH |
+| 8 | CLO | Revenue Jan (contracts CLOSE -17%) | EXACT on revenue |
+| 9 | TTT New Users | MAU_TYPE=New Jan | MISMATCH (regex escaping bug) |
+| 10 | Vay Nhanh | Disbursement Jan | MISMATCH (STATUS filter bug) |
+| 11 | Paylater ALL_TRANS | MAU+GMV Jan | ERROR (agent_id column bug) |
+| 12 | Billpay | Users+GMV Jan | CLOSE/MISMATCH (different source tables) |
+
+**Result: 8 EXACT/CLOSE, 4 MISMATCH/ERROR. All mismatches = KNOWN bugs.**
+
+### Trust Upgrades
+| Domain | Old | New | Reason |
+|--------|-----|-----|--------|
+| P2P Revenue | LOW | HIGH | W2W bug fixed, VietQR+W2W exact match |
+| TTT AUM | LOW | HIGH | 30x sum bug FIXED, end-of-month snapshot exact |
+| Notification | — | HIGH | CTR by source plausible, SQL correct |
+
+### New Bugs Found
+| Bug | Domain | Severity |
+|-----|--------|----------|
+| REGEXP_EXTRACT double-escaping | TTT | 2 — workaround: ask in plain Vietnamese |
+
+### Key Strategic Findings (20+ queries beyond distill)
+1. **TTT Whales**: 14.7K users (>100M), hold 20.5% of AUM. Save+insure, don't borrow. 85% uninsured.
+2. **Paylater Mar +53%**: UTILITIES post-Tet catch-up (71% of growth). Seasonal, not structural.
+3. **CLO SHB**: Confirmed credit freeze (0 contracts 8+ days). CLO -58% March.
+4. **P2B Fees -25%**: VietQR cannibalization (870→38 VND/txn). Volume UP, revenue DOWN.
+5. **377K Active Pure-QR Users**: NEVER targeted for FS cross-sell. Zero VietQR→FS campaigns exist.
+6. **MBV Paylater +428%**: Growing 35x faster than TPB. Premium segment.
+7. **Vehicle Ins peaked Feb**: Travel accelerating into spring. Order crossover Apr-May.
+8. **AMBER = entry-level lender**: 14.2M avg loan, 5-20M sweet spot. +36% = Tet rebound.
+9. **SME Merchants**: 81% have zero FS products (vs 46% general users). 496K untapped.
+10. **Merchant Financing (FMOB)**: ETL stopped Aug 2025. Product likely paused. Was 0.4% of VN volume.
+11. **Paylater penalty**: STABLE 21% (not rising). Correct methodology: pay_pl_fee_penalty + dpd trans_types.
+12. **Paylater daily pattern**: Thu highest DAU (297K), Sun lowest (235K). Tue highest GMV.
+13. **OTA VietJet +12%**: Growing faster than VN Airlines (+4%). Vietravel collapsing (-75%).
+14. **Donation**: Flat txns, +25% value. Avg donation rising (429→542 VND).
+15. **SME Offline**: GROCERY+FOOD = 64% of 7.8T GMV. 205K merchants.
+
+### Files Updated This Session
+- trust-calibration.md (full session results + trust changes)
+- paylater.md (penalty methodology, MBV growth, post-Tet surge, P2B fee erosion)
+- p2p.md (VietQR cross-sell gap, pure-QR user profile)
+- ttt.md (whale analysis, regex escaping bug)
+- insurtech.md (Vehicle peak/Travel acceleration, AMBER segment)
+- clo.md (SHB confirmed freeze, CLO -58%)
+- notification.md (CTR by source, in-app only)
+
+**Last Updated**: 2026-03-09 by DA (Session 27 complete)

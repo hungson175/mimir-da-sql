@@ -45,6 +45,13 @@ Key columns: PARTNER_ID, STATUS_CODE, DATE_REQUESTED, CONTRACT_AMOUNT, REVENUE, 
 Filter: SERVICE_TYPE='CLO', STATUS_CODE IN ('CONTRACT_SIGNED','DISBURSED').
 Disbursement amount = CONTRACT_AMOUNT (not DISBURSED_CREDIT_AMOUNT).
 
+### SHB Mar 2026: CONFIRMED Credit Freeze (2026-03-09)
+Data through Mar 8: 0 contracts, 1,202 OFFER_REJECTED (all Mar 3). No activity Mar 4-8.
+8 days of zero = confirmed credit policy freeze, not batch processing.
+CLO total Mar projected: ~3,038 (-58% vs Feb 7,167). SHB was 53% of Feb volume.
+FE Credit +25% and F88 +205% but too small to offset SHB gap.
+CLO = 3% of total FS credit volume — SHB freeze is partnership problem, not revenue crisis.
+
 ## Mimir Trust
 - DATE_MODIFIED usage: LOW (persistently wrong)
 - General: MEDIUM
