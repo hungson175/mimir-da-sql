@@ -1,0 +1,1789 @@
+Prompt,Domain,Note,Expected_SQL,Expected_Response,Answer_version_1,Answer_version_2,Answer_version_3,Answer_version_4,,Phương pháp:,Sử dụng ChatGPT
+Tổng số lượng giao dịch theo từng dịch vụ trong quý 1 năm 2024 là bao nhiêu?,Transaction_MoMo,Duyệt,,,"SELECT 
+    t.usecase,
+    COUNT(DISTINCT t.user_id) AS user_count
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+    t.user_id = d.user_id
+WHERE
+    t.date BETWEEN '2024-01-01' AND '2024-03-31'
+GROUP BY 
+    t.usecase;","SELECT 
+  usecase, 
+  COUNT(DISTINCT user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  DATE_TRUNC(date, QUARTER) = '2024-01-01'
+GROUP BY 
+  usecase
+","SELECT 
+  usecase,
+  COUNT(DISTINCT user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  date BETWEEN '2024-01-01' AND '2024-03-31'
+GROUP BY 
+  usecase
+ORDER BY 
+  usecase
+LIMIT 10;","SELECT 
+    usecase,
+    COUNT(DISTINCT user_id) AS number_of_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE DATE BETWEEN '2024-01-01' AND '2024-03-31'
+GROUP BY usecase
+ORDER BY number_of_users DESC
+LIMIT 10",,System:,"### Role:
+You are an SQL evaluation system.
+### Input
+You will receive an information domain knowledge about dataset schema and context background.
+Around some data angles and question sample.
+### Mission:
+You help users generate data questions (around 10 questions) about this Domain
+### Languges
+English and Tiếng Việt (Vietnamese)
+### Output:
+{first question}
+{second question}
+{third question}
+continue..."
+Bao nhiêu người dùng đã thực hiện giao dịch vào tháng 1 năm 2024 và vẫn tiếp tục giao dịch vào tháng 2 năm 2024?,Transaction_MoMo,Duyệt,,,"WITH Jan_2024_Transactions AS (
+    SELECT DISTINCT user_id
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE DATE_TRUNC(date, MONTH) = '2024-01-01'
+),
+Feb_2024_Transactions AS (
+    SELECT DISTINCT user_id
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE DATE_TRUNC(date, MONTH) = '2024-02-01'
+)
+SELECT COUNT(*) AS user_count
+FROM Jan_2024_Transactions j
+JOIN Feb_2024_Transactions f
+ON j.user_id = f.user_id;","SELECT COUNT(DISTINCT t1.user_id) as continuing_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t1
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t2
+ON t1.user_id = t2.user_id
+WHERE
+  EXTRACT(YEAR FROM t1.date) = 2024 AND EXTRACT(MONTH FROM t1.date) = 1
+  AND EXTRACT(YEAR FROM t2.date) = 2024 AND EXTRACT(MONTH FROM t2.date) = 2;","SELECT COUNT(DISTINCT transaction_january.user_id) AS user_count
+FROM (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE EXTRACT(YEAR FROM date) = 2024 AND EXTRACT(MONTH FROM date) = 1
+) AS transaction_january
+JOIN (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE EXTRACT(YEAR FROM date) = 2024 AND EXTRACT(MONTH FROM date) = 2
+) AS transaction_february
+ON transaction_january.user_id = transaction_february.user_id
+","SELECT COUNT(DISTINCT t1.user_id) AS active_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS t1
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS t2
+ON t1.user_id = t2.user_id
+WHERE t1.date BETWEEN '2024-01-01' AND '2024-01-31'
+  AND t2.date BETWEEN '2024-02-01' AND '2024-02-29'
+LIMIT 10;",,,
+Có bao nhiêu người dùng hardcore (người dùng thường xuyên) trong tháng 2 năm 2024?,Transaction_MoMo,Kiểm tra lại,,,"WITH transactions_feb_2024 AS (
+  SELECT
+    user_id,
+    DATE(date) as tran_date
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE
+    EXTRACT(YEAR FROM date) = 2024
+    AND EXTRACT(MONTH FROM date) = 2
+),
+daily_transactions AS (
+  SELECT
+    user_id,
+    COUNT(DISTINCT tran_date) as days_active
+  FROM transactions_feb_2024
+  GROUP BY user_id
+)
+SELECT
+  COUNT(*) as hardcore_users_count
+FROM daily_transactions
+WHERE days_active = 29 -- Tháng 2 năm nhuận có 29 ngày
+","SELECT COUNT(DISTINCT t.user_id) AS hardcore_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+WHERE t.date >= '2024-02-01' AND t.date <= '2024-02-29'
+AND t.transaction_amount > 1000000
+AND t.transaction_type = 'Hardcore';","SELECT COUNT(DISTINCT user_id) AS hardcore_user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE DATE_TRUNC(date, MONTH) = '2024-02-01'
+  AND (
+    SELECT COUNT(*) 
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS t 
+    WHERE t.user_id = iDeA_TRANS_CORE.user_id 
+      AND DATE_TRUNC(t.date, MONTH) = '2024-02-01'
+  ) > 10
+LIMIT 10
+","SELECT COUNT(DISTINCT user_id) AS hardcore_user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE DATE_TRUNC(date, MONTH) = '2024-02-01'
+  AND transaction_amount >= 10000000",,,
+Chênh lệch cụ thể của số lượng người dùng tại Hà Nội trong tháng 4 và tháng 5 năm 2024 là bao nhiêu?,Transaction_MoMo,Duyệt,,,"WITH ActiveUsers AS (
+  SELECT DISTINCT core.user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` core
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` demo
+  ON core.user_id = demo.user_id
+  WHERE demo.city = 'Hà Nội' 
+    AND core.date BETWEEN '2024-04-01' AND '2024-05-31'
+    AND EXTRACT(YEAR FROM core.date) = 2024 
+    AND EXTRACT(MONTH FROM core.date) IN (4, 5)
+),
+UserCount AS (
+  SELECT 
+    EXTRACT(MONTH FROM core.date) AS month,
+    COUNT(DISTINCT core.user_id) AS user_count
+  FROM ActiveUsers au
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_CORE` core
+  ON au.user_id = core.user_id
+  GROUP BY EXTRACT(MONTH FROM core.date)
+)
+SELECT 
+  (SELECT user_count FROM UserCount WHERE month = 5) -
+  (SELECT user_count FROM UserCount WHERE month = 4) AS user_diff
+","SELECT 
+    (COUNT(DISTINCT CASE WHEN EXTRACT(MONTH FROM t.date) = 5 THEN t.user_id END) -
+     COUNT(DISTINCT CASE WHEN EXTRACT(MONTH FROM t.date) = 4 THEN t.user_id END)) AS user_difference
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+    t.user_id = d.user_id
+WHERE 
+    d.city = 'Hà Nội' AND 
+    EXTRACT(YEAR FROM t.date) = 2024 AND 
+    EXTRACT(MONTH FROM t.date) IN (4, 5);","SELECT 
+    COUNT(DISTINCT user_id) AS user_count, 
+    EXTRACT(MONTH FROM date) AS month
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS tc
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS td
+ON 
+    tc.user_id = td.user_id
+WHERE 
+    td.city = 'Hà Nội' 
+    AND DATE(date) BETWEEN '2024-04-01' AND '2024-05-31'
+GROUP BY 
+    EXTRACT(MONTH FROM date)
+ORDER BY 
+    month
+LIMIT 10;","WITH user_counts AS (
+    SELECT
+        DATE_TRUNC(date, MONTH) AS month,
+        COUNT(DISTINCT t.user_id) AS user_count
+    FROM
+        `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+    JOIN
+        `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+    ON
+        t.user_id = d.user_id
+    WHERE
+        d.city = 'Hà Nội'
+        AND date BETWEEN '2024-04-01' AND '2024-05-31'
+    GROUP BY
+        DATE_TRUNC(date, MONTH)
+)
+SELECT
+    (SELECT user_count FROM user_counts WHERE month = '2024-05-01') - 
+    (SELECT user_count FROM user_counts WHERE month = '2024-04-01') AS user_difference
+;",,Prompt,"Thông tin Domain
+Data Angles
+Sample Questions"
+Số lượng giao dịch cashin trong quý 1 năm 2024 là bao nhiêu?,Transaction_MoMo,Duyệt,,,"SELECT 
+    COUNT(DISTINCT tc.user_id) AS num_users_cashin_Q1_2024
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` tc
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` td
+ON 
+    tc.user_id = td.user_id
+WHERE 
+    tc.transaction_type = 'cashin' 
+    AND DATE(tc.date) BETWEEN '2024-01-01' AND '2024-03-31';","SELECT 
+    COUNT(DISTINCT user_id) AS user_count
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+    transaction_type = 'cashin' AND
+    DATE(date) BETWEEN '2024-01-01' AND '2024-03-31';","SELECT COUNT(DISTINCT user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN' 
+  AND date BETWEEN '2024-01-01' AND '2024-03-31';","SELECT COUNT(DISTINCT user_id) as number_of_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND DATE BETWEEN '2024-01-01' AND '2024-03-31'",,,
+Xu hướng người dùng hoạt động hàng tháng (MAU) từ đầu năm 2024 cho đến nay như thế nào?,Transaction_MoMo,Không duyệt,,,"SELECT 
+    DATE_TRUNC(date, MONTH) as month,
+    COUNT(DISTINCT user_id) as monthly_active_users
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+    DATE_TRUNC(date, MONTH) BETWEEN '2024-01-01' AND CURRENT_DATE()
+GROUP BY 
+    DATE_TRUNC(date, MONTH)
+ORDER BY 
+    DATE_TRUNC(date, MONTH);","SELECT 
+  DATE_TRUNC(date, MONTH) AS month,
+  COUNT(DISTINCT user_id) AS mau
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  date >= '2024-01-01'
+GROUP BY 
+  month
+ORDER BY 
+  month;","SELECT
+  EXTRACT(MONTH FROM date) AS month,
+  COUNT(DISTINCT user_id) AS monthly_active_users
+FROM
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE
+  date >= '2024-01-01'
+GROUP BY
+  month
+ORDER BY
+  month;","SELECT 
+  DATE_TRUNC(date, MONTH) AS month,
+  COUNT(DISTINCT user_id) AS mau
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  date >= '2024-01-01'
+GROUP BY 
+  month
+ORDER BY 
+  month
+LIMIT 10;",,Constraint,"Một số domain mới sẽ thiếu angles và samples + thiếu tính logic, thực tiễn
+Thiếu domain của nhiều lĩnh vực khác
+Nhiều câu hỏi cần xác thực lại cách hỏi"
+Số lượng người dùng đã sử dụng dịch vụ APPLICATION STORE trong tháng 3 năm 2024 là bao nhiêu?,Transaction_MoMo,Không duyệt,,,"SELECT COUNT(DISTINCT trans.user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS trans
+WHERE trans.usecase = 'APPLICATION STORE'
+  AND DATE(trans.date) BETWEEN '2024-03-01' AND '2024-03-31';","SELECT COUNT(DISTINCT t.user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+WHERE t.usecase = 'APPLICATION STORE'
+  AND EXTRACT(YEAR FROM t.date) = 2024
+  AND EXTRACT(MONTH FROM t.date) = 3;","SELECT COUNT(DISTINCT t.user_id) AS total_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+WHERE t.usecase = 'APPLICATION STORE'
+  AND t.date BETWEEN '2024-03-01' AND '2024-03-31';","SELECT COUNT(DISTINCT t.user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+WHERE t.usecase = 'APPLICATION STORE'
+  AND t.date BETWEEN '2024-03-01' AND '2024-03-31';",,,Có thể tận dùng log user hỏi về domain này
+Có bao nhiêu giao dịch CASHIN trong tháng 3 năm 2024?,Transaction_MoMo,Không duyệt,,,"SELECT COUNT(*) AS cashin_transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN' 
+AND EXTRACT(YEAR FROM date) = 2024
+AND EXTRACT(MONTH FROM date) = 3;","SELECT COUNT(*) AS cashin_transactions_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+  AND DATE BETWEEN '2024-03-01' AND '2024-03-31';","SELECT COUNT(*) as cashin_transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE DATE_TRUNC(date, MONTH) = '2024-03-01' 
+AND transaction_type = 'CASHIN'
+","SELECT COUNT(*) AS cashin_transactions_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND DATE_TRUNC(date, MONTH) = '2024-03-01'
+",,,
+Số lượng giao dịch phát sinh tại merchant GOOGLE trong tháng 3 năm 2024 là bao nhiêu?,Transaction_MoMo,Duyệt,,,"SELECT COUNT(tranid) AS transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE'
+  AND DATE_TRUNC(DATE(date), MONTH) = '2024-03-01';","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE' AND 
+      DATE_TRUNC(date, MONTH) = '2024-03-01';","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE'
+  AND DATE_TRUNC(date, MONTH) = '2024-03-01'
+","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE'
+  AND DATE_TRUNC(date, MONTH) = '2024-03-01'",,,
+Số lượng MAU tại thành phố Hà Nội trong năm 2024 là bao nhiêu?,Transaction_MoMo,Không duyệt,,,"SELECT 
+  EXTRACT(MONTH FROM date) AS month,
+  COUNT(DISTINCT core.user_id) AS MAU
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` core
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` demo
+  ON core.user_id = demo.user_id
+WHERE 
+  demo.city = 'Hà Nội'
+  AND EXTRACT(YEAR FROM core.date) = 2024
+GROUP BY month
+ORDER BY month;","SELECT 
+  COUNT(DISTINCT user_id) AS MAU
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS core
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS demo
+ON 
+  core.user_id = demo.user_id
+WHERE 
+  demo.city = 'Hà Nội' 
+  AND EXTRACT(YEAR FROM core.date) = 2024;","SELECT 
+  EXTRACT(MONTH FROM date) AS month,
+  COUNT(DISTINCT t.user_id) AS mau
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+  t.user_id = d.user_id
+WHERE 
+  d.city = 'Hà Nội' 
+  AND EXTRACT(YEAR FROM t.date) = 2024
+GROUP BY 
+  month
+ORDER BY 
+  month
+LIMIT 10;","SELECT COUNT(DISTINCT user_id) AS MAU
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS core
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS demo
+ON core.user_id = demo.user_id
+WHERE demo.city = 'Hà Nội'
+AND EXTRACT(YEAR FROM core.date) = 2024",,,
+Phân nhóm người dùng theo độ tuổi trong tháng 4 năm 2024 như thế nào?,Transaction_MoMo,Duyệt,,,"SELECT 
+    d.age_group,
+    COUNT(DISTINCT t.user_id) AS user_count
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+    t.user_id = d.user_id
+WHERE 
+    DATE(t.date) BETWEEN '2024-04-01' AND '2024-04-30'
+GROUP BY 
+    d.age_group
+ORDER BY 
+    d.age_group;","SELECT 
+  d.age_group,
+  COUNT(DISTINCT d.user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` as c
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` as d
+ON 
+  c.user_id = d.user_id
+WHERE 
+  EXTRACT(YEAR FROM c.date) = 2024
+  AND EXTRACT(MONTH FROM c.date) = 4
+GROUP BY 
+  d.age_group;","SELECT 
+  age_group, 
+  COUNT(DISTINCT user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS demo
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS core
+ON 
+  demo.user_id = core.user_id
+WHERE 
+  DATE(core.date) BETWEEN '2024-04-01' AND '2024-04-30'
+GROUP BY 
+  age_group
+ORDER BY 
+  age_group
+LIMIT 10;","SELECT 
+  d.age_group, 
+  COUNT(DISTINCT d.user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS c
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS d
+ON 
+  c.user_id = d.user_id
+WHERE 
+  DATE_TRUNC(c.date, MONTH) = '2024-04-01'
+GROUP BY 
+  d.age_group
+ORDER BY 
+  d.age_group
+LIMIT 
+  10;",,,
+Tỷ lệ giữ chân người dùng MoMo trong năm 2024 là bao nhiêu?,Transaction_MoMo,Duyệt,,,"WITH users_2023 AS (
+    SELECT DISTINCT user_id
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE EXTRACT(YEAR FROM date) = 2023
+),
+users_2024 AS (
+    SELECT DISTINCT user_id
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE EXTRACT(YEAR FROM date) = 2024
+),
+retained_users AS (
+    SELECT user_id
+    FROM users_2023
+    WHERE user_id IN (SELECT user_id FROM users_2024)
+)
+
+SELECT 
+    (SELECT COUNT(*) FROM retained_users) AS retained_users_count,
+    (SELECT COUNT(*) FROM users_2023) AS total_users_2023,
+    (SELECT COUNT(*) FROM retained_users) * 100.0 / (SELECT COUNT(*) FROM users_2023) AS retention_rate
+;","The provided context does not contain information about retention metrics or dates beyond 2023. Therefore, it's insufficient to generate the SQL query needed to determine the retention rate of MoMo users in 2024. 
+
+To gather the required context, you might need additional details such as user activity logs for 2023 and 2024, and specific criteria for determining user retention.","WITH users_2023 AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE EXTRACT(YEAR FROM date) = 2023
+),
+
+-- Step 2: Find the number of these users who were active in 2024
+users_2024 AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE EXTRACT(YEAR FROM date) = 2024
+)
+
+-- Step 3: Calculate the retention rate
+SELECT
+  COUNT(users_2024.user_id) / COUNT(users_2023.user_id) * 100 AS retention_rate_2024
+FROM
+  users_2023
+LEFT JOIN
+  users_2024
+ON
+  users_2023.user_id = users_2024.user_id;","SELECT
+  DATE_TRUNC(date, MONTH) AS month,
+  COUNT(DISTINCT user_id) AS active_users
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  EXTRACT(YEAR FROM date) = 2024
+GROUP BY 
+  month
+ORDER BY 
+  month
+LIMIT 10;",,,
+Tỷ lệ cohort của người dùng MoMo trong năm 2024 là bao nhiêu?,Transaction_MoMo,Không duyệt,,,"WITH initial_users AS (
+    SELECT 
+        user_id,
+        MIN(DATE(date)) AS first_transaction_date
+    FROM 
+        `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE
+        EXTRACT(YEAR FROM DATE(date)) = 2024
+    GROUP BY 
+        user_id
+),
+cohort_activity AS (
+    SELECT
+        iu.user_id,
+        EXTRACT(MONTH FROM iu.first_transaction_date) AS cohort_month,
+        EXTRACT(MONTH FROM DATE(t.date)) AS active_month,
+        COUNT(DISTINCT t.tranid) AS transaction_count
+    FROM
+        initial_users AS iu
+    JOIN
+        `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS t
+    ON 
+        iu.user_id = t.user_id
+    WHERE
+        EXTRACT(YEAR FROM DATE(t.date)) = 2024
+    GROUP BY
+        iu.user_id, cohort_month, active_month
+)
+SELECT
+    cohort_month,
+    active_month,
+    COUNT(DISTINCT user_id) AS active_users,
+    COUNT(DISTINCT user_id) * 100.0 / SUM(COUNT(DISTINCT user_id)) OVER (PARTITION BY cohort_month) AS retention_rate
+FROM
+    cohort_activity
+GROUP BY
+    cohort_month, active_month
+ORDER BY
+    cohort_month, active_month;","The provided context does not contain information about the cohort definitions or the specific date range for 2024. Therefore, it is insufficient to generate the required SQL query.
+
+To accurately generate this query, please provide:
+
+1. Definition of what constitutes a ""cohort"" (e.g., users who made their first transaction in a particular month).
+2. The specific date range for 2024 (e.g., from January 1st, 2024 to December 31st, 2024).
+3. Specific metrics to determine the ""cohort rate"" (e.g., retention rate, churn rate).
+
+Once this information is provided, a more precise SQL query can be generated.","SELECT
+  EXTRACT(YEAR FROM date) AS year,
+  EXTRACT(MONTH FROM date) AS month,
+  COUNT(DISTINCT user_id) AS cohort_size
+FROM
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE
+  EXTRACT(YEAR FROM date) = 2024
+GROUP BY
+  year, month
+ORDER BY
+  year, month
+LIMIT 10;","SELECT 
+  COUNT(DISTINCT user_id) AS user_count, 
+  EXTRACT(YEAR FROM date) AS year 
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` 
+WHERE 
+  EXTRACT(YEAR FROM date) = 2024 
+GROUP BY 
+  year 
+ORDER BY 
+  year 
+LIMIT 10;",,,
+Số lượng người dùng từ 18 đến 22 tuổi thực hiện giao dịch vào tháng 4 năm 2024 là bao nhiêu?,Transaction_MoMo,Duyệt,,,"SELECT c.tranid, d.user_id, d.city, d.age, c.transaction_amount, c.transaction_type
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` c
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON c.user_id = d.user_id;","The provided context does not relate to the dataset, which contains transaction and demographic information. 
+
+To proceed with the dataset described, here are some example questions that might be asked related to it, along with the relevant tables:
+
+1. What is the total transaction amount per merchant?
+2. How many transactions occurred in each city?
+3. What is the average age of users by city group?
+4. Which transaction type is most common for each usecase?
+
+If you have any specific question related to the dataset, please provide it, and I'll help generate the appropriate SQL query.","SELECT 
+  date,
+  SUM(transaction_amount) AS total_transaction_amount
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+GROUP BY date
+ORDER BY date
+LIMIT 10;","Xin chào! Bạn có muốn tôi tìm hiểu thêm về cách tính tổng số giao dịch theo thành phố hoặc nhóm tuổi không? Nếu không, bạn có thể cung cấp thêm thông tin cụ thể về câu hỏi của mình.",,,
+Phân tích các giao dịch theo nguồn vốn trong tháng 3 năm 2024?,Transaction_MoMo,Không duyệt,,,"SELECT 
+    (COUNT(CASE WHEN voucher_amount > 0 THEN 1 END) / COUNT(*)) * 100 AS percentage_with_voucher
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`;","Based on the provided schema, here are some possible questions that could be analyzed:
+
+1. What are the total transaction amounts per use case?
+2. Which city has the highest number of users?
+3. What is the average transaction amount by age group?
+4. How much voucher amount is used by each source of fund?
+5. What is the total transaction amount for each merchant?
+6. What are the most common transaction types by city group?
+
+These questions leverage different aspects of the provided data, such as transaction details and user demographics. You can generate SQL queries accordingly to analyze these questions.","Certainly! Here are some suggestions for simple questions you can analyze with your data:
+
+1. Total number of transactions for each use case.
+2. Total transaction amount for each city.
+3. Average transaction amount by age group.
+4. Distribution of transaction types (CASHIN, CASHOUT, etc.).
+5. Average voucher amount by source of fund.
+
+Would you like a query for any of these analyses or do you have another specific question in mind?","Sure, here are some simple questions that might be interesting for analysis:
+1. What is the total transaction amount segmented by different use cases?
+2. What are the top 10 users with the highest transaction amounts?
+3. How does the average transaction amount vary across different age groups?
+4. What is the distribution of transaction types in each city?
+5. Which merchants have the highest total transaction amounts?
+6. How many transactions are funded by different sources of funds?
+7. What is the trend of transaction amounts over months?
+
+You can start with any of these questions and I can help to generate the corresponding SQL query. Which one would you like to start with, or do you have any other specific analysis in mind?",,,
+Tổng số lượng giao dịch P2P từ ví điện tử đến ví điện tử trong năm 2024 là bao nhiêu?,Transaction_MoMo,Kiểm tra lại,,,"SELECT
+    COUNT(*) AS total_transactions
+FROM
+    `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` trans
+JOIN 
+    `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` segment
+ON
+    trans.USER_ID = segment.USER_ID 
+    AND trans.MONTH = segment.MONTH
+    AND trans.CATE = segment.CATE
+WHERE
+    segment.USER_SEGMENT = 'Light' 
+    AND trans.CATE = 'ADS PAYMENT' 
+    AND trans.DATE BETWEEN '2024-04-01' AND '2024-06-30';","SELECT
+    SUM(TRANS) AS Total_Transactions
+FROM
+    `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE
+    USER_SEGMENT = 'Light'
+    AND CATE = 'ADS PAYMENT'
+    AND MONTH BETWEEN '2024-04-01' AND '2024-06-30';","SELECT 
+  COUNT(*) AS total_transactions
+FROM 
+  `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` us
+JOIN 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` trans
+ON 
+  us.USER_ID = trans.USER_ID 
+  AND us.MONTH = trans.DATE
+  AND us.CATE = trans.CATE
+WHERE 
+  us.CATE = 'ADS PAYMENT'
+  AND us.USER_SEGMENT = '3. Light'
+  AND EXTRACT(YEAR FROM us.MONTH) = 2024
+  AND EXTRACT(QUARTER FROM us.MONTH) = 2
+LIMIT 10
+","SELECT 
+  MONTH, 
+  SUM(TRANS) AS TOTAL_TRANS
+FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE USER_SEGMENT = '3. Light' 
+  AND CATE = 'ADS PAYMENT'
+  AND MONTH BETWEEN '2024-04-01' AND '2024-06-30'
+GROUP BY MONTH
+ORDER BY MONTH
+LIMIT 10
+",,,
+Có bao nhiêu người dùng từ Hồ Chí Minh thực hiện giao dịch cashout trong quý 2 năm 2024?,Transaction_MoMo,Duyệt,,,"WITH users_with_specific_amount AS (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE EXTRACT(MONTH FROM DATE) = 6 AND EXTRACT(YEAR FROM DATE) = 2024 AND GMV = 19000
+)
+
+SELECT SUM(GMV) AS total_gmv
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE EXTRACT(MONTH FROM DATE) = 4 AND EXTRACT(YEAR FROM DATE) = 2024
+  AND USER_ID IN (SELECT USER_ID FROM users_with_specific_amount)
+;","WITH USER_IDS_JUNE AS (
+    SELECT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE DATE >= '2024-06-01' AND DATE < '2024-07-01' AND GMV = 19000
+)
+SELECT SUM(GMV) AS TOTAL_GMV
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE >= '2024-04-01' AND DATE < '2024-05-01' 
+  AND USER_ID IN (SELECT USER_ID FROM USER_IDS_JUNE);","SELECT SUM(GMV) AS total_GMV
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-04-01' AND '2024-04-30'
+AND USER_ID IN (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE DATE BETWEEN '2024-06-01' AND '2024-06-30'
+    AND GMV = 19000
+);","SELECT SUM(GMV) AS total_gmv_april_2024
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-04-01' AND '2024-04-30'
+AND USER_ID IN (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE DATE BETWEEN '2024-06-01' AND '2024-06-30'
+    AND GMV = 19000
+)",,,
+Số lượng người dùng sử dụng voucher trong giao dịch trong tháng 5 năm 2024 là bao nhiêu?,Transaction_MoMo,Duyệt,,,"WITH active_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+  WHERE EXTRACT(MONTH FROM DATE) = 3 AND EXTRACT(YEAR FROM DATE) = 2024
+),
+inactive_users AS (
+  SELECT DISTINCT US.USER_ID, US.USER_SEGMENT
+  FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` US
+  LEFT JOIN active_users AU ON US.USER_ID = AU.USER_ID
+  WHERE AU.USER_ID IS NULL AND US.MONTH = '2024-03'
+)
+SELECT USER_SEGMENT, COUNT(USER_ID) AS INACTIVE_USER_COUNT
+FROM inactive_users
+GROUP BY USER_SEGMENT
+ORDER BY INACTIVE_USER_COUNT DESC;","SELECT 
+  usbc.USER_SEGMENT,
+  COUNT(DISTINCT t.USER_ID) AS inactive_users
+FROM 
+  `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` usbc
+LEFT JOIN 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` t
+ON 
+  usbc.USER_ID = t.USER_ID
+  AND t.DATE BETWEEN '2024-03-01' AND '2024-03-31'
+WHERE 
+  usbc.MONTH = '2024-03-01'
+  AND t.USER_ID IS NULL
+GROUP BY 
+  usbc.USER_SEGMENT;","SELECT 
+  u.USER_SEGMENT, 
+  COUNT(DISTINCT u.USER_ID) AS inactive_users
+FROM 
+  `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` u 
+LEFT JOIN 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` t 
+ON 
+  u.USER_ID = t.USER_ID 
+  AND FORMAT_DATE('%Y-%m', u.MONTH) = FORMAT_DATE('%Y-%m', t.DATE)
+WHERE 
+  u.MONTH = '2024-03-01' 
+  AND t.USER_ID IS NULL
+GROUP BY 
+  u.USER_SEGMENT
+ORDER BY 
+  inactive_users DESC
+LIMIT 10;","SELECT 
+  USER_SEGMENT, 
+  COUNT(DISTINCT USER_ID) AS inactive_user_count
+FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE MONTH = '2024-03-01' 
+  AND USER_SEGMENT IS NULL
+GROUP BY USER_SEGMENT
+ORDER BY inactive_user_count DESC
+LIMIT 10;",,,
+Phân tích lịch sử giao dịch của người dùng trong nhóm tuổi [5].36-50 trong quý 1 năm 2024?,Transaction_MoMo,Kiểm tra lại,,,"SELECT COUNT(DISTINCT USER_ID) AS user_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+  AND MONEY_SOURCE = 'NHLK'
+  AND USER_ID NOT IN (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+      AND MONEY_SOURCE != 'NHLK'
+  );","SELECT COUNT(DISTINCT USER_ID) AS user_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31' 
+  AND MONEY_SOURCE = 'NHLK';","SELECT USER_ID
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+AND MONEY_SOURCE = 2
+GROUP BY USER_ID
+HAVING COUNT(DISTINCT MONEY_SOURCE) = 1
+ORDER BY USER_ID
+LIMIT 10;","SELECT 
+  USER_ID
+FROM 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE 
+  MONEY_SOURCE = 2
+  AND DATE >= '2024-02-01' 
+  AND DATE <= '2024-05-31'
+GROUP BY 
+  USER_ID",,,
+So sánh tổng số lượng giao dịch giữa các nhóm tuổi khác nhau trong năm 2024.,Transaction_MoMo,Kiểm tra lại,,,"SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26'
+  AND PARTNER_CODE = 'Facebook Ads';","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26' AND SERVICE_CODE = 'Facebook ads';","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26'
+  AND PARTNER_CODE = 'Facebook'
+LIMIT 10;","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26' AND MERCHANT = 'FACEBOOK ADS'",,,
+What is the total amount of transactions made in September 2024?,Airtime,Duyệt,,,,,,,,,
+How many successful transactions were made by new users in August 2024?,Airtime,Kiểm tra lại,,,,,,,,,
+Tổng số tiền đã chi tiêu bởi người dùng nữ trong tháng 9 năm 2024 là bao nhiêu?,Airtime,Kiểm tra lại,,,,,,,,,
+What is the average transaction amount for the age group 23_to_27 in October 2024?,Airtime,Kiểm tra lại,,,,,,,,,
+How many recover users (segment_user) churned for more than 4 months in 2024?,Airtime,Kiểm tra lại,,,,,,,,,
+Tổng doanh thu từ các giao dịch sử dụng mã khuyến mãi trong năm 2024 là bao nhiêu?,Airtime,Duyệt,,,,,,,,,
+What is the most popular service category by transaction quantity in November 2024?,Airtime,Kiểm tra lại,,,,,,,,,
+Số lượng giao dịch thất bại trong tháng 10 năm 2023 là bao nhiêu?,Airtime,Không duyệt,,,,,,,,,
+How many male users are from Hanoi and made transactions in October 2024?,Airtime,Không duyệt,,,,,,,,,
+Xu hướng doanh thu hàng tháng của dịch vụ COMBO trong năm 2024 như thế nào?,Airtime,Kiểm tra lại,,,,,,,,,
+What is the total GMV grouped by different service types in the month of February 2024?,Airtime,Kiểm tra lại,,,,,,,,,
+"Trong tháng 3 năm 2023, số lượng giao dịch thất bại (statusid = 6) là bao nhiêu?",Airtime,Kiểm tra lại,,,,,,,,,
+What is the average transaction amount for users under the age group 23_to_27 in November 2024?,Airtime,Không duyệt,,,,,,,,,
+Tổng doanh thu từ các giao dịch sử dụng khuyến mãi chiếm nhiều trong tổng giá trị GMV vào năm 2024 là bao nhiêu?,Airtime,Không duyệt,,,,,,,,,
+How many transactions were made using the momo wallet as the payment method in December 2024?,Airtime,Kiểm tra lại,,,,,,,,,
+Số lượng giao dịch của người dùng ở khu vực Hồ Chí Minh trong tháng 10 năm 2024 là bao nhiêu?,Airtime,Duyệt,,,,,,,,,
+"What is the average amount of successful transactions (statusid = 2) by users segmented as ""Loyal Customers"" in the first quarter of 2024?",Airtime,Kiểm tra lại,,,,,,,,,
+Tổng số đơn vị sản phẩm được nạp trong các giao dịch dịch vụ Topup vào tháng 4 năm 2024 là bao nhiêu?,Airtime,Duyệt,,,,,,,,,
+"How many transactions were made by users identified as ""hardcore"" in the month of January 2024?",Airtime,Duyệt,,,,,,,,,
+What is the total AOV for recover_users with a churn_duration above 3 months in the year 2023?,Airtime,Kiểm tra lại,,,,,,,,,
+Tổng số giao dịch (transactions) của người dùng được xác định là 'Heavy' trong danh mục 'RETAIL' vào tháng 8 năm 2024.,DLS ONLINE,Kiểm tra lại,,,,,,,,,
+Tổng GMV của người dùng trong danh mục 'LOGISTICS' tại Hà Nội vào tháng 7 năm 2024.,DLS ONLINE,Kiểm tra lại,,,,,,,,,
+Số lượng giao dịch được thực hiện qua nguồn tiền là 'MoMo wallet' trong tháng 6 năm 2024.,DLS ONLINE,Kiểm tra lại,,,,,,,,,
+Tổng số tiền hoàn lại (refund amount) của giao dịch 'billpay' từ tháng 2/2024 đến tháng 5/2024.,DLS ONLINE,Kiểm tra lại,,,,,,,,,
+Doanh thu (revenue) của dịch vụ 'APPLE ICLOUD' vào tháng 6 năm 2024.,DLS ONLINE,Kiểm tra lại,,,,,,,,,
+Tổng số GMV và Transactions của nhóm Medium User tại thành phố Hồ Chí Minh trong tháng 3 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Số người dùng trung thành (Cheating = 'NOT CHEAT') với danh mục 'SME OFFLINE' trong quý 2 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Số người dùng đã hoàn thành 'KYC' vào tháng 10 năm 2024.,DLS ONLINE,Duyệt,,,,,,,,,
+Tổng GMV của các người dùng nhóm Heavy trong danh mục 'APPLICATION STORE' vào tháng 8 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Số người dùng sử dụng chính sách 'Cashback' trong tháng 9 năm 2024.,DLS ONLINE,Kiểm tra lại,,,,,,,,,
+Tổng số giao dịch của người dùng nhóm 'Heavy' trong danh mục 'RETAIL' vào tháng 8 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Tổng GMV của người dùng trong danh mục 'LOGISTICS' tại Hà Nội vào tháng 7 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Số lượng giao dịch được thực hiện qua nguồn tiền là 'MoMo wallet' trong tháng 6 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Tổng số tiền hoàn lại của giao dịch 'billpay' từ tháng 2/2024 đến tháng 5/2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Doanh thu của dịch vụ 'APPLE ICLOUD' vào tháng 6 năm 2024.,DLS ONLINE,Kiểm tra lại,,,,,,,,,
+Tổng GMV và lượng giao dịch của nhóm người dùng 'Medium' tại thành phố Hồ Chí Minh trong tháng 3 năm 2024.,DLS ONLINE,Kiểm tra lại,,,,,,,,,
+Số người dùng trung thành với danh mục 'SME OFFLINE' trong quý 2 năm 2024.,DLS ONLINE,Duyệt,,,,,,,,,
+Số người dùng đã hoàn thành 'KYC' vào tháng 10 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Tổng GMV của nhóm người dùng 'Heavy' trong danh mục 'APPLICATION STORE' vào tháng 8 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+Số người dùng sử dụng chính sách 'Cashback' trong tháng 9 năm 2024.,DLS ONLINE,Không duyệt,,,,,,,,,
+"What was the total traffic pool for each touchpoint group on October 2, 2024?",Promotion,Duyệt,,,,,,,,,
+"How many unique users interacted with the PROMOTION_HUB touchpoint group on October 4, 2024?",Promotion,Duyệt,,,,,,,,,
+"Which touchpoint group had the highest number of user pool on October 8, 2024?",Promotion,Duyệt,,,,,,,,,
+"How many sessions involved voucher collection from the SMART_WIDGET touchpoint group on October 7, 2024?",Promotion,Kiểm tra lại,,,,,,,,,
+Can you provide a trendline for the traffic pool across all touchpoint groups for the first week of October 2024?,Promotion,Kiểm tra lại,,,,,,,,,
+What was the average number of user interactions per touchpoint group in the first week of October 2024?,Promotion,,,,,,,,,,
+"How did the number of unique users collecting vouchers on October 7, 2024, compare between SMART_WIDGET and PROMOTION_HUB touchpoint groups?",Promotion,,,,,,,,,,
+"Which touchpoint group had the highest number of transactions associated with voucher redemption on October 5, 2024?",Promotion,,,,,,,,,,
+"How many unique promotion types were redeemed from the MY_VOUCHER touchpoint group on October 8, 2024?",Promotion,,,,,,,,,,
+What was the total number of sessions for the POS touchpoint group across all observed dates in the dataset?,Promotion,,,,,,,,,,
+What is the average number of unique users who interacted with each touchpoint group in October 2024?,Promotion,,,,,,,,,,
+"How many sessions resulted in voucher collections for each touchpoint group on October 5, 2024?",Promotion,,,,,,,,,,
+"What are the total pages or screen views for the ""PROMOTION_HUB"" touchpoint group over the month of October 2024?",Promotion,,,,,,,,,,
+"How many unique users collected vouchers from each touchpoint group on October 7, 2024?",Promotion,,,,,,,,,,
+"Which touchpoint group had the highest number of interaction events on October 4, 2024?",Promotion,,,,,,,,,,
+"What is the trendline of user interactions in the ""SMART_WIDGET"" touchpoint group over the first week of October 2024?",Promotion,,,,,,,,,,
+"How many unique users viewed the ""MY_VOUCHER"" touchpoint group on October 8, 2024?",Promotion,,,,,,,,,,
+Which touchpoint group had the most significant decrease in daily engaged users (DEU) in the past month?,Promotion,,,,,,,,,,
+"How many transactions were associated with voucher redemptions from the ""POS"" touchpoint group on October 5, 2024?",Promotion,,,,,,,,,,
+"In the month of October 2024, how many unique promotion types were redeemed each day across all touchpoint groups?",Promotion,,,,,,,,,,
+Số lượng người dùng tương tác trung bình với từng nhóm touchpoint vào tháng 10 năm 2024 là bao nhiêu?,Promotion,,,,,,,,,,
+Tổng số phiên thu thập voucher với từng nhóm touchpoint vào ngày 5 tháng 10 năm 2024 là bao nhiêu?,Promotion,,,,,,,,,,
+"Tổng số lượt xem trang hoặc màn hình của nhóm touchpoint ""PROMOTION_HUB"" trong tháng 10 năm 2024 là bao nhiêu?",Promotion,,,,,,,,,,
+Có bao nhiêu người dùng duy nhất thu thập voucher từ từng nhóm touchpoint vào ngày 7 tháng 10 năm 2024?,Promotion,,,,,,,,,,
+Nhóm touchpoint nào có số lượng sự kiện tương tác cao nhất vào ngày 4 tháng 10 năm 2024?,Promotion,,,,,,,,,,
+"Xu hướng tương tác của người dùng trong nhóm touchpoint ""SMART_WIDGET"" trong tuần đầu tiên của tháng 10 năm 2024 là gì?",Promotion,,,,,,,,,,
+"Có bao nhiêu người dùng duy nhất đã xem nhóm touchpoint ""MY_VOUCHER"" vào ngày 8 tháng 10 năm 2024?",Promotion,,,,,,,,,,
+Nhóm touchpoint nào có sự suy giảm đáng kể nhất về người dùng tương tác hàng ngày (DEU) trong tháng qua?,Promotion,,,,,,,,,,
+"Có bao nhiêu giao dịch liên quan đến việc đổi voucher từ nhóm touchpoint ""POS"" vào ngày 5 tháng 10 năm 2024?",Promotion,,,,,,,,,,
+"Trong tháng 10 năm 2024, có bao nhiêu loại khuyến mãi duy nhất đã được đổi mỗi ngày trên tất cả các nhóm touchpoint?",Promotion,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,

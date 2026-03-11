@@ -1,0 +1,1453 @@
+ID,Question (NL),Category,Difficulty,Target Tables,Target Columns,Business Rules / Notes,Gold SQL,Gold Result (summary),Expected Row Count,Dataset Split,Created By,Created Date,DOMAIN
+Q1,"Trong 30 ngay truoc giai ngan, user thuong access bao nhieu lan? Phan bo theo bucket.",Subquery,Moderate,"momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO, momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT","AGENT_ID, LOAN_ID, DISBURSED_TIME, DISBURSED_DATE, LOAN_AMOUNT, FINAL_SEGMENT_USER, EVENT_TIME",Join ENTRY_POINT within 30 days before DISBURSED_TIME using TIMESTAMP_SUB. Count accesses and distinct access days per LOAN_ID. Bucket into 1/2/3/4-5/6-10/11-20/21-50/50+.,"WITH disbursed_feb AS (SELECT AGENT_ID, LOAN_ID, DISBURSED_TIME, LOAN_AMOUNT, FINAL_SEGMENT_USER FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL), access_counts AS (SELECT d.LOAN_ID, d.AGENT_ID, d.FINAL_SEGMENT_USER, d.LOAN_AMOUNT, COUNT(*) AS access_count, COUNT(DISTINCT DATE(e.EVENT_TIME)) AS access_days FROM disbursed_feb d JOIN `momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT` e ON d.AGENT_ID=e.AGENT_ID AND e.EVENT_TIME<d.DISBURSED_TIME AND e.EVENT_TIME>=TIMESTAMP_SUB(d.DISBURSED_TIME, INTERVAL 30 DAY) GROUP BY d.LOAN_ID, d.AGENT_ID, d.FINAL_SEGMENT_USER, d.LOAN_AMOUNT) SELECT CASE WHEN access_count=1 THEN '01_1 lan' WHEN access_count=2 THEN '02_2 lan' WHEN access_count=3 THEN '03_3 lan' WHEN access_count BETWEEN 4 AND 5 THEN '04_4-5 lan' WHEN access_count BETWEEN 6 AND 10 THEN '05_6-10 lan' WHEN access_count BETWEEN 11 AND 20 THEN '06_11-20 lan' WHEN access_count BETWEEN 21 AND 50 THEN '07_21-50 lan' ELSE '08_50+ lan' END AS access_bucket, COUNT(*) AS loans, ROUND(100.0*COUNT(*)/SUM(COUNT(*)) OVER(),1) AS pct, ROUND(AVG(access_count),1) AS avg_accesses, ROUND(AVG(access_days),1) AS avg_days, ROUND(AVG(LOAN_AMOUNT)/1e6,1) AS avg_loan_mm FROM access_counts GROUP BY access_bucket ORDER BY access_bucket","88.4% user access >=2 lan. Top bucket: 6-10 lan (19.6%), 11-20 lan (18.0%). Avg loan tang tu 15.7M (1 lan) den 19.4M (50+ lan). Chi 11.6% quyet dinh ngay lan dau.",8,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q2,Tính last touchpoint user giải ngân tháng 2,Window + Complex,Complex,"momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO, momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT","AGENT_ID, LOAN_ID, DISBURSED_TIME, DISBURSED_DATE, LOAN_AMOUNT, ACCESSED_SOURCE, EVENT_TIME, ETL_DATE","Giải ngân = DISBURSED_DATE IS NOT NULL (cả STATUS DISBURSED và LIQUIDATED). Last touchpoint = ENTRY_POINT row có EVENT_TIME lớn nhất trước DISBURSED_TIME, match bằng AGENT_ID. ETL_DATE >= 2026-01-01 để giới hạn scan.","WITH disbursed_feb AS (
+    SELECT AGENT_ID, LOAN_ID, DISBURSED_TIME, DISBURSED_DATE, LENDER_ID, LOAN_AMOUNT, FINAL_SEGMENT_USER
+    FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO`                                                                                                                                                                                                                              WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28'                                                                                                                                                                                                                       AND DISBURSED_DATE IS NOT NULL                                                                                                                                                                                                                                             ),                                                                                                                                                                                                                                                                             entry_ranked AS (                                                                                                                                                                                                                                                                SELECT e.AGENT_ID, e.EVENT_TIME, e.ACCESSED_SOURCE, d.LOAN_ID, d.DISBURSED_TIME, d.LENDER_ID, d.LOAN_AMOUNT, d.FINAL_SEGMENT_USER,
+      ROW_NUMBER() OVER (PARTITION BY d.LOAN_ID ORDER BY e.EVENT_TIME DESC) AS rn                                                                                                                                                                                                  FROM disbursed_feb d                                                                                                                                                                                                                                                           JOIN `momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT` e                                                                                                                                                                                                                            ON d.AGENT_ID = e.AGENT_ID                                                                                                                                                                                                                                                     AND e.EVENT_TIME < d.DISBURSED_TIME
+      AND e.ETL_DATE >= '2026-01-01'
+  )                                                                                                                                                                                                                                                                              SELECT ACCESSED_SOURCE,
+    COUNT(*) AS loan_count,
+    COUNT(DISTINCT AGENT_ID) AS unique_users,
+    ROUND(SUM(LOAN_AMOUNT)/1e9,1) AS total_amount_bn,                                                                                                                                                                                                                              ROUND(AVG(LOAN_AMOUNT)/1e6,1) AS avg_loan_mm,                                                                                                                                                                                                                                  ROUND(100.0*COUNT(*)/SUM(COUNT(*)) OVER(),1) AS pct                                                                                                                                                                                                                          FROM entry_ranked WHERE rn=1                                                                                                                                                                                                                                                   GROUP BY ACCESSED_SOURCE ORDER BY loan_count DESC ","Top 3: tabbar_home 66.6% (79,780 loans), app_all_service_top 12.8% (15,374), financial_hub 5.8% (6,999). Top 4 sources = 90.4% total disbursements.",80.0,eval,DA-SQL Agent,,VAYNHANH
+Q3,Tinh last touchpoint ma user giai ngan Vay Nhanh thang 2 chia theo final segment user,Window + Complex,Complex,"momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO, momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT","AGENT_ID, LOAN_ID, DISBURSED_TIME, DISBURSED_DATE, LOAN_AMOUNT, FINAL_SEGMENT_USER, ACCESSED_SOURCE, EVENT_TIME, ETL_DATE","Last touchpoint = ENTRY_POINT row with max EVENT_TIME before DISBURSED_TIME, matched by AGENT_ID. Breakdown by FINAL_SEGMENT_USER (NEWLOAN, RELOAN, REPEATED, FM_MERCHANT_NEW, FM_MERCHANT_REPEATED, FM_STUDENT_NEW). ETL_DATE >= 2026-01-01 to limit scan. HAVING COUNT(*) >= 10 to filter noise.","WITH disbursed_feb AS (SELECT AGENT_ID, LOAN_ID, DISBURSED_TIME, LOAN_AMOUNT, FINAL_SEGMENT_USER FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL), entry_ranked AS (SELECT e.AGENT_ID, e.ACCESSED_SOURCE, d.LOAN_ID, d.LOAN_AMOUNT, d.FINAL_SEGMENT_USER, ROW_NUMBER() OVER (PARTITION BY d.LOAN_ID ORDER BY e.EVENT_TIME DESC) AS rn FROM disbursed_feb d JOIN `momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT` e ON d.AGENT_ID = e.AGENT_ID AND e.EVENT_TIME < d.DISBURSED_TIME AND e.ETL_DATE >= '2026-01-01') SELECT FINAL_SEGMENT_USER, ACCESSED_SOURCE, COUNT(*) AS loans, COUNT(DISTINCT AGENT_ID) AS users, ROUND(SUM(LOAN_AMOUNT)/1e9,2) AS amount_bn, ROUND(AVG(LOAN_AMOUNT)/1e6,1) AS avg_mm, ROUND(100.0*COUNT(*)/SUM(COUNT(*)) OVER(PARTITION BY FINAL_SEGMENT_USER),1) AS pct_within_segment FROM entry_ranked WHERE rn=1 GROUP BY FINAL_SEGMENT_USER, ACCESSED_SOURCE HAVING COUNT(*)>=10 ORDER BY FINAL_SEGMENT_USER, loans DESC","RELOAN: tabbar_home 69.7%, app_all_service 11.6%, search 5.1%. NEWLOAN: tabbar_home 61.6%, app_all_service 16.0%, financial_hub 10.6%. REPEATED: tabbar_home 64.3%, collection channels 5.9%. RELOAN depends more on Home; NEWLOAN explores via Financial Hub; Collection channels almost exclusively RELOAN+REPEATED.",80.0,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q4,"So sanh so lan access va so ngay access truoc giai ngan giua NEWLOAN, RELOAN, REPEATED?",JOIN,Moderate,"momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO, momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT","AGENT_ID, LOAN_ID, DISBURSED_TIME, DISBURSED_DATE, FINAL_SEGMENT_USER, EVENT_TIME","Count accesses + distinct days within 30d before disbursement per loan. Use APPROX_QUANTILES for median. Filter FINAL_SEGMENT_USER IN (NEWLOAN, RELOAN, REPEATED).","WITH disbursed_feb AS (SELECT AGENT_ID, LOAN_ID, DISBURSED_TIME, FINAL_SEGMENT_USER FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL AND FINAL_SEGMENT_USER IN ('NEWLOAN','RELOAN','REPEATED')), access_counts AS (SELECT d.LOAN_ID, d.FINAL_SEGMENT_USER, COUNT(*) AS access_count, COUNT(DISTINCT DATE(e.EVENT_TIME)) AS access_days FROM disbursed_feb d JOIN `momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT` e ON d.AGENT_ID=e.AGENT_ID AND e.EVENT_TIME<d.DISBURSED_TIME AND e.EVENT_TIME>=TIMESTAMP_SUB(d.DISBURSED_TIME, INTERVAL 30 DAY) GROUP BY d.LOAN_ID, d.FINAL_SEGMENT_USER) SELECT FINAL_SEGMENT_USER, COUNT(*) AS loans, ROUND(AVG(access_count),1) AS avg_accesses, ROUND(APPROX_QUANTILES(access_count,100)[OFFSET(50)],0) AS median_accesses, ROUND(AVG(access_days),1) AS avg_distinct_days, ROUND(APPROX_QUANTILES(access_days,100)[OFFSET(50)],0) AS median_days FROM access_counts GROUP BY FINAL_SEGMENT_USER ORDER BY loans DESC","RELOAN: median 10 accesses / 5 days. NEWLOAN: median 4 accesses / 2 days. REPEATED: median 9 / 4 days. New users decide fast (2 days), reloan users browse more (5 days).",3.0,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q5,Cohort liquidation theo thang: ty le reloan trong 30/60/90 ngay sau khi tat toan?,Multi-step,Moderate,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"AGENT_ID, LOAN_ID, LIQUIDATED_DATE, DISBURSED_DATE, LOAN_AMOUNT",Liquidated = LIQUIDATED_DATE IS NOT NULL (NEVER use STATUS). Self-join: find next DISBURSED_DATE > LIQUIDATED_DATE within 90 days. ROW_NUMBER to get first reloan only. LEFT JOIN to keep non-reloans. Jan/Feb 2026 cohorts immature (not enough time for 60d/90d window).,"WITH liquidations AS (SELECT AGENT_ID, LOAN_ID AS liq_loan_id, LIQUIDATED_DATE, LENDER_ID AS liq_lender, LOAN_AMOUNT AS liq_amount, FORMAT_DATE('%Y-%m', LIQUIDATED_DATE) AS liq_month FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE LIQUIDATED_DATE IS NOT NULL AND LIQUIDATED_DATE BETWEEN '2025-07-01' AND '2026-02-28'), next_loan AS (SELECT l.*, n.LOAN_ID AS reloan_id, n.DISBURSED_DATE AS reloan_date, n.LOAN_AMOUNT AS reloan_amount, DATE_DIFF(n.DISBURSED_DATE, l.LIQUIDATED_DATE, DAY) AS days_to_reloan, ROW_NUMBER() OVER (PARTITION BY l.AGENT_ID, l.liq_loan_id ORDER BY n.DISBURSED_DATE) AS rn FROM liquidations l LEFT JOIN `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` n ON l.AGENT_ID=n.AGENT_ID AND n.DISBURSED_DATE>l.LIQUIDATED_DATE AND n.DISBURSED_DATE<=DATE_ADD(l.LIQUIDATED_DATE, INTERVAL 90 DAY) AND n.DISBURSED_DATE IS NOT NULL) SELECT liq_month, COUNT(DISTINCT CONCAT(AGENT_ID, liq_loan_id)) AS total_liquidations, COUNTIF(rn=1 AND days_to_reloan<=30) AS reloan_30d, COUNTIF(rn=1 AND days_to_reloan<=60) AS reloan_60d, COUNTIF(rn=1 AND days_to_reloan<=90) AS reloan_90d, ROUND(100.0*COUNTIF(rn=1 AND days_to_reloan<=30)/COUNT(DISTINCT CONCAT(AGENT_ID, liq_loan_id)),1) AS rate_30d, ROUND(100.0*COUNTIF(rn=1 AND days_to_reloan<=60)/COUNT(DISTINCT CONCAT(AGENT_ID, liq_loan_id)),1) AS rate_60d, ROUND(100.0*COUNTIF(rn=1 AND days_to_reloan<=90)/COUNT(DISTINCT CONCAT(AGENT_ID, liq_loan_id)),1) AS rate_90d FROM next_loan WHERE rn=1 OR rn IS NULL GROUP BY liq_month ORDER BY liq_month",Mature cohorts (Jul-Nov 2025): 90d reloan rate stable 58.7-62.1%. 30d rate peaked Oct at 47.9%. Feb 2026 immature at 39.3% (30d only). ~60% users reloan within 90 days of paying off.,8.0,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q6,"Ti le duoc duyet (disburse/submit) chia theo segment, lender, credit score range, thang (Jul 2025 - Feb 2026)?",Subquery,Moderate,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"SUBMITTED_DATE, DISBURSED_DATE, FINAL_SEGMENT_USER, LENDER_ID, MOMO_CREDIT_SCORE","Submitted = SUBMITTED_DATE IS NOT NULL. Disbursed = DISBURSED_DATE IS NOT NULL. Credit score buckets: <606, 606-665, 666-690, 691-715, 716-740, 741-765, 766+. NEVER use STATUS column.","WITH base AS (SELECT FORMAT_DATE('%Y-%m', SUBMITTED_DATE) AS submit_month, FINAL_SEGMENT_USER, LENDER_ID, CASE WHEN MOMO_CREDIT_SCORE < 606 THEN '01 <606' WHEN MOMO_CREDIT_SCORE BETWEEN 606 AND 665 THEN '02 606-665' WHEN MOMO_CREDIT_SCORE BETWEEN 666 AND 690 THEN '03 666-690' WHEN MOMO_CREDIT_SCORE BETWEEN 691 AND 715 THEN '04 691-715' WHEN MOMO_CREDIT_SCORE BETWEEN 716 AND 740 THEN '05 716-740' WHEN MOMO_CREDIT_SCORE BETWEEN 741 AND 765 THEN '06 741-765' WHEN MOMO_CREDIT_SCORE >= 766 THEN '07 766+' ELSE '99 NULL' END AS score_range, CASE WHEN DISBURSED_DATE IS NOT NULL THEN 1 ELSE 0 END AS is_disbursed FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE SUBMITTED_DATE IS NOT NULL AND SUBMITTED_DATE BETWEEN '2025-07-01' AND '2026-02-28') SELECT submit_month, FINAL_SEGMENT_USER AS segment, LENDER_ID AS lender, score_range, COUNT(*) AS submitted, SUM(is_disbursed) AS disbursed, ROUND(100.0*SUM(is_disbursed)/COUNT(*),1) AS approval_pct FROM base GROUP BY submit_month, FINAL_SEGMENT_USER, LENDER_ID, score_range ORDER BY submit_month, FINAL_SEGMENT_USER, LENDER_ID, score_range","Overall 65-73% by month (peak Oct 73.1%, low Feb 65.3%). RELOAN 78.4% vs NEWLOAN 58.2%. MBV 76.1% > VIET_CREDIT 71.2% > AMBER 67% > MCREDIT 64.5%. Score <606: 38.9%, 666+: 78-84%. Approval rate declining as submit volume grows.",20.0,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q7,Tong gia tri giai ngan va gia tri trung binh moi khoan Vay Nhanh thang 2/2026?,Aggregation,Simple,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"DISBURSED_DATE, DISBURSED_AMOUNT",DISBURSED_AMOUNT = LOAN_AMOUNT in this table. Use DISBURSED_DATE for time filter.,"SELECT ROUND(SUM(DISBURSED_AMOUNT)/1e9,1) AS total_bn, ROUND(AVG(DISBURSED_AMOUNT)/1e6,1) AS avg_mm FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL","Total 2,515.2 bn VND, avg 17.6M per loan",1.0,eval,DA-SQL Agent,2026-03-10,VAYNHANH
+Q8,So sanh giai ngan Vay Nhanh thang 1 va thang 2/2026?,Aggregation,Simple,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"DISBURSED_DATE, AGENT_ID, DISBURSED_AMOUNT",Feb has fewer days + Tet holiday. MoM comparison expected to show decline.,"SELECT FORMAT_DATE('%Y-%m', DISBURSED_DATE) AS month, COUNT(*) AS loans, COUNT(DISTINCT AGENT_ID) AS users, ROUND(SUM(DISBURSED_AMOUNT)/1e9,1) AS amount_bn, ROUND(AVG(DISBURSED_AMOUNT)/1e6,1) AS avg_mm FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-01-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL GROUP BY month ORDER BY month","Jan 171,573 loans / 3,108.4bn -> Feb 143,176 loans / 2,515.2bn (-16.5% loans, -19.1% amount)",2.0,eval,DA-SQL Agent,2026-03-10,VAYNHANH
+Q9,Phan bo so lan giai ngan cua user Vay Nhanh thang 2/2026?,Aggregation,Simple,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"DISBURSED_COUNT_TIME, DISBURSED_AMOUNT, DISBURSED_DATE",DISBURSED_COUNT_TIME = ordinal loan number per user. Higher count = more experienced borrower.,"SELECT CASE WHEN DISBURSED_COUNT_TIME=1 THEN '1st loan' WHEN DISBURSED_COUNT_TIME=2 THEN '2nd loan' WHEN DISBURSED_COUNT_TIME=3 THEN '3rd loan' WHEN DISBURSED_COUNT_TIME BETWEEN 4 AND 5 THEN '4-5th loan' WHEN DISBURSED_COUNT_TIME BETWEEN 6 AND 10 THEN '6-10th loan' ELSE '11+ loan' END AS loan_sequence, MIN(DISBURSED_COUNT_TIME) AS sort_key, COUNT(*) AS loans, ROUND(AVG(DISBURSED_AMOUNT)/1e6,1) AS avg_mm, ROUND(100.0*COUNT(*)/SUM(COUNT(*)) OVER(),1) AS pct FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL GROUP BY loan_sequence ORDER BY sort_key","1st loan 34.5% (avg 13.5M), 2nd 21.7% (avg 17.8M), 3rd 14.3% (avg 21.3M). Avg increases with sequence.",1.0,eval,DA-SQL Agent,2026-03-10,VAYNHANH
+Q10,Top 10 ly do tu choi don vay Vay Nhanh thang 2/2026?,Aggregation,Simple,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"REJECTED_REASON, CREATED_DATE","REJECTED_REASON populated regardless of STATUS. Filter by CREATED_DATE. Top reasons: RJ_DEDUP, blacklist, bad debt.","SELECT REJECTED_REASON, COUNT(*) AS cnt FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE CREATED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND REJECTED_REASON IS NOT NULL AND REJECTED_REASON != '' GROUP BY REJECTED_REASON ORDER BY cnt DESC LIMIT 10","Top 3: RJ_DEDUP (10,135), FASTMONEY_REF_BLACKLIST (9,170), RJ_BAD_DEBT (6,893)",10.0,eval,DA-SQL Agent,2026-03-10,VAYNHANH
+Q11,So luong user duy nhat giai ngan Vay Nhanh thang 2/2026 va trung binh moi user vay bao nhieu khoan?,Aggregation,Simple,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"AGENT_ID, DISBURSED_DATE",User = AGENT_ID (not BORROWER_ID). Loans per user = total_loans / unique_users.,"SELECT COUNT(DISTINCT AGENT_ID) AS unique_borrowers, COUNT(*) AS total_loans, ROUND(COUNT(*)*1.0/COUNT(DISTINCT AGENT_ID),2) AS loans_per_user FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL","126,248 unique users, 143,176 loans, 1.13 loans/user",1.0,eval,DA-SQL Agent,2026-03-10,VAYNHANH
+Q12,Phan bo ky han (tenor) cac khoan vay Vay Nhanh thang 2/2026?,Aggregation,Simple,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"TENOR, DISBURSED_AMOUNT, DISBURSED_DATE",Tenor in months. Short-term (1-6 months) dominates. Longer tenor = higher avg loan.,"SELECT CAST(TENOR AS INT64) AS tenor_months, COUNT(*) AS loans, ROUND(AVG(DISBURSED_AMOUNT)/1e6,1) AS avg_mm, ROUND(100.0*COUNT(*)/SUM(COUNT(*)) OVER(),1) AS pct FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL GROUP BY tenor_months ORDER BY loans DESC","6-month tenor dominates (28.7%, avg 7.2M), then 9-month (15.5%), 12-month (13.5%). 36-month avg 62M.",1.0,eval,DA-SQL Agent,2026-03-10,VAYNHANH
+Q13,Giai ngan Vay Nhanh theo ngay trong tuan thang 2/2026?,Aggregation,Simple,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"DISBURSED_DATE, DISBURSED_AMOUNT",Use EXTRACT(DAYOFWEEK) or FORMAT_DATE('%A'). Weekend typically lower.,"SELECT FORMAT_DATE('%A', DISBURSED_DATE) AS day_of_week, EXTRACT(DAYOFWEEK FROM DISBURSED_DATE) AS dow_num, COUNT(*) AS loans, ROUND(SUM(DISBURSED_AMOUNT)/1e9,2) AS amount_bn, ROUND(AVG(DISBURSED_AMOUNT)/1e6,1) AS avg_mm FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL GROUP BY day_of_week, dow_num ORDER BY dow_num",7 rows. Need to run to get exact numbers.,1.0,eval,DA-SQL Agent,2026-03-10,VAYNHANH
+Q14,Thoi gian trung binh tu submit den giai ngan Vay Nhanh thang 2/2026 theo lender?,Aggregation,Moderate,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"LENDER_ID, SUBMITTED_TIME, DISBURSED_TIME, DISBURSED_DATE","Use TIMESTAMP_DIFF(DISBURSED_TIME, SUBMITTED_TIME, MINUTE). SUBMITTED_TIME must not be null.","SELECT LENDER_ID, COUNT(*) AS loans, ROUND(AVG(TIMESTAMP_DIFF(DISBURSED_TIME, SUBMITTED_TIME, MINUTE)),1) AS avg_minutes, ROUND(APPROX_QUANTILES(TIMESTAMP_DIFF(DISBURSED_TIME, SUBMITTED_TIME, MINUTE),100)[OFFSET(50)],1) AS median_minutes FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL AND SUBMITTED_TIME IS NOT NULL GROUP BY LENDER_ID ORDER BY loans DESC","VIET_CREDIT avg 2.1min (median 2), MCREDIT avg 6.3min (median 0), MBV avg 2.3min (median 1), AMBER avg 2.4min (median 2)",1.0,eval,DA-SQL Agent,2026-03-10,VAYNHANH
+Q15,Tan suat truy cap theo ngay truoc giai ngan (day 0 den day -30) cua user Vay Nhanh thang 2?,JOIN,Moderate,"momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO, momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT","AGENT_ID, LOAN_ID, DISBURSED_TIME, DISBURSED_DATE, EVENT_TIME","TIMESTAMP_DIFF(DISBURSED_TIME, EVENT_TIME, DAY) = days before disbursement. Day 0 = same day as disbursement. Join within 30-day window.","WITH disbursed_feb AS (SELECT AGENT_ID, LOAN_ID, DISBURSED_TIME FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL) SELECT TIMESTAMP_DIFF(d.DISBURSED_TIME, e.EVENT_TIME, DAY) AS days_before_disbursement, COUNT(*) AS total_accesses, COUNT(DISTINCT d.LOAN_ID) AS unique_loans FROM disbursed_feb d JOIN `momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT` e ON d.AGENT_ID=e.AGENT_ID AND e.EVENT_TIME<d.DISBURSED_TIME AND e.EVENT_TIME>=TIMESTAMP_SUB(d.DISBURSED_TIME, INTERVAL 30 DAY) GROUP BY days_before_disbursement ORDER BY days_before_disbursement","Day 0 spike: 205K accesses (49,707 loans = 43%). Day 1: 103K (-50%). Day 7-28: plateau ~40-56K accesses/day. Pattern: sharp spike day 0-1, then long flat tail.",30,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q16,"So sanh so lan access va so ngay access truoc giai ngan giua NEWLOAN, RELOAN, REPEATED?",Subquery,Complex,"momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO, momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT","AGENT_ID, LOAN_ID, DISBURSED_TIME, DISBURSED_DATE, FINAL_SEGMENT_USER, EVENT_TIME","Count accesses + distinct days within 30d before disbursement per loan. Use APPROX_QUANTILES for median. Filter FINAL_SEGMENT_USER IN (NEWLOAN, RELOAN, REPEATED).","WITH disbursed_feb AS (SELECT AGENT_ID, LOAN_ID, DISBURSED_TIME, FINAL_SEGMENT_USER FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND DISBURSED_DATE IS NOT NULL AND FINAL_SEGMENT_USER IN ('NEWLOAN','RELOAN','REPEATED')), access_counts AS (SELECT d.LOAN_ID, d.FINAL_SEGMENT_USER, COUNT(*) AS access_count, COUNT(DISTINCT DATE(e.EVENT_TIME)) AS access_days FROM disbursed_feb d JOIN `momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT` e ON d.AGENT_ID=e.AGENT_ID AND e.EVENT_TIME<d.DISBURSED_TIME AND e.EVENT_TIME>=TIMESTAMP_SUB(d.DISBURSED_TIME, INTERVAL 30 DAY) GROUP BY d.LOAN_ID, d.FINAL_SEGMENT_USER) SELECT FINAL_SEGMENT_USER, COUNT(*) AS loans, ROUND(AVG(access_count),1) AS avg_accesses, ROUND(APPROX_QUANTILES(access_count,100)[OFFSET(50)],0) AS median_accesses, ROUND(AVG(access_days),1) AS avg_distinct_days, ROUND(APPROX_QUANTILES(access_days,100)[OFFSET(50)],0) AS median_days FROM access_counts GROUP BY FINAL_SEGMENT_USER ORDER BY loans DESC","RELOAN: median 10 accesses / 5 days. NEWLOAN: median 4 accesses / 2 days. REPEATED: median 9 / 4 days. New users decide fast (2 days), reloan users browse more (5 days).",3,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q17,Thoi gian trung binh tu tat toan den reloan theo thang,Subquery,Complex,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"AGENT_ID, LOAN_ID, LIQUIDATED_DATE, DISBURSED_DATE",Self-join to find first reloan after liquidation (no time cap). Use APPROX_QUANTILES for percentiles. Recent cohorts appear faster because only near-term reloans observed (right-censoring).,"WITH liquidations AS (SELECT AGENT_ID, LOAN_ID AS liq_loan_id, LIQUIDATED_DATE, FORMAT_DATE('%Y-%m', LIQUIDATED_DATE) AS liq_month FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE LIQUIDATED_DATE IS NOT NULL AND LIQUIDATED_DATE BETWEEN '2025-07-01' AND '2026-02-28'), next_loan AS (SELECT l.*, n.DISBURSED_DATE AS reloan_date, DATE_DIFF(n.DISBURSED_DATE, l.LIQUIDATED_DATE, DAY) AS days_to_reloan, ROW_NUMBER() OVER (PARTITION BY l.AGENT_ID, l.liq_loan_id ORDER BY n.DISBURSED_DATE) AS rn FROM liquidations l JOIN `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` n ON l.AGENT_ID=n.AGENT_ID AND n.DISBURSED_DATE>l.LIQUIDATED_DATE AND n.DISBURSED_DATE IS NOT NULL) SELECT liq_month, COUNT(*) AS reloans, ROUND(AVG(days_to_reloan),1) AS avg_days, ROUND(APPROX_QUANTILES(days_to_reloan,100)[OFFSET(25)],0) AS p25_days, ROUND(APPROX_QUANTILES(days_to_reloan,100)[OFFSET(50)],0) AS median_days, ROUND(APPROX_QUANTILES(days_to_reloan,100)[OFFSET(75)],0) AS p75_days FROM next_loan WHERE rn=1 GROUP BY liq_month ORDER BY liq_month","Mature cohorts: median 9-17 days to reloan. P25 = 3-4 days (instant reloans). Oct 2025 median 10d, Dec median 9d. Users pay off and reborrow within 2 weeks typically.",8,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q18,So sanh traffic user khong co khoan vay giua thang 3/2026 va thang 1/2026 cung ky (1-11)?,Subquery,Complex,"momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO, momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT","AGENT_ID, DISBURSED_DATE, LIQUIDATED_DATE, ETL_DATE, ACCESSED_SOURCE",No-loan users = LEFT JOIN loan_info WHERE active loan IS NULL. Compare same period (1-11) for fairness. Active loan at time = disbursed before period end AND (not liquidated OR liquidated after period start).,"WITH active_loans_jan AS (SELECT DISTINCT AGENT_ID FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE IS NOT NULL AND (LIQUIDATED_DATE IS NULL OR LIQUIDATED_DATE>='2026-01-01') AND DISBURSED_DATE<'2026-01-12'), active_loans_mar AS (SELECT DISTINCT AGENT_ID FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO` WHERE DISBURSED_DATE IS NOT NULL AND (LIQUIDATED_DATE IS NULL OR LIQUIDATED_DATE>='2026-03-01') AND DISBURSED_DATE<'2026-03-12'), jan_traffic AS (SELECT e.ACCESSED_SOURCE, COUNT(*) AS sessions, COUNT(DISTINCT e.AGENT_ID) AS users FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT` e LEFT JOIN active_loans_jan a ON e.AGENT_ID=a.AGENT_ID WHERE e.ETL_DATE BETWEEN '2026-01-01' AND '2026-01-11' AND a.AGENT_ID IS NULL GROUP BY e.ACCESSED_SOURCE), mar_traffic AS (SELECT e.ACCESSED_SOURCE, COUNT(*) AS sessions, COUNT(DISTINCT e.AGENT_ID) AS users FROM `momovn-prod.BU_FI.BAOTU_VAYNHANH_ENTRY_POINT` e LEFT JOIN active_loans_mar a ON e.AGENT_ID=a.AGENT_ID WHERE e.ETL_DATE BETWEEN '2026-03-01' AND '2026-03-11' AND a.AGENT_ID IS NULL GROUP BY e.ACCESSED_SOURCE) SELECT COALESCE(m.ACCESSED_SOURCE,j.ACCESSED_SOURCE) AS source, IFNULL(j.users,0) AS jan_users, IFNULL(j.sessions,0) AS jan_sessions, IFNULL(m.users,0) AS mar_users, IFNULL(m.sessions,0) AS mar_sessions, IFNULL(m.users,0)-IFNULL(j.users,0) AS user_diff, ROUND(100.0*SAFE_DIVIDE(IFNULL(m.users,0)-IFNULL(j.users,0),IFNULL(j.users,0)),1) AS user_growth_pct FROM mar_traffic m FULL OUTER JOIN jan_traffic j ON m.ACCESSED_SOURCE=j.ACCESSED_SOURCE ORDER BY IFNULL(m.users,0)+IFNULL(j.users,0) DESC","Mar vs Jan (1-11): 550K vs 615K users (-10.5%). Sessions 1.53M vs 1.97M (-22.4%). Sessions/user 2.8 vs 3.2. tabbar_home -56K (-16%), financial_hub -44K (-27%), momo_passport -28K (-68%). Only app_all_service_top grew +15K (+11%).",50,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+Q19,"DPD30 cac khoan vay theo vintage va lender (chi dung LOAN_INFO, khong dung bang vintage)?",Ambiguous,Ambiguous,momovn-prod.BU_FI.BAOTU_VAYNHANH_LOAN_INFO,"DISBURSED_DATE, LIQUIDATED_DATE, FIRST_DUE_DATE, TENOR, LENDER_ID, LOAN_AMOUNT",LOAN_INFO khong co du lieu thanh toan tung ky. Chi biet loan da liquidated hay chua ,,,1.0,eval,DA-SQL Agent,2026-03-11,VAYNHANH
+,,,,,,,,,,,,,
+TTT001,AUM tháng 1 bao nhiêu?,Aggregation,Simple,mart_ttt_daily_user_record,"BALANCE, GRASS_DATE","AUM = SUM(BALANCE) tại ngày cuối tháng (snapshot), KHÔNG phải SUM across all days. Nếu SUM cả tháng → inflate ~30x. Không filter MAU/MFU vì churn accounts vẫn có balance. Câu hỏi không nói rõ năm nào → LLM phải infer 2026. Không nói rõ breakdown Individual vs Money Pool → LLM có thể miss hoặc tự ý breakdown.",SELECT SUM(BALANCE) AS total_aum FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31',"1 row, total_aum ~11.57T VND",1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT002,Có bao nhiêu người đang dùng TTT vậy?,Ambiguous,Ambiguous,mart_ttt_daily_user_record,"USER_ID, MAU_TYPE, GRASS_DATE","Đang dùng = MAU hay MFU? Không nói tháng nào. Agent tốt nên hỏi lại: ""Ý anh/chị là người mở app (MAU ~3.5M) hay người thực sự có tiền (MFU ~1.7M)?"". USER_ID cần REGEXP_EXTRACT vì mp_ prefix gây double-count. Nếu agent tự đoán mà không clarify → penalty.","-- Agent nên hỏi lại. Nếu buộc phải trả lời, MAU là default hợp lý: SELECT COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS total_mau FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND MAU_TYPE != '0.Churn'","1 row, ~3.4-3.5M (nếu MAU) hoặc ~1.67M (nếu MFU)",1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT003,Tháng rồi người ta gửi vô TTT tổng bao nhiêu tiền?,Aggregation,Moderate,mart_ttt_daily_user_record,"cashin_gmv, cashin_p2p_gmv, cashin_va_gmv, cashin_ai_gmv, cashin_stock_gmv, cashin_payout_gmv, cashin_mp_gmv, GRASS_DATE","Tháng rồi = tháng trước (agent phải infer). Total cashin = SUM tất cả 7 sub-channels, không chỉ cashin_gmv (~50% total). COALESCE(col, 0) vì NULL. ""Gửi vô"" = cashin, không phải balance. LLM yếu thường chỉ dùng cashin_gmv.","SELECT SUM( COALESCE(cashin_gmv, 0) + COALESCE(cashin_p2p_gmv, 0) + COALESCE(cashin_va_gmv, 0) + COALESCE(cashin_ai_gmv, 0) + COALESCE(cashin_stock_gmv, 0) + COALESCE(cashin_payout_gmv, 0) + COALESCE(cashin_mp_gmv, 0) ) AS total_cashin FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28'","1 row, total cashin cả tháng",1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT004,MoMo đang trả lãi cho TTT mỗi tháng bao nhiêu vậy? Có đáng lo không?,Aggregation,Simple,mart_ttt_daily_user_record,"INTEREST, GRASS_DATE","Column tên `INTEREST` (KHÔNG phải `interest_gmv` — column name sai phổ biến nhất). Interest = chi phí MoMo trả cho user/ngày, SUM across tháng. ""Có đáng lo không"" = phần business interpretation, agent không cần SQL cho phần này. LLM có thể dùng sai column name → query fail.",SELECT SUM(INTEREST) AS total_interest_paid FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28',"1 row, ~37-38B VND/month",1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT005,Tháng 1 so với tháng 2 thì TTT đang lên hay xuống?,Multi-step,Ambiguous,mart_ttt_daily_user_record,"BALANCE, USER_ID, MAU_TYPE, INTEREST, cashin sub-channels, GRASS_DATE","Câu hỏi cực kỳ vague — ""lên hay xuống"" theo metric nào? AUM? MAU? Cashin? Agent tốt nên hỏi lại hoặc decompose thành multiple metrics. Mỗi metric có date logic khác nhau (AUM = snapshot, MAU = full range, cashin = SUM range). Nếu agent chỉ trả 1 metric → incomplete.","-- Cần multiple queries. Minimum viable: AUM + MAU for 2 months WITH jan_stats AS ( SELECT SUM(CASE WHEN GRASS_DATE = '2026-01-31' THEN BALANCE ELSE 0 END) AS aum, COUNT(DISTINCT CASE WHEN MAU_TYPE != '0.Churn' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS mau FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-01-31' ), feb_stats AS ( SELECT SUM(CASE WHEN GRASS_DATE = '2026-02-28' THEN BALANCE ELSE 0 END) AS aum, COUNT(DISTINCT CASE WHEN MAU_TYPE != '0.Churn' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS mau FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' ) SELECT 'Jan' AS month, aum, mau FROM jan_stats UNION ALL SELECT 'Feb', aum, mau FROM feb_stats",2 rows: Jan vs Feb cho AUM + MAU,2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT006,Vùng nào đang dùng TTT nhiều nhất? Top 5 cho t,Ranking + Filter,Moderate,mart_ttt_daily_user_record,"REGION, USER_ID, MAU_TYPE, GRASS_DATE",Dùng nhiều nhất = MAU count. Cần filter MAU_TYPE != '0.Churn'. REGEXP_EXTRACT cho USER_ID dedup. REGION có thể NULL → COALESCE. LIMIT 5. Không nói rõ tháng → agent phải infer tháng gần nhất.,"SELECT COALESCE(REGION, 'Unknown') AS region, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS active_users FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND MAU_TYPE != '0.Churn' GROUP BY COALESCE(REGION, 'Unknown') ORDER BY active_users DESC LIMIT 5",5 rows — top 5 regions,5.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT007,Tiền rút ra nhiều hơn tiền gửi vào không? Tháng 2,Multi-step,Complex,mart_ttt_daily_user_record,"Tất cả 7 cashin + 7 cashout sub-channels, GRASS_DATE","Net cash = Total Cashin - Total Cashout. Phải SUM đủ 7+7 sub-channels, mỗi cái COALESCE. Câu hỏi hỏi yes/no nhưng SQL cần tính cả 2 phía. Nếu chỉ dùng cashin_gmv và cashout_gmv → miss ~50% flow, có thể sai direction.","SELECT SUM( COALESCE(cashin_gmv, 0) + COALESCE(cashin_p2p_gmv, 0) + COALESCE(cashin_va_gmv, 0) + COALESCE(cashin_ai_gmv, 0) + COALESCE(cashin_stock_gmv, 0) + COALESCE(cashin_payout_gmv, 0) + COALESCE(cashin_mp_gmv, 0) ) AS total_cashin, SUM( COALESCE(cashout_gmv, 0) + COALESCE(cashout_napas_gmv, 0) + COALESCE(cashout_p2p_gmv, 0) + COALESCE(cashout_payment_gmv, 0) + COALESCE(cashout_stock_gmv, 0) + COALESCE(cashout_mp_gmv, 0) + COALESCE(cashout_payment_mp_gmv, 0) ) AS total_cashout FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28'","1 row: total_cashin vs total_cashout, net cash = cashin - cashout",1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT008,Nhóm tuổi nào gửi tiết kiệm TTT nhiều nhất?,Aggregation,Moderate,mart_ttt_daily_user_record,"AGE_GROUP, BALANCE, GRASS_DATE","Gửi tiết kiệm nhiều nhất có thể hiểu là total AUM hoặc total cashin — ambiguous nhẹ. AGE_GROUP format: '1.Below 22', '2.23-27', '3.28-35', '4.36-50', '5.Above 50'. Nên dùng AUM snapshot cuối tháng (default interpretation). ORDER BY DESC, không cần LIMIT (chỉ ~5-6 groups).","SELECT AGE_GROUP, SUM(BALANCE) AS total_aum, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS user_count FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31' AND BALANCE > 0 GROUP BY AGE_GROUP ORDER BY total_aum DESC","~5-6 rows, sorted by AUM desc",46148.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT009,Bao nhiêu % user TTT đang dùng Túi+?,Conditional Logic,Moderate,mart_ttt_daily_user_record,"PLUS_TYPE, USER_ID, MAU_TYPE, GRASS_DATE","Túi+ users = PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL. Base = MAU (MAU_TYPE != '0.Churn'). REGEXP_EXTRACT cả tử lẫn mẫu. LLM thường không biết filter logic của PLUS_TYPE — dễ include churn Túi+ hoặc 'None' value.","SELECT COUNT(DISTINCT CASE WHEN PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) * 100.0 / NULLIF(COUNT(DISTINCT CASE WHEN MAU_TYPE != '0.Churn' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END), 0) AS tui_plus_pct FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-01-31'","1 row, tui_plus_pct (%)",1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT010,Người dùng rút tiền từ TTT chủ yếu qua kênh nào?,Ranking + Filter,Moderate,mart_ttt_daily_user_record,"cashout_gmv, cashout_napas_gmv, cashout_p2p_gmv, cashout_payment_gmv, cashout_stock_gmv, cashout_mp_gmv, cashout_payment_mp_gmv, GRASS_DATE","Cần breakdown 7 cashout sub-channels để so sánh. ""Chủ yếu"" = channel có GMV cao nhất. LLM thường chỉ biết cashout_gmv, không biết 6 kênh còn lại. Format output nên UNPIVOT hoặc liệt kê từng kênh. COALESCE.","SELECT 'basic' AS channel, SUM(COALESCE(cashout_gmv, 0)) AS gmv FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' UNION ALL SELECT 'napas', SUM(COALESCE(cashout_napas_gmv, 0)) FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' UNION ALL SELECT 'p2p', SUM(COALESCE(cashout_p2p_gmv, 0)) FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' UNION ALL SELECT 'payment', SUM(COALESCE(cashout_payment_gmv, 0)) FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' UNION ALL SELECT 'stock', SUM(COALESCE(cashout_stock_gmv, 0)) FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' UNION ALL SELECT 'money_pool', SUM(COALESCE(cashout_mp_gmv, 0)) FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' UNION ALL SELECT 'payment_mp', SUM(COALESCE(cashout_payment_mp_gmv, 0)) FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' ORDER BY gmv DESC","7 rows, sorted by GMV desc — top channel likely p2p or payment",7.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT011,User mới tháng này so tháng trước tăng hay giảm? Giảm bao nhiêu?,Date/Time,Moderate,mart_ttt_daily_user_record,"USER_ID, MAU_TYPE, GRASS_DATE","User mới = MAU_TYPE = '1.New' (KHÔNG phải != '0.Churn'). ""Tháng này"" vs ""tháng trước"" → agent phải infer relative dates. Cần REGEXP_EXTRACT. Dùng DATE_TRUNC(GRASS_DATE, MONTH) — KHÔNG dùng GRASS_MONTH (không tồn tại). LLM hay nhầm MAU_TYPE != '0.Churn' (= tất cả active, gồm retain + reactive) vs = '1.New' (chỉ new).","WITH monthly_new AS ( SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS new_users FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-02-28' AND MAU_TYPE = '1.New' GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ) SELECT *, LAG(new_users) OVER (ORDER BY month) AS prev_month, new_users - LAG(new_users) OVER (ORDER BY month) AS diff FROM monthly_new",2 rows: Jan + Feb new user counts with diff,2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT012,Góp chung (Money Pool) đang chiếm bao nhiêu % tổng AUM?,Aggregation,Simple,mart_ttt_daily_user_record,"IS_MP, BALANCE, GRASS_DATE",IS_MP = 'Money Pool' vs 'Individual'. AUM = snapshot cuối tháng. % = Money Pool AUM / Total AUM * 100. LLM có thể không biết column IS_MP tồn tại hoặc dùng sai filter. Nếu SUM across month → sai 30x nhưng tỷ lệ % có thể vẫn gần đúng (trap tinh vi).,"SELECT IS_MP, SUM(BALANCE) AS aum, SUM(BALANCE) * 100.0 / SUM(SUM(BALANCE)) OVER () AS pct FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31' GROUP BY IS_MP","2 rows: Individual ~86%, Money Pool ~14%",2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT013,Mấy ngày đầu tháng 3 có gì bất thường không? Nhìn dòng tiền dùm t,Window + Complex,Complex,mart_ttt_daily_user_record,"Tất cả cashin + cashout sub-channels, GRASS_DATE","Mấy ngày đầu tháng 3 = 2026-03-01 đến ~03-08 (data available). ""Bất thường"" = anomaly detection → cần tính daily totals + compare vs baseline (mean, stddev). Known: Mar 7 (Z=+6.4σ) và Mar 8 (Z=+7.6σ) cashout spikes. Net cash -416B (anomaly lịch sử). Agent cần chạy daily breakdown + statistical comparison, không chỉ SUM tổng.","WITH daily AS ( SELECT GRASS_DATE, SUM(COALESCE(cashin_gmv,0)+COALESCE(cashin_p2p_gmv,0)+COALESCE(cashin_va_gmv,0)+COALESCE(cashin_ai_gmv,0)+COALESCE(cashin_stock_gmv,0)+COALESCE(cashin_payout_gmv,0)+COALESCE(cashin_mp_gmv,0)) AS cashin, SUM(COALESCE(cashout_gmv,0)+COALESCE(cashout_napas_gmv,0)+COALESCE(cashout_p2p_gmv,0)+COALESCE(cashout_payment_gmv,0)+COALESCE(cashout_stock_gmv,0)+COALESCE(cashout_mp_gmv,0)+COALESCE(cashout_payment_mp_gmv,0)) AS cashout FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-03-01' AND '2026-03-08' GROUP BY GRASS_DATE ) SELECT *, cashin - cashout AS net, AVG(cashout) OVER () AS avg_cashout, ROUND((cashout - AVG(cashout) OVER ()) / NULLIF(STDDEV(cashout) OVER (), 0), 2) AS z_score FROM daily ORDER BY GRASS_DATE","8 rows daily, Mar 7-8 có Z-score cao bất thường",8.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT014,Tỷ lệ churn TTT đang bao nhiêu? Có cao hơn bình thường không?,Multi-step,Complex,mart_ttt_daily_user_record,"USER_ID, MAU_TYPE, GRASS_DATE","Churn = MAU_TYPE = '0.Churn'. Total base = ALL unique users (cả churn + active). Churn rate = churn/total * 100. Pool churn rất lớn (~75-77%) — đây là bình thường cho TTT. ""Cao hơn bình thường"" cần so sánh vs tháng trước hoặc baseline → multi-step. REGEXP_EXTRACT bắt buộc.","WITH monthly_churn AS ( SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, COUNT(DISTINCT CASE WHEN MAU_TYPE = '0.Churn' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS churned, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS total FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2025-12-01' AND '2026-01-31' GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ) SELECT month, churned, total, ROUND(churned * 100.0 / NULLIF(total, 0), 2) AS churn_rate_pct FROM monthly_churn ORDER BY month","2 rows (Dec 2025, Jan 2026), churn_rate ~75-77%",2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT015,Năm ngoái cùng kỳ AUM là bao nhiêu? Tăng trưởng YoY?,Date/Time,Complex,mart_ttt_daily_user_record,"BALANCE, GRASS_DATE","Cùng kỳ = same month last year. ""Năm ngoái"" relative → agent phải infer. Cả 2 thời điểm đều cần end-of-month snapshot. YoY = (current - prev) / prev * 100. Nếu 2025 data không có → cần handle gracefully.","WITH aum AS ( SELECT EXTRACT(YEAR FROM GRASS_DATE) AS yr, SUM(BALANCE) AS total_aum FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE IN ('2025-01-31', '2026-01-31') GROUP BY EXTRACT(YEAR FROM GRASS_DATE) ) SELECT curr.total_aum AS aum_2026, prev.total_aum AS aum_2025, ROUND((curr.total_aum - prev.total_aum) / NULLIF(prev.total_aum, 0) * 100, 2) AS yoy_pct FROM aum curr JOIN aum prev ON curr.yr = 2026 AND prev.yr = 2025","1 row: AUM 2026, AUM 2025, YoY growth %",1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT016,"Trong số người bỏ TTT tháng 1, trước đó họ có gửi tiền không hay chỉ mở rồi bỏ?",Subquery,Complex,mart_ttt_daily_user_record,"USER_ID, MAU_TYPE, MFU_TYPE, GRASS_DATE","Bỏ TTT = MAU_TYPE = '0.Churn' trong tháng 1/2026. ""Trước đó có gửi tiền"" = từng có MFU_TYPE != '0.Churn' trong tháng 12/2025. Cần subquery/CTE: tìm churned users tháng 1, check xem họ có funded ở tháng 12 không. Chia thành 2 nhóm: từng funded vs chưa bao giờ funded. REGEXP_EXTRACT bắt buộc.","WITH jan_churn AS ( SELECT DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) AS uid FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-01-31' AND MAU_TYPE = '0.Churn' ), dec_funded AS ( SELECT DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) AS uid FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2025-12-01' AND '2025-12-31' AND MFU_TYPE != '0.Churn' ) SELECT CASE WHEN d.uid IS NOT NULL THEN 'Previously Funded' ELSE 'Never Funded' END AS segment, COUNT(*) AS user_count FROM jan_churn j LEFT JOIN dec_funded d ON j.uid = d.uid GROUP BY CASE WHEN d.uid IS NOT NULL THEN 'Previously Funded' ELSE 'Never Funded' END",2 rows: Previously Funded vs Never Funded counts,2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT017,Nam hay nữ tiết kiệm giỏi hơn?,Aggregation,Simple,mart_ttt_daily_user_record,"GENDER, BALANCE, USER_ID, GRASS_DATE","Tiết kiệm giỏi hơn = avg balance per user. GENDER = 'male', 'female', 'unknown'. Dùng end-of-month snapshot. Chỉ MFU (có tiền) để avg không bị pha loãng bởi churn users có balance = 0. COALESCE(GENDER, 'unknown'). LLM có thể quên filter MFU hoặc dùng SUM thay AVG.","SELECT COALESCE(GENDER, 'unknown') AS gender, AVG(BALANCE) AS avg_balance_per_user, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31' AND MFU_TYPE != '0.Churn' GROUP BY COALESCE(GENDER, 'unknown') ORDER BY avg_balance_per_user DESC","3 rows (male, female, unknown), sorted by avg_balance",3.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT018,"Q4/2025 so với Q3/2025, AUM tăng bao nhiêu tỷ? MAU tăng bao nhiêu người?",Date/Time,Complex,mart_ttt_daily_user_record,"BALANCE, USER_ID, MAU_TYPE, GRASS_DATE","AUM = end-of-quarter snapshot (cuối Sep vs cuối Dec). MAU = full quarter range, dedup REGEXP_EXTRACT, filter MAU_TYPE != '0.Churn'. Hai metrics cần date logic hoàn toàn khác nhau trong cùng 1 query. Q3 end = 2025-09-30, Q4 end = 2025-12-31. LLM thường apply cùng date logic cho cả AUM và MAU.","WITH aum AS ( SELECT CASE WHEN GRASS_DATE = '2025-09-30' THEN 'Q3' ELSE 'Q4' END AS quarter, SUM(BALANCE) AS aum FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE IN ('2025-09-30', '2025-12-31') GROUP BY CASE WHEN GRASS_DATE = '2025-09-30' THEN 'Q3' ELSE 'Q4' END ), mau AS ( SELECT CASE WHEN GRASS_DATE <= '2025-09-30' THEN 'Q3' ELSE 'Q4' END AS quarter, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS mau FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2025-07-01' AND '2025-12-31' AND MAU_TYPE != '0.Churn' GROUP BY CASE WHEN GRASS_DATE <= '2025-09-30' THEN 'Q3' ELSE 'Q4' END ) SELECT a.quarter, a.aum, m.mau FROM aum a JOIN mau m ON a.quarter = m.quarter ORDER BY a.quarter","2 rows (Q3, Q4), mỗi row có AUM + MAU → diff tính thủ công",2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT019,"Trong tháng 1, ngày nào có nhiều người rút tiền nhất? Rút bao nhiêu?",Ranking + Filter,Moderate,mart_ttt_daily_user_record,"GRASS_DATE, USER_ID, cashout sub-channels","Nhiều người rút = COUNT DISTINCT users có cashout > 0 (bất kỳ sub-channel nào). ""Rút bao nhiêu"" = total cashout GMV ngày đó (SUM tất cả 7 sub-channels). Cần cả 2 metrics: user count + GMV. Chỉ count users có ít nhất 1 cashout sub-channel > 0. REGEXP_EXTRACT. LLM thường chỉ trả GMV hoặc chỉ trả user count, không cả 2.","SELECT GRASS_DATE, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users_withdrawing, SUM( COALESCE(cashout_gmv, 0) + COALESCE(cashout_napas_gmv, 0) + COALESCE(cashout_p2p_gmv, 0) + COALESCE(cashout_payment_gmv, 0) + COALESCE(cashout_stock_gmv, 0) + COALESCE(cashout_mp_gmv, 0) + COALESCE(cashout_payment_mp_gmv, 0) ) AS total_cashout FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-01-31' AND ( COALESCE(cashout_gmv, 0) + COALESCE(cashout_napas_gmv, 0) + COALESCE(cashout_p2p_gmv, 0) + COALESCE(cashout_payment_gmv, 0) + COALESCE(cashout_stock_gmv, 0) + COALESCE(cashout_mp_gmv, 0) + COALESCE(cashout_payment_mp_gmv, 0) ) > 0 GROUP BY GRASS_DATE ORDER BY users_withdrawing DESC LIMIT 1",1 row: ngày peak + user count + total cashout GMV,1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT020,TTT tháng vừa rồi ổn không? Brief cho t ngắn gọn,Ambiguous,Ambiguous,mart_ttt_daily_user_record,Potentially ALL,"Câu hỏi executive-style cực kỳ vague. ""Tháng vừa rồi"" = tháng nào? ""Ổn không"" = theo tiêu chí gì? Agent tốt nên: (1) clarify hoặc (2) decompose thành ≥3 metrics: MAU trend, AUM, net cash flow, churn. Nếu chỉ trả 1 metric → incomplete. Nếu tháng 3/2026 → net cash -416B là critical insight. Agent đúng khi hỏi ngược: ""Anh muốn t nhìn vào chỉ số nào? MAU, AUM, hay dòng tiền?"".",-- Không có single Gold SQL -- Agent tốt: hỏi lại HOẶC chạy ≥3 queries: -- 1. MAU (with REGEXP_EXTRACT + MAU_TYPE filter) -- 2. AUM (end-of-month snapshot) -- 3. Net cash flow (full cashin - cashout sub-channels) -- 4. Churn rate (optional),Multi-query needed. Key: nếu Feb thì relatively stable; nếu Mar thì net cash -416B red flag,N/A,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT021,user ttt giu tien bao lau truoc khi rut ra het?,Window + Complex,Complex,mart_ttt_daily_user_record,"USER_ID, BALANCE, MFU_TYPE, GRASS_DATE","Câu hỏi hành vi duration — cần tính khoảng cách ngày từ lúc user bắt đầu có balance > 0 đến khi balance = 0. Table là daily snapshot nên phải self-join hoặc window function để tìm ""first funded date"" vs ""last funded date"" per user. Rất phức tạp: cần xác định ""episode"" nạp-rút, không phải chỉ min/max date. LLM sẽ gần như chắc chắn oversimplify hoặc viết sai logic. Có thể cần approximate bằng cách tính avg số ngày MFU_TYPE != '0.Churn' liên tiếp.","-- Approximate: avg number of consecutive funded days per user WITH funded_days AS ( SELECT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) AS uid, GRASS_DATE, MFU_TYPE, LAG(GRASS_DATE) OVER (PARTITION BY CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) ORDER BY GRASS_DATE) AS prev_date FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-01-31' AND MFU_TYPE != '0.Churn' ), with_gaps AS ( SELECT uid, GRASS_DATE, CASE WHEN DATE_DIFF(GRASS_DATE, prev_date, DAY) > 1 OR prev_date IS NULL THEN 1 ELSE 0 END AS new_episode FROM funded_days ), episodes AS ( SELECT uid, GRASS_DATE, SUM(new_episode) OVER (PARTITION BY uid ORDER BY GRASS_DATE) AS episode_id FROM with_gaps ), episode_length AS ( SELECT uid, episode_id, DATE_DIFF(MAX(GRASS_DATE), MIN(GRASS_DATE), DAY) + 1 AS days_held FROM episodes GROUP BY uid, episode_id ) SELECT AVG(days_held) AS avg_days_before_withdraw, APPROX_QUANTILES(days_held, 100)[OFFSET(50)] AS median_days FROM episode_length",1 row: avg + median days users hold money before withdrawing,1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT022,tai sao aum giam thang nay?,Ambiguous,Ambiguous,mart_ttt_daily_user_record,"BALANCE, GRASS_DATE, cashin/cashout sub-channels, MAU_TYPE, MFU_TYPE","Câu hỏi causal (""tại sao"") — SQL không trả lời được ""tại sao"", chỉ trả lời ""cái gì xảy ra"". Agent tốt nên: (1) Xác nhận AUM giảm thật không (snapshot cuối tháng so sánh), (2) Decompose các yếu tố: net cash flow giảm? user churn tăng? cashin giảm? cashout tăng? (3) Trả lời bằng data rồi interpret. ""Tháng này"" không rõ tháng nào. LLM sẽ fail nếu chỉ gen 1 query đơn giản.","-- Cần multi-query decomposition. Minimum: -- 1. AUM comparison (2 tháng gần nhất, end-of-month snapshot) -- 2. Net cash flow breakdown (cashin vs cashout, all sub-channels) -- 3. MFU churn (người rút hết tiền) -- Không có single SQL answer cho ""tại sao""","Multi-query. Agent tốt nhất nên hỏi lại ""tháng nào?"" rồi decompose",N/A,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT023,moi thang co bao nhieu nguoi nap VA tren 10 giao dich 1 ngay?,Aggregation,Complex,mart_ttt_daily_user_record,"USER_ID, CASHIN_VA_TRANS, GRASS_DATE","Nạp VA = Virtual Account cashin. ""Trên 10 giao dịch 1 ngày"" = CASHIN_VA_TRANS > 10 per row (vì mỗi row = 1 user/1 ngày). Cần GROUP BY tháng, COUNT DISTINCT user có ít nhất 1 ngày CASHIN_VA_TRANS > 10. REGEXP_EXTRACT cho dedup. Câu hỏi cụ thể nhưng dùng column TRANS (không phải GMV) — LLM thường chỉ biết GMV columns. ""Mỗi tháng"" = cần multi-month, không nói range → agent phải infer.","SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users_over_10_va_trans FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2025-10-01' AND '2026-02-28' AND CASHIN_VA_TRANS > 10 GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ORDER BY month","~5 rows (1 per month), count users with >10 VA transactions in a single day",5.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT024,hanh vi nap rut cua tui cong khac gi so voi tui ca nhan 30 ngay qua?,Multi-step,Complex,mart_ttt_daily_user_record,"IS_MP, tất cả cashin + cashout sub-channels + TRANS columns, GRASS_DATE","Túi cộng = Money Pool (IS_MP = 'Money Pool'). ""Túi cá nhân"" = Individual. ""30 ngày qua"" = relative date. ""Hành vi nạp rút"" = cần cả GMV lẫn transaction count, breakdown by channel. Cần GROUP BY IS_MP với tất cả sub-channels. LLM sẽ: (1) không biết IS_MP column, (2) thiếu sub-channels, (3) chỉ lấy GMV không lấy TRANS.","SELECT IS_MP, SUM(COALESCE(cashin_gmv,0)+COALESCE(cashin_p2p_gmv,0)+COALESCE(cashin_va_gmv,0)+COALESCE(cashin_ai_gmv,0)+COALESCE(cashin_stock_gmv,0)+COALESCE(cashin_payout_gmv,0)+COALESCE(cashin_mp_gmv,0)) AS total_cashin_gmv, SUM(COALESCE(CASHIN_TRANS,0)+COALESCE(CASHIN_P2P_TRANS,0)+COALESCE(CASHIN_VA_TRANS,0)+COALESCE(CASHIN_AI_TRANS,0)+COALESCE(CASHIN_STOCK_TRANS,0)+COALESCE(CASHIN_PAYOUT_TRANS,0)+COALESCE(CASHIN_MP_TRANS,0)) AS total_cashin_trans, SUM(COALESCE(cashout_gmv,0)+COALESCE(cashout_napas_gmv,0)+COALESCE(cashout_p2p_gmv,0)+COALESCE(cashout_payment_gmv,0)+COALESCE(cashout_stock_gmv,0)+COALESCE(cashout_mp_gmv,0)+COALESCE(cashout_payment_mp_gmv,0)) AS total_cashout_gmv, SUM(COALESCE(CASHOUT_TRANS,0)+COALESCE(CASHOUT_NAPAS_TRANS,0)+COALESCE(CASHOUT_P2P_TRANS,0)+COALESCE(CASHOUT_PAYMENT_TRANS,0)+COALESCE(CASHOUT_STOCK_TRANS,0)+COALESCE(CASHOUT_MP_TRANS,0)+COALESCE(CASHOUT_PAYMENT_MP_TRANS,0)) AS total_cashout_trans FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY) GROUP BY IS_MP","2 rows (Individual, Money Pool): cashin/cashout GMV + trans counts",2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT025,nguoi dung mua tui cong thi sau do lam gi?,Ambiguous,Ambiguous,"fact_ttt_event_tracking, mart_ttt_daily_user_record","event_name, screen_name, USER_ID, IS_MP, GRASS_DATE","Câu hỏi journey/funnel — ""mua túi cộng"" = kích hoạt Money Pool, ""sau đó làm gì"" = cần xem event sequence sau activation. Cần JOIN event tracking table với mart table. Không rõ timeframe. Agent tốt nên hỏi lại: ""Anh muốn xem hành vi trong bao lâu sau khi kích hoạt? Và đo bằng metric nào — screen views, transactions, hay balance?"". LLM gần chắc không biết cách map ""mua túi cộng"" → event nào.","-- Cần event tracking data -- Agent nên hỏi lại clarify -- Approximate: xem cashin/cashout pattern của Money Pool users SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS mp_users, SUM(COALESCE(cashin_mp_gmv, 0)) AS mp_cashin, SUM(COALESCE(cashout_mp_gmv, 0)) AS mp_cashout, SUM(COALESCE(cashout_payment_mp_gmv, 0)) AS mp_payment FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE IS_MP = 'Money Pool' AND MAU_TYPE = '1.New' AND GRASS_DATE BETWEEN '2025-10-01' AND '2026-02-28' GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ORDER BY month",Agent nên clarify. Nếu ép trả lời: ~5 rows monthly behavior of new MP users,~5,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT026,so du trung binh cua user ttt la bao nhieu?,Aggregation,Simple,mart_ttt_daily_user_record,"BALANCE, AVG_BALANCE, USER_ID, GRASS_DATE","Bẫy column: table có cả `BALANCE` (snapshot cuối ngày) và `AVG_BALANCE` (rolling 30-day avg). ""Số dư trung bình"" có thể hiểu là: (1) AVG(BALANCE) tại 1 ngày = trung bình trên tất cả users, (2) dùng column AVG_BALANCE = rolling avg per user. Cần clarify. Nếu dùng BALANCE, phải chọn 1 ngày (snapshot). Nên filter chỉ funded users (MFU_TYPE != '0.Churn') để avg không bị kéo xuống bởi hàng triệu users balance = 0. Không nói tháng nào.","SELECT AVG(BALANCE) AS avg_balance_per_funded_user, SUM(BALANCE) AS total_aum, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS funded_users FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-02-28' AND MFU_TYPE != '0.Churn'",1 row: avg ~6-7M VND per funded user,1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT027,tui+ dang co bao nhieu nguoi? tang hay giam so thang truoc?,Date/Time,Moderate,mart_ttt_daily_user_record,"PLUS_TYPE, USER_ID, GRASS_DATE","Túi+ users = PLUS_TYPE NOT IN ('0.Churn', 'None') AND IS NOT NULL. Cần 2 tháng để compare. REGEXP_EXTRACT. ""Tháng trước"" = relative. 
+
+LLM trap: (1) filter PLUS_TYPE sai, (2) thiếu dedup, (3) không biết phải so tháng hiện tại và tháng trước . (4) không biết phải so cùng kì tính theo ngày grass date nếu tháng hiện tại  chưa full",,"2 rows (Feb, March): Túi+ user counts tính theo đúng số lượng ngày",2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT028,user nao dang giu nhieu tien nhat trong ttt? top 10,Ranking + Filter,Simple,mart_ttt_daily_user_record,"USER_ID, BALANCE, GRASS_DATE","Top 10 users by BALANCE tại ngày gần nhất (snapshot). Cần ORDER BY BALANCE DESC LIMIT 10. Không cần REGEXP_EXTRACT ở đây vì muốn xem account-level. Nhưng nên dùng end-of-month snapshot. Câu đơn giản nhưng LLM có thể: (1) SUM across days, (2) không chọn đúng date.","SELECT USER_ID, IS_MP, BALANCE FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-02-28' ORDER BY BALANCE DESC LIMIT 10",10 rows: top 10 users by balance,10.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT029,tai sao thang nay user nap nhieu tien hon binh thuong?,Ambiguous,Ambiguous,mart_ttt_daily_user_record,"cashin sub-channels, GRASS_DATE, CASHIN_VA_TRANS, AGE_GROUP, REGION","Causal question lần nữa. ""Nạp nhiều hơn bình thường"" = trước tiên phải xác nhận cashin thực sự tăng (so vs baseline). Sau đó decompose: kênh nào tăng? nhóm user nào nạp nhiều hơn? region nào? Agent không thể trả lời ""tại sao"" chỉ bằng SQL — chỉ có thể show ""cái gì thay đổi"". ""Tháng này"" = không rõ. LLM sẽ fail nếu gen 1 query.","-- Multi-query decomposition needed: -- 1. Confirm: tổng cashin tháng này vs avg 3 tháng trước -- 2. Breakdown by channel: kênh nào spike -- 3. Breakdown by segment: AGE_GROUP, REGION, BAL_GROUP -- Example query 1: cashin trend WITH monthly AS ( SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, SUM(COALESCE(cashin_gmv,0)+COALESCE(cashin_p2p_gmv,0)+COALESCE(cashin_va_gmv,0)+COALESCE(cashin_ai_gmv,0)+COALESCE(cashin_stock_gmv,0)+COALESCE(cashin_payout_gmv,0)+COALESCE(cashin_mp_gmv,0)) AS total_cashin FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2025-11-01' AND '2026-02-28' GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ) SELECT *, LAG(total_cashin) OVER (ORDER BY month) AS prev_month, ROUND((total_cashin - LAG(total_cashin) OVER (ORDER BY month)) / NULLIF(LAG(total_cashin) OVER (ORDER BY month), 0) * 100, 2) AS mom_change_pct FROM monthly ORDER BY month",~4 rows monthly cashin trend. Agent nên follow up với channel/segment breakdown,4.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT030,user tui+ rut tien ve ngan hang (napas) thang roi bao nhieu? co tang khong?,Conditional Logic,Moderate,mart_ttt_daily_user_record,"PLUS_TYPE, IS_CASHOUT_NAPAS, CASHOUT_NAPAS_GMV, CASHOUT_NAPAS_TRANS, GRASS_DATE, USER_ID","Túi+ filter: PLUS_TYPE NOT IN ('0.Churn', 'None'). Napas = cashout_napas_gmv. ""Có tăng không"" = cần so 2 tháng. Có thể dùng IS_CASHOUT_NAPAS = 'Cashout' hoặc trực tiếp filter cashout_napas_gmv > 0. REGEXP_EXTRACT. LLM trap: (1) không biết PLUS_TYPE filter, (2) không biết IS_CASHOUT_NAPAS tag.","SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS napas_users, SUM(COALESCE(CASHOUT_NAPAS_GMV, 0)) AS napas_gmv, SUM(COALESCE(CASHOUT_NAPAS_TRANS, 0)) AS napas_trans FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-02-28' AND PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ORDER BY month","2 rows (Jan, Feb): napas users + GMV + trans for Túi+ users",2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT031,tinh hinh kinh doanh ttt 6 thang qua,Ambiguous,Moderate,mart_ttt_daily_user_record,Potentially ALL key metrics,"Cực kỳ vague — giống Q020 nhưng timeframe dài hơn. ""Tình hình kinh doanh"" = executive dashboard gồm: MAU, MFU, AUM, cashin, cashout, net cash, churn, new users, interest cost. Mỗi metric cần date logic khác nhau. 6 tháng = Sep 2025 – Feb 2026. Agent đúng nếu hỏi lại ""anh muốn focus vào metric nào?"" hoặc tự decompose ≥4 metrics.","-- Minimum viable: monthly trend cho 4 core metrics -- AUM (snapshot) + MAU (range) + cashin + cashout per month -- Mỗi metric cần query riêng do date logic khác nhau -- Ví dụ cho MAU trend: SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS mau FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2025-09-01' AND '2026-02-28' AND MAU_TYPE != '0.Churn' GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ORDER BY month","Multi-query, 6 rows per metric",N/A,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT032,nhom so du nao dong gop nhieu nhat vao tong AUM?,Aggregation,Moderate,mart_ttt_daily_user_record,"BAL_GROUP, BALANCE, GRASS_DATE","BAL_GROUP = balance tier ([0]Churn, [1](0-300k], [2](300k-3TR], [3](3TR-30TR], [4](30TR-50TR], [5](50TR-100TR], [6](100TR-inf]). GROUP BY BAL_GROUP, SUM(BALANCE) at end-of-month. ORDER BY DESC. LLM có thể: (1) không biết BAL_GROUP column tồn tại → cố tạo CASE WHEN tự phân nhóm, (2) SUM across all days.","SELECT BAL_GROUP, SUM(BALANCE) AS total_aum, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS user_count, ROUND(SUM(BALANCE) * 100.0 / SUM(SUM(BALANCE)) OVER (), 2) AS pct_of_total FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31' GROUP BY BAL_GROUP ORDER BY total_aum DESC","~7 rows (1 per BAL_GROUP), top tier likely [6](100TR-inf]",7.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT033,user tui+ duoc cashback bao nhieu roi? co dang khong?,Aggregation,Moderate,mart_ttt_daily_user_record,"TOTAL_CASHBACK_GMV, TOTAL_CASHBACK_TRANS, IS_CASHBACK, PLUS_TYPE, GRASS_DATE, USER_ID","Cashback = quyền lợi Túi+ hoàn 0.1% khi thanh toán bằng TTT. Column: TOTAL_CASHBACK_GMV, TOTAL_CASHBACK_TRANS. Filter: IS_CASHBACK = 'Cashback' hoặc TOTAL_CASHBACK_GMV > 0. ""Có đáng không"" = cần tính tổng cashback vs tổng cashout_payment (chi phí cashback / revenue from payment). LLM gần chắc không biết columns TOTAL_CASHBACK_GMV và IS_CASHBACK tồn tại.","SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS cashback_users, SUM(COALESCE(TOTAL_CASHBACK_GMV, 0)) AS total_cashback, SUM(COALESCE(CASHOUT_PAYMENT_GMV, 0)) AS total_payment_gmv, ROUND(SUM(COALESCE(TOTAL_CASHBACK_GMV, 0)) * 100.0 / NULLIF(SUM(COALESCE(CASHOUT_PAYMENT_GMV, 0)), 0), 4) AS cashback_rate_pct FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-02-28' AND PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ORDER BY month",2 rows: monthly cashback total + rate vs payment GMV,2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT034,user nap tu dong (auto invest) co bao nhieu nguoi? nap trung binh bao nhieu?,Aggregation,Simple,mart_ttt_daily_user_record,"CASHIN_AI_TRANS, CASHIN_AI_GMV, USER_ID, GRASS_DATE","Nạp tự động = Auto Invest = cashin_ai columns. Filter: CASHIN_AI_TRANS > 0 hoặc CASHIN_AI_GMV > 0. Avg = tổng GMV / số unique users. REGEXP_EXTRACT. Không nói tháng nào. LLM trap: (1) không biết cashin_ai_gmv/trans columns, (2) nhầm với cashin_gmv.","SELECT COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS ai_users, SUM(COALESCE(CASHIN_AI_GMV, 0)) AS total_ai_cashin, ROUND(SUM(COALESCE(CASHIN_AI_GMV, 0)) / NULLIF(COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)), 0), 0) AS avg_ai_cashin_per_user FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND CASHIN_AI_TRANS > 0",1 row: AI users count + total + avg per user,1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT035,user co so du tren 50 trieu chiem bao nhieu % tong? ho la ai?,Conditional Logic,Moderate,mart_ttt_daily_user_record,"BALANCE, BAL_GROUP, USER_ID, GRASS_DATE, AGE_GROUP, GENDER, REGION",">50 triệu = BALANCE > 50000000 hoặc BAL_GROUP IN ('[5](50TR-100TR]', '[6](100TR-inf]'). ""Chiếm bao nhiêu %"" = % of total AUM hoặc % of total users (ambiguous). ""Họ là ai"" = demographic breakdown (age, gender, region). Cần snapshot cuối tháng. LLM có thể: (1) dùng sai threshold, (2) không biết BAL_GROUP, (3) chỉ trả % mà không trả demographics.","WITH all_users AS ( SELECT SUM(BALANCE) AS total_aum, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS total_users FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31' AND BALANCE > 0 ), high_balance AS ( SELECT COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS hb_users, SUM(BALANCE) AS hb_aum FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31' AND BALANCE > 50000000 ), demographics AS ( SELECT AGE_GROUP, GENDER, COALESCE(REGION, 'Unknown') AS region, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31' AND BALANCE > 50000000 GROUP BY AGE_GROUP, GENDER, COALESCE(REGION, 'Unknown') ORDER BY users DESC LIMIT 10 ) SELECT hb.hb_users, hb.hb_aum, ROUND(hb.hb_users * 100.0 / a.total_users, 2) AS pct_users, ROUND(hb.hb_aum * 100.0 / a.total_aum, 2) AS pct_aum FROM high_balance hb CROSS JOIN all_users a",1 row: counts + % of users + % of AUM. Plus demographics query,1 + top 10 demographic segments,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT036,cuoi tuan user co rut tien nhieu hon ngay thuong khong?,Date/Time,Moderate,mart_ttt_daily_user_record,"GRASS_DATE, cashout sub-channels","Cần phân loại ngày thành weekday vs weekend (EXTRACT(DAYOFWEEK)). Tính AVG daily cashout cho mỗi nhóm. Cashout = full 7 sub-channels. Known insight: Mar 7-8 (Sat-Sun) có spike +38-46%. LLM trap: (1) BQ DAYOFWEEK: 1=Sunday, 7=Saturday — dễ code sai, (2) thiếu sub-channels.","SELECT CASE WHEN EXTRACT(DAYOFWEEK FROM GRASS_DATE) IN (1, 7) THEN 'Weekend' ELSE 'Weekday' END AS day_type, COUNT(DISTINCT GRASS_DATE) AS num_days, SUM(COALESCE(cashout_gmv,0)+COALESCE(cashout_napas_gmv,0)+COALESCE(cashout_p2p_gmv,0)+COALESCE(cashout_payment_gmv,0)+COALESCE(cashout_stock_gmv,0)+COALESCE(cashout_mp_gmv,0)+COALESCE(cashout_payment_mp_gmv,0)) AS total_cashout, ROUND(SUM(COALESCE(cashout_gmv,0)+COALESCE(cashout_napas_gmv,0)+COALESCE(cashout_p2p_gmv,0)+COALESCE(cashout_payment_gmv,0)+COALESCE(cashout_stock_gmv,0)+COALESCE(cashout_mp_gmv,0)+COALESCE(cashout_payment_mp_gmv,0)) / COUNT(DISTINCT GRASS_DATE), 0) AS avg_daily_cashout FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' GROUP BY CASE WHEN EXTRACT(DAYOFWEEK FROM GRASS_DATE) IN (1, 7) THEN 'Weekend' ELSE 'Weekday' END",2 rows: Weekend vs Weekday avg daily cashout,2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT037,user ttt duoc nhan lai bao nhieu 1 ngay? phan bo theo nhom so du ra sao?,Aggregation,Moderate,mart_ttt_daily_user_record,"INTEREST, INT_GROUP, BAL_GROUP, GRASS_DATE","Lãi 1 ngày = SUM(INTEREST) for 1 specific day. ""Phân bổ theo nhóm số dư"" = GROUP BY BAL_GROUP hoặc INT_GROUP. LLM trap: (1) Dùng sai column interest_gmv, (2) Không biết INT_GROUP/BAL_GROUP columns tồn tại → cố tự CASE WHEN, (3) SUM across nhiều ngày thay vì 1 ngày.","SELECT BAL_GROUP, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users, SUM(INTEREST) AS daily_interest, AVG(INTEREST) AS avg_interest_per_user FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-01-31' AND INTEREST > 0 GROUP BY BAL_GROUP ORDER BY daily_interest DESC","~6-7 rows (BAL_GROUPs), sorted by interest contribution",46180.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT038,user reactive thang 2 quay lai voi bao nhieu tien? co giu lai duoc khong?,Subquery,Complex,mart_ttt_daily_user_record,"USER_ID, MAU_TYPE, MFU_TYPE, BALANCE, cashin sub-channels, GRASS_DATE","Reactive = MAU_TYPE = '3.Reactive' trong tháng 2. ""Quay lại với bao nhiêu tiền"" = tổng cashin hoặc balance cuối tháng 2 của nhóm reactive. ""Giữ lại được không"" = cần check tháng 3 xem họ còn MFU không → subquery/JOIN 2 tháng. LLM trap: (1) Không biết MAU_TYPE = '3.Reactive', (2) Chỉ query 1 tháng mà không check retention.","WITH reactive_feb AS ( SELECT DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) AS uid FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND MAU_TYPE = '3.Reactive' ), feb_metrics AS ( SELECT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) AS uid, SUM(COALESCE(cashin_gmv,0)+COALESCE(cashin_p2p_gmv,0)+COALESCE(cashin_va_gmv,0)+COALESCE(cashin_ai_gmv,0)+COALESCE(cashin_stock_gmv,0)+COALESCE(cashin_payout_gmv,0)+COALESCE(cashin_mp_gmv,0)) AS total_cashin FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) IN (SELECT uid FROM reactive_feb) GROUP BY CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) ), mar_status AS ( SELECT DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) AS uid FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-03-01' AND '2026-03-08' AND MAU_TYPE != '0.Churn' ) SELECT COUNT(DISTINCT f.uid) AS reactive_users, SUM(f.total_cashin) AS total_reactive_cashin, AVG(f.total_cashin) AS avg_cashin_per_user, COUNT(DISTINCT m.uid) AS retained_in_mar, ROUND(COUNT(DISTINCT m.uid) * 100.0 / NULLIF(COUNT(DISTINCT f.uid), 0), 2) AS retention_pct FROM feb_metrics f LEFT JOIN mar_status m ON f.uid = m.uid",1 row: reactive count + cashin + retention into March,1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT039,"user nap qua p2p vs nap thuong, nhom nao nhieu hon?",Conditional Logic,Simple,mart_ttt_daily_user_record,"CASHIN_GMV, CASHIN_P2P_GMV, USER_ID, GRASS_DATE","Nạp qua P2P = cashin_p2p_gmv. ""Nạp thường"" = cashin_gmv (cashin thuần từ ví MoMo). So sánh 2 channels. Câu đơn giản nhưng LLM có thể: (1) Gộp tất cả sub-channels thay vì chỉ 2, (2) Hiểu ""nạp thường"" sai (nghĩ là total). Không nói timeframe.","SELECT 'Cashin Thuần' AS channel, COUNT(DISTINCT CASE WHEN CASHIN_TRANS > 0 THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS users, SUM(COALESCE(CASHIN_GMV, 0)) AS gmv FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' UNION ALL SELECT 'Cashin P2P', COUNT(DISTINCT CASE WHEN CASHIN_P2P_TRANS > 0 THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END), SUM(COALESCE(CASHIN_P2P_GMV, 0)) FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28'",2 rows: P2P vs Thuần — user count + GMV comparison,2.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT040,nguoi dung tui+ duoc quyen loi gi? bao nhieu nguoi su dung tung quyen loi?,Multi-step,Complex,mart_ttt_daily_user_record,"PLUS_TYPE, IS_STOCKBACK, IS_WHEEL, IS_TKOL8M, IS_CASHBACK, IS_CASHOUT_NAPAS, TOTAL_CASHBACK_GMV, CASHOUT_NAPAS_GMV, USER_ID, GRASS_DATE","Quyền lợi Túi+ gồm: (1) Cashback 0.1% thanh toán (IS_CASHBACK), (2) Rút napas miễn phí 100tr/tháng (IS_CASHOUT_NAPAS), (3) Stockback cổ phiếu (IS_STOCKBACK), (4) Vòng quay (IS_WHEEL), (5) TKOL 8M ưu đãi (IS_TKOL8M). Cần COUNT DISTINCT users cho mỗi benefit. Filter Túi+ users trước. LLM gần chắc không biết 5 campaign behavior tags này tồn tại — đây là trap rất khó.","SELECT COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS total_tui_plus, COUNT(DISTINCT CASE WHEN IS_CASHBACK = 'Cashback' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS used_cashback, COUNT(DISTINCT CASE WHEN IS_CASHOUT_NAPAS = 'Cashout' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS used_napas, COUNT(DISTINCT CASE WHEN IS_STOCKBACK = 'Claim Stockback' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS used_stockback, COUNT(DISTINCT CASE WHEN IS_WHEEL = 'Wheel88' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS used_wheel, COUNT(DISTINCT CASE WHEN IS_TKOL8M = 'TKOL 8M' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS used_tkol8m FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-01-01' AND '2026-01-31' AND PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL",1 row: total Túi+ users + count per benefit type,1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT041,tui+ bac vang kim cuong moi hang co bao nhieu nguoi?,Aggregation,Simple,mart_ttt_daily_user_record,"TIER, USER_ID, GRASS_DATE, PLUS_TYPE","Bạc vàng kim cương = Silver, Gold, Platinum (column TIER). Cần filter PLUS_TYPE NOT IN ('0.Churn', 'None') trước, rồi GROUP BY TIER. REGEXP_EXTRACT cho dedup. Column TIER mới từ 01/2026 — LLM gần chắc không biết column này tồn tại, sẽ cố dùng PLUS_SEGMENT hoặc CASE WHEN từ BALANCE. Không nói tháng nào.","SELECT TIER, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL GROUP BY TIER ORDER BY users DESC","3 rows: Silver, Gold, Platinum user counts",3.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT042,bao nhieu nguoi bo tien mua tui+? ho chi bao nhieu?,Aggregation,Moderate,mart_ttt_daily_user_record,"PLUS_SEGMENT, IS_BUY_PACKAGE, PACKAGE_GMV, PACKAGE_TRANS, USER_ID, GRASS_DATE","Bỏ tiền mua = 2 khía cạnh: (1) mua subscription Túi+ (PLUS_SEGMENT chứa '+ Buy' suffix — Silver + Buy = 9K, Gold + Buy = 19K, Platinum + Buy = 49K), (2) mua gói bundle voucher (IS_BUY_PACKAGE). Câu hỏi ambiguous — user hỏi về subscription hay bundle? Agent tốt nên trả cả 2. LLM sẽ fail vì: (1) không biết PLUS_SEGMENT format mới, (2) không biết IS_BUY_PACKAGE, PACKAGE_GMV columns tồn tại.","-- Part 1: Subscription Túi+ (trả tiền mua tier) SELECT PLUS_SEGMENT, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND PLUS_SEGMENT LIKE '%Buy%' GROUP BY PLUS_SEGMENT ORDER BY users DESC; -- Part 2: Bundle voucher SELECT COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS bundle_buyers, SUM(COALESCE(PACKAGE_GMV, 0)) AS total_package_revenue, SUM(COALESCE(PACKAGE_TRANS, 0)) AS total_package_trans FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND IS_BUY_PACKAGE IS NOT NULL AND IS_BUY_PACKAGE != 'None'",Part 1: rows per Buy segment. Part 2: total buyers + revenue,Multi-query,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT043,user ttt dung tien ttt de thanh toan va chuyen tien chiem bao nhieu % tong momo?,Aggregation,Moderate,mart_ttt_daily_user_record,"TTT_P2P_GMV, TTT_PAYMENT_GMV, MOMO_P2P_GMV, MOMO_PAYMENT_GMV, GRASS_DATE","% penetration = ttt_gmv / momo_gmv * 100. Có 2 metrics: P2P penetration (ttt_p2p_gmv / momo_p2p_gmv) và Payment penetration (ttt_payment_gmv / momo_payment_gmv). Columns mới hoàn toàn — LLM không biết tồn tại. Sẽ cố dùng cashout_p2p_gmv hoặc cashout_payment_gmv (sai vì đó chỉ là cashout, không phải cross-platform metric).","SELECT SUM(COALESCE(TTT_P2P_GMV, 0)) AS ttt_p2p, SUM(COALESCE(MOMO_P2P_GMV, 0)) AS momo_p2p, ROUND(SUM(COALESCE(TTT_P2P_GMV, 0)) * 100.0 / NULLIF(SUM(COALESCE(MOMO_P2P_GMV, 0)), 0), 2) AS p2p_penetration_pct, SUM(COALESCE(TTT_PAYMENT_GMV, 0)) AS ttt_payment, SUM(COALESCE(MOMO_PAYMENT_GMV, 0)) AS momo_payment, ROUND(SUM(COALESCE(TTT_PAYMENT_GMV, 0)) * 100.0 / NULLIF(SUM(COALESCE(MOMO_PAYMENT_GMV, 0)), 0), 2) AS payment_penetration_pct FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28'",1 row: P2P penetration % + Payment penetration %,1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT044,tier platinum co so du trung binh bao nhieu? so voi silver va gold?,Aggregation,Moderate,mart_ttt_daily_user_record,"TIER, BALANCE, AVG_BALANCE, USER_ID, GRASS_DATE, PLUS_TYPE","GROUP BY TIER, tính AVG(BALANCE) tại end-of-month snapshot. Filter PLUS_TYPE active. Bẫy: (1) TIER column mới, LLM không biết, (2) Dùng AVG_BALANCE (rolling 30d) thay vì AVG(BALANCE) (snapshot) — 2 con số khác nhau, câu hỏi hỏi ""số dư trung bình"" có thể map vào cả 2. (3) Platinum = Balance 50M+ nên avg balance phải rất cao.","SELECT TIER, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users, AVG(BALANCE) AS avg_balance, SUM(BALANCE) AS total_aum FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-02-28' AND PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL GROUP BY TIER ORDER BY avg_balance DESC","3 rows: Platinum (avg very high ~50M+), Gold, Silver — sorted by avg_balance",3.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT045,user nhan xu sinh loi co bao nhieu? ho co xu huong giu tien lau hon khong?,Multi-step,Complex,mart_ttt_daily_user_record,"IS_COIN_INT, IS_COIN_SPENT, USER_ID, BALANCE, MFU_TYPE, GRASS_DATE","Xu sinh lời = IS_COIN_INT column (scheme collab MoMo Xu, 8%/năm). ""Giữ tiền lâu hơn"" = so sánh MFU retention hoặc avg balance giữa nhóm IS_COIN_INT active vs non-active. Cần 2 queries: (1) count IS_COIN_INT users, (2) compare balance/retention metrics. LLM gần chắc không biết IS_COIN_INT tồn tại. Câu hỏi cũng liên quan IS_COIN_SPENT (đổi xu → voucher).","-- Part 1: Count coin interest users SELECT IS_COIN_INT, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users, AVG(BALANCE) AS avg_balance FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE = '2026-02-28' AND MFU_TYPE != '0.Churn' GROUP BY IS_COIN_INT; -- Part 2: Compare retention (MFU retain rate) SELECT CASE WHEN IS_COIN_INT IS NOT NULL AND IS_COIN_INT != 'None' THEN 'Coin Interest User' ELSE 'Regular User' END AS segment, COUNT(DISTINCT CASE WHEN MFU_TYPE = '2.Retain' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) AS retained, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS total, ROUND(COUNT(DISTINCT CASE WHEN MFU_TYPE = '2.Retain' THEN CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) END) * 100.0 / NULLIF(COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)), 0), 2) AS retain_pct FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND MFU_TYPE != '0.Churn' GROUP BY CASE WHEN IS_COIN_INT IS NOT NULL AND IS_COIN_INT != 'None' THEN 'Coin Interest User' ELSE 'Regular User' END",Part 1: user counts + avg balance by IS_COIN_INT. Part 2: retention comparison,Multi-query,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT046,% nguoi dung ttt dung tien ttt chuyen khoan tang hay giam? tach p2p voi thanh toan,Date/Time,Complex,mart_ttt_daily_user_record,"TTT_P2P_GMV, TTT_PAYMENT_GMV, MOMO_P2P_GMV, MOMO_PAYMENT_GMV, GRASS_DATE","Cần tính penetration % theo tháng cho cả P2P và Payment, rồi so trend MoM. Penetration = ttt_gmv / momo_gmv. ""Tách P2P với thanh toán"" = 2 metrics riêng. Cần ít nhất 2-3 tháng data. LLM sẽ fail vì: (1) Không biết columns mới, (2) Dùng cashout_p2p thay vì ttt_p2p_gmv, (3) Không có mẫu số momo_* để tính %.","SELECT DATE_TRUNC(GRASS_DATE, MONTH) AS month, ROUND(SUM(COALESCE(TTT_P2P_GMV, 0)) * 100.0 / NULLIF(SUM(COALESCE(MOMO_P2P_GMV, 0)), 0), 2) AS p2p_penetration_pct, ROUND(SUM(COALESCE(TTT_PAYMENT_GMV, 0)) * 100.0 / NULLIF(SUM(COALESCE(MOMO_PAYMENT_GMV, 0)), 0), 2) AS payment_penetration_pct FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2025-12-01' AND '2026-02-28' GROUP BY DATE_TRUNC(GRASS_DATE, MONTH) ORDER BY month","3 rows (Dec, Jan, Feb): P2P penetration % + Payment penetration % monthly trend",3.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT047,merchant nap tien payout vao ttt tu khi nao? co bao nhieu merchant dang dung?,Aggregation,Moderate,mart_ttt_daily_user_record,"FIRST_PAYOUT_DATE, CASHIN_PAYOUT_GMV, CASHIN_PAYOUT_TRANS, USER_ID, GRASS_DATE","Merchant nạp payout = user có FIRST_PAYOUT_DATE IS NOT NULL hoặc CASHIN_PAYOUT_GMV > 0. ""Từ khi nào"" = MIN(FIRST_PAYOUT_DATE). ""Bao nhiêu merchant"" = COUNT DISTINCT users có payout. Column FIRST_PAYOUT_DATE mới — LLM không biết. Sẽ cố filter bằng cashin_payout_gmv > 0 (gần đúng nhưng thiếu FIRST_PAYOUT_DATE insight).","SELECT COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS active_merchants, MIN(FIRST_PAYOUT_DATE) AS earliest_payout_date, SUM(COALESCE(CASHIN_PAYOUT_GMV, 0)) AS total_payout_gmv, SUM(COALESCE(CASHIN_PAYOUT_TRANS, 0)) AS total_payout_trans FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND FIRST_PAYOUT_DATE IS NOT NULL",1 row: merchant count + earliest payout date + GMV + trans,1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT048,tier nao dung ttt de thanh toan nhieu nhat? platinum co dung nhieu hon silver khong?,Conditional Logic,Complex,mart_ttt_daily_user_record,"TIER, TTT_PAYMENT_GMV, TTT_PAYMENT_TRANS, TTT_P2P_GMV, USER_ID, PLUS_TYPE, GRASS_DATE","Cross 2 dimensions mới: TIER × TTT as SOF. Cần GROUP BY TIER, SUM(ttt_payment_gmv + ttt_p2p_gmv). Filter PLUS_TYPE active. LLM fail vì: (1) TIER column unknown, (2) TTT_PAYMENT_GMV unknown → dùng cashout_payment_gmv (gần nhưng không phải SOF metric), (3) Thiếu cross-analysis tier × SOF.","SELECT TIER, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users, SUM(COALESCE(TTT_PAYMENT_GMV, 0)) AS ttt_payment_gmv, SUM(COALESCE(TTT_P2P_GMV, 0)) AS ttt_p2p_gmv, SUM(COALESCE(TTT_PAYMENT_GMV, 0) + COALESCE(TTT_P2P_GMV, 0)) AS total_sof_gmv, ROUND(SUM(COALESCE(TTT_PAYMENT_GMV, 0) + COALESCE(TTT_P2P_GMV, 0)) / NULLIF(COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)), 0), 0) AS avg_sof_per_user FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL GROUP BY TIER ORDER BY total_sof_gmv DESC","3 rows: tier comparison on SOF usage, Platinum likely highest per user",3.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT049,user chuyen tien qua ngan hang (e2b) tu ttt so voi toan momo nhu nao?,Aggregation,Moderate,mart_ttt_daily_user_record,"TTT_P2P_E2B_GMV, TTT_P2P_E2B_TRANS, MOMO_P2P_E2B_GMV, MOMO_P2P_E2B_TRANS, GRASS_DATE","E2B = E-wallet to Bank transfer. Columns rất mới (chưa có đầy đủ data model note). So sánh TTT E2B vs MoMo E2B để tính penetration. LLM gần chắc không biết E2B columns tồn tại — sẽ cố dùng cashout_napas (liên quan nhưng khác concept: napas = TTT → bank trực tiếp, E2B = ví → bank qua P2P).","SELECT SUM(COALESCE(TTT_P2P_E2B_GMV, 0)) AS ttt_e2b_gmv, SUM(COALESCE(MOMO_P2P_E2B_GMV, 0)) AS momo_e2b_gmv, ROUND(SUM(COALESCE(TTT_P2P_E2B_GMV, 0)) * 100.0 / NULLIF(SUM(COALESCE(MOMO_P2P_E2B_GMV, 0)), 0), 2) AS e2b_penetration_pct, SUM(COALESCE(TTT_P2P_E2B_TRANS, 0)) AS ttt_e2b_trans, SUM(COALESCE(MOMO_P2P_E2B_TRANS, 0)) AS momo_e2b_trans FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28'","1 row: TTT E2B GMV, MoMo E2B GMV, penetration %",1.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT050,"so sanh hanh vi su dung ttt lam nguon tien cua 3 tier bac vang kim cuong — ai chuyen tien nhieu, ai thanh toan nhieu?",Multi-step,Complex,mart_ttt_daily_user_record,"TIER, TTT_P2P_GMV, TTT_P2P_TRANS, TTT_PAYMENT_GMV, TTT_PAYMENT_TRANS, TTT_P2P_E2B_GMV, MOMO_P2P_GMV, MOMO_PAYMENT_GMV, USER_ID, PLUS_TYPE, GRASS_DATE",Full cross-analysis: TIER × (P2P + Payment + E2B). Cần per-user metrics (avg GMV/user) để so sánh fair vì Platinum ít user hơn nhưng chi nhiều hơn. Also tính penetration per tier = ttt_gmv / momo_gmv. Đây là câu hỏi tổng hợp exploit gần như tất cả columns mới: TIER + ttt_p2p + ttt_payment + momo_p2p + momo_payment + e2b. LLM sẽ fail ở hầu hết mọi khía cạnh.,"SELECT TIER, COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)) AS users, -- P2P SUM(COALESCE(TTT_P2P_GMV, 0)) AS ttt_p2p_gmv, ROUND(SUM(COALESCE(TTT_P2P_GMV, 0)) / NULLIF(COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)), 0), 0) AS avg_p2p_per_user, ROUND(SUM(COALESCE(TTT_P2P_GMV, 0)) * 100.0 / NULLIF(SUM(COALESCE(MOMO_P2P_GMV, 0)), 0), 2) AS p2p_penetration_pct, -- Payment SUM(COALESCE(TTT_PAYMENT_GMV, 0)) AS ttt_payment_gmv, ROUND(SUM(COALESCE(TTT_PAYMENT_GMV, 0)) / NULLIF(COUNT(DISTINCT CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING)), 0), 0) AS avg_payment_per_user, ROUND(SUM(COALESCE(TTT_PAYMENT_GMV, 0)) * 100.0 / NULLIF(SUM(COALESCE(MOMO_PAYMENT_GMV, 0)), 0), 2) AS payment_penetration_pct, -- E2B SUM(COALESCE(TTT_P2P_E2B_GMV, 0)) AS ttt_e2b_gmv FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record` WHERE GRASS_DATE BETWEEN '2026-02-01' AND '2026-02-28' AND PLUS_TYPE NOT IN ('0.Churn', 'None') AND PLUS_TYPE IS NOT NULL GROUP BY TIER ORDER BY ttt_p2p_gmv + ttt_payment_gmv DESC","3 rows: Silver, Gold, Platinum — full SOF breakdown with per-user avg + penetration %",3.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+TTT051,so sanh chi phi hoan tien tui cong va doanh thu ban tui cong trung binh moi user trong 6 thang qua,Multi-step,Complex,mart_ttt_daily_user_record,"total_cashback_gmv,
+user_id,
+grass_date,
+segment,","  - Chi phí: TOTAL_CASHBACK_GMV (0.1% hoàn tiền cho Túi+ users)
+  - Doanh thu: Phí subscription — nhưng không có column trực tiếp, phải ước lượng từ PLUS_SEGMENT 
+  (chứa suffix Buy) với data sau 2026-01-01, và chứa ''TTT+ 9k'' với data trước 2026-01-01
+  - Upgrade: Nếu user đã có tier thấp (kể cả miễn phí) → mua tier cao hơn chỉ trả phần chênh lệch 
+  - Detect upgrade: Dùng LAG(TIER) so sánh tier các ngày trước vs hiện tại","
+  WITH monthly_user AS (
+    -- Gom về 1 row / user / tháng
+    SELECT
+      DATE_TRUNC(GRASS_DATE, MONTH) AS month,
+      CAST(REGEXP_EXTRACT(USER_ID, r'\d+') AS STRING) AS uid,
+      -- Lấy segment + tier cuối tháng (ổn định nhất)
+      ARRAY_AGG(PLUS_SEGMENT ORDER BY GRASS_DATE DESC LIMIT 1)[OFFSET(0)] AS plus_segment,        
+      ARRAY_AGG(TIER ORDER BY GRASS_DATE DESC LIMIT 1)[OFFSET(0)] AS tier,
+      -- Cashback = tích lũy hàng ngày → SUM cả tháng
+      SUM(COALESCE(TOTAL_CASHBACK_GMV, 0)) AS cashback_gmv
+    FROM `momovn-prod.BU_FI.mart_ttt_daily_user_record`
+    WHERE GRASS_DATE BETWEEN '2025-09-01' AND '2026-02-28'
+      AND PLUS_TYPE NOT IN ('0.Churn', 'None')
+      AND PLUS_TYPE IS NOT NULL
+    GROUP BY 1, 2
+  ),
+
+  with_prev_tier AS (
+    -- Detect upgrade: so sánh tier tháng trước
+    SELECT
+      *,
+      LAG(tier) OVER (PARTITION BY uid ORDER BY month) AS prev_tier
+    FROM monthly_user
+  ),
+
+  revenue_calc AS (
+    SELECT
+      month, uid, cashback_gmv, plus_segment, tier, prev_tier,
+
+      -- ===== ƯỚC LƯỢNG DOANH THU SUBSCRIPTION =====
+      CASE
+        -- [Pre-2026] Chỉ có 1 gói TTT+ 9k
+        WHEN month < '2026-01-01'
+          AND plus_segment = 'TTT+ 9k'
+          THEN 9000
+
+        -- [Post-2026] Silver + Buy = 9K (không có tier thấp hơn → luôn full)
+        WHEN month >= '2026-01-01'
+          AND plus_segment LIKE '%Silver%Buy%'
+          THEN 9000
+
+        -- [Post-2026] Gold + Buy: 19K full, hoặc chênh lệch nếu upgrade
+        WHEN month >= '2026-01-01'
+          AND plus_segment LIKE '%Gold%Buy%'
+          THEN CASE
+            WHEN prev_tier = 'Silver' THEN 19000 - 9000   -- upgrade Silver→Gold: 10K
+            ELSE 19000                                      -- mua mới: 19K
+          END
+
+        -- [Post-2026] Platinum + Buy: 49K full, hoặc chênh lệch
+        WHEN month >= '2026-01-01'
+          AND plus_segment LIKE '%Platinum%Buy%'
+          THEN CASE
+            WHEN prev_tier = 'Gold'   THEN 49000 - 19000  -- upgrade Gold→Plat: 30K
+            WHEN prev_tier = 'Silver' THEN 49000 - 9000   -- upgrade Silver→Plat: 40K
+            ELSE 49000                                      -- mua mới: 49K
+          END
+
+        -- Các segment khác = được Túi+ miễn phí
+        ELSE 0
+      END AS est_revenue,
+
+      -- Flag paid user
+      CASE
+        WHEN plus_segment = 'TTT+ 9k' THEN 1
+        WHEN plus_segment LIKE '%Buy%' THEN 1
+        ELSE 0
+      END AS is_paid
+
+    FROM with_prev_tier
+  )
+
+  -- ===== KẾT QUẢ CHÍNH: MONTHLY COMPARISON =====
+  SELECT
+    month,
+
+    -- Tổng quan users
+    COUNT(DISTINCT uid)                                                AS total_plus_users,       
+    COUNT(DISTINCT CASE WHEN is_paid = 1 THEN uid END)                AS paid_users,
+    COUNT(DISTINCT CASE WHEN cashback_gmv > 0 THEN uid END)           AS cashback_users,
+
+    -- CHI PHÍ HOÀN TIỀN (Cashback 0.1%)
+    ROUND(SUM(cashback_gmv), 0)                                       AS total_cashback_cost,     
+    ROUND(SUM(cashback_gmv)
+      / NULLIF(COUNT(DISTINCT CASE WHEN cashback_gmv > 0
+          THEN uid END), 0), 0)                                       AS avg_cashback_per_cb_user,
+    ROUND(SUM(cashback_gmv)
+      / NULLIF(COUNT(DISTINCT uid), 0), 0)                             AS
+  avg_cashback_per_plus_user,
+
+    -- DOANH THU BÁN TÚI+ (subscription)
+    ROUND(SUM(est_revenue), 0)                                        AS
+  total_subscription_revenue,
+    ROUND(SUM(est_revenue)
+      / NULLIF(COUNT(DISTINCT CASE WHEN is_paid = 1
+          THEN uid END), 0), 0)                                       AS
+  avg_revenue_per_paid_user,
+    ROUND(SUM(est_revenue)
+      / NULLIF(COUNT(DISTINCT uid), 0), 0)                             AS
+  avg_revenue_per_plus_user,
+
+    -- NET = Revenue - Cost (per Túi+ user)
+    ROUND(
+      (SUM(est_revenue) - SUM(cashback_gmv))
+      / NULLIF(COUNT(DISTINCT uid), 0), 0
+    )                                                                  AS net_per_plus_user,      
+
+    -- Ratio: doanh thu / chi phí
+    ROUND(SUM(est_revenue)
+      / NULLIF(SUM(cashback_gmv), 0), 4)                              AS revenue_cost_ratio       
+
+  FROM revenue_calc
+  GROUP BY month
+  ORDER BY month
+","6 rows (Sep 2025 → Feb 2026):  Tổng tiền MoMo trả lại user (chi phí) , Tổng tiền user trả để mua Túi+ (doanh thu),   TB chi phí hoàn / user có nhận cashback,TB doanh thu / user trả tiền mua Túi+, Lãi/lỗ ròng trên mỗi user Túi+ ,  ROI >1 = lãi, <1 = lỗ   ",6.0,eval,DA Team (AI-assisted),2026-03-10 00:00:00,TTT
+,,,,,,,,,,,,,
+VTS001,tổng GMV VTS ở SME OFFLINE trong tháng 1/2026 là bao nhiêu,Aggregation,Simple,momovn-prod.BU_FI.PAYLATER_ALL_TRANS,"amount, created_date, service_category",result_code=0 & pay_pl/pay_ins & service_category = 'SME OFFLINE',"SELECT SUM(amount) 
+FROM momovn-prod.BU_FI.PAYLATER_ALL_TRANS 
+WHERE 1=1
+AND created_date BETWEEN '2026-01-01' AND '2026-01-31' 
+AND result_code=0 AND trans_type IN ('pay_pl','pay_ins')
+and service_category = 'SME OFFLINE'","1 row, GMV = 225418915314",1.0,dev,DA_Team,2025-03-11,VTS
+VTS002,tháng 12/2025 có bao nhiêu user dùng VTS theo active_type,Aggregation,Simple,momovn-prod.BU_FI.momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"mau_type, agent_id, month_trans",MAU = distinct users,"SELECT mau_type, count(distinct agent_id)
+ FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT` 
+ WHERE month_trans = '2025-12-01'
+ group by 1
+ order by 1","3 row,
+1.New        112594
+2.Retain        1158626
+3.Reactive        165386",3.0,dev,DA_Team,2025-03-11,VTS
+VTS003,"Có bao nhiêu user light, medium, hardcore ở tháng 1/2026?",Conditional Logic,Simple,momovn-prod.BU_FI.momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"agent_id, trans_vts, month_trans","Phân loại theo số transaction (trans_vts): light = 1-3 trans, medium = 4-6 trans, hardcore = 7+ trans. CASE WHEN trans_vts BETWEEN 1 AND 3 → light, 4-6 → medium, >=7 → hardcore","SELECT
+  CASE
+    WHEN trans_vts BETWEEN 1 AND 3 THEN 'light'
+    WHEN trans_vts BETWEEN 4 AND 6 THEN 'medium'
+    WHEN trans_vts >= 7 THEN 'hardcore'
+  END AS user_segment,
+  COUNT(DISTINCT agent_id) AS user_count
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2026-01-01'
+GROUP BY 1
+ORDER BY 1","3 rows,
+user_segment        user_count
+1.light        596303
+2.medium        286755
+3.hardcore        570525",3.0,eval,DA_Team,2025-03-11,VTS
+VTS004,Số lượng user có trả góp ở TikTok thang 1/2026,Aggregation,Simple,PAYLATER_ALL_TRANS,"user_id, trans_type, service_name, result_code",Trả góp: trans_type = 'pay_ins'. Merchant TikTok: service_nameLIKE '%tiktok%' (có thể viết hoa/thường khác nhau). Filter result_code = 0. COUNT DISTINCT user_id,"SELECT COUNT(DISTINCT user_id) AS user_count
+FROM `momovn-prod.BU_FI.PAYLATER_ALL_TRANS`
+WHERE result_code = 0
+  AND trans_type = 'pay_ins'
+  AND created_date BETWEEN '2026-01-01' AND '2026-01-31' 
+  AND LOWER(service_name) LIKE '%tiktok%'
+  group by all","1 row, 17466",1.0,dev,DA_Team,2025-03-11,VTS
+VTS005,Số lượng MAU theo từng nhóm tuổi trong tháng 3/2025,Aggregation,Simple,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"agent_id, age_group, month_trans",COUNT DISTINCT agent_id GROUP BY age_group,"SELECT age_group, COUNT(DISTINCT agent_id) AS user_count
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2025-03-01'
+GROUP BY age_group
+ORDER BY age_group","7 rows (7 age groups)
+age_group        user_count
+[1] Age <=22        332642
+[2] Age 23-26        255399
+[3] Age 27-30        162575
+[4] Age 31-35        152964
+[5] Age 36-40        79371
+[6] Age > 40        60005",7.0,dev,DA_Team,2025-03-11,VTS
+VTS006,User đang có hạn mức như thế nào? Cho xem phân bổ credit limit theo số user tháng 2/2025,Aggregation,Simple,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"agent_id, credit_limit, month_trans","Phân bổ credit_limit theo khoảng. Có thể chia theo các mức phổ biến: <=1M, 1-3M, 3-5M, 5-10M, 10-20M, >20M. CASE WHEN để bucket rồi COUNT DISTINCT agent_id","SELECT
+  CASE
+    WHEN credit_limit <= 1000000 THEN '01. <=1M'
+    WHEN credit_limit <= 3000000 THEN '02. 1-3M'
+    WHEN credit_limit <= 5000000 THEN '03. 3-5M'
+    WHEN credit_limit <= 10000000 THEN '04. 5-10M'
+    WHEN credit_limit <= 20000000 THEN '05. 10-20M'
+    ELSE '06. >20M'
+  END AS credit_limit_bucket,
+  COUNT(DISTINCT agent_id) AS user_count
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2025-02-01'
+GROUP BY 1
+ORDER BY 1","5 row
+01. <=1M	328968
+02. 1-3M	211902
+03. 3-5M	151661
+04. 5-10M	217911
+05. 10-20M	60549",5.0,eval,DA_Team,2025-03-11,VTS
+VTS007,"User ở HCM thanh toán ở SME , tách theo active type, thang 3/2025",Ranking + Filter,Simple,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"agent_id, spending_sps, sl_trans_sps, most_city_a60, mau_type, month_trans","SME = SME OFFLINE, tương ứng cột spending_sps / sl_trans_sps. 
+User có dùng SME: sl_trans_sps > 0. 
+Location dùng most_city_a60 ( most_city_a60 = 'Hồ Chí Minh'. 
+active_type = mau_type (1.New, 2.Retain, 3.Reactive). ","SELECT
+       mau_type,
+       COUNT(DISTINCT agent_id) AS user_count,
+       SUM(spending_sps) AS total_spending_sme,
+       SUM(sl_trans_sps) AS total_trans_sme
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2025-03-01'
+  AND sl_trans_sps > 0
+  and most_city_a60 = 'Hồ Chí Minh'
+GROUP BY 1
+ORDER BY 1","3 row: 
+mau_type        user_count        total_spending_sme        total_trans_sme
+1.New        6223        11052796573.0        14814
+2.Retain        126213        182967382561.0        430887
+3.Reactive        9713        14737209346.0        23693",3.0,dev,DA_Team,2025-03-11,VTS
+VTS008,Top 10% user PayLater chiếm bao nhiêu % GMV? thang 12/2025,Window + Complex,Moderate,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"agent_id, spending_vts, month_trans",Dùng NTILE(10) hoặc PERCENT_RANK() để xác định top 10% user theo spending_vts. GMV = SUM(spending_vts). Tính % GMV của top 10% so với tổng GMV,"WITH user_ranked AS (
+  SELECT agent_id, spending_vts,
+         NTILE(10) OVER (ORDER BY spending_vts DESC) AS decile
+  FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+  WHERE month_trans = '2025-12-01'
+)
+SELECT
+  COUNT(DISTINCT CASE WHEN decile = 1 THEN agent_id END) AS top10pct_users,
+  COUNT(DISTINCT agent_id) AS total_users,
+  SUM(CASE WHEN decile = 1 THEN spending_vts ELSE 0 END) AS top10pct_gmv,
+  SUM(spending_vts) AS total_gmv,
+  SAFE_DIVIDE(
+    SUM(CASE WHEN decile = 1 THEN spending_vts ELSE 0 END),
+    SUM(spending_vts)
+  ) AS top10pct_gmv_share
+FROM user_ranked"," 1 row,
+""top10pct_users"": ""143661"",
+  ""total_users"": ""1436606"",
+  ""top10pct_gmv"": ""1133211080525.0"",
+  ""total_gmv"": ""2367319098181.0"",
+  ""top10pct_gmv_share"": ""0.478""",1.0,eval,DA_Team,2025-03-11,VTS
+VTS009,So sánh tỷ lệ retain giữa user có dùng promo và không dùng promo trong tháng 11/2025,Conditional Logic,Moderate,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"is_retain_next_month, is_using_promo, agent_id, month_trans","is_using_promo = 1 là có dùng promo. Retention rate = SAFE_DIVIDE(SUM(is_retain_next_month), COUNT(DISTINCT agent_id)). GROUP BY is_using_promo","SELECT is_using_promo,
+       COUNT(DISTINCT agent_id) AS users,
+       SAFE_DIVIDE(SUM(is_retain_next_month), COUNT(DISTINCT agent_id)) AS retention_rate
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2025-11-01'
+GROUP BY is_using_promo","2 rows,  
+promo vs non-promo với retention rate: [{
+  ""is_using_promo"": ""0"",
+  ""users"": ""1115184"",
+  ""retention_rate"": ""0.843""
+}, {
+  ""is_using_promo"": ""1"",
+  ""users"": ""262734"",
+  ""retention_rate"": ""0.830""
+}]",2.0,eval,DA_Team,2025-03-11,VTS
+VTS010,User thanh toán VTS bao nhiêu dịch vụ ? Phân bổ user theo số lượng dịch vụ tháng 12/2025,Conditional Logic,Moderate,"momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT, ","agent_id, cnt_usecase, month_trans","cnt_usecase là số distinct usecase mỗi user dùng trong tháng. Tạo range: 1 usecase, 2 usecase, 3+ usecase, CASE WHEN để bucket rồi COUNT DISTINCT agent_id","SELECT
+  CASE
+    WHEN cnt_usecase <= 1 THEN '1 usecase'
+    WHEN cnt_usecase = 2 THEN '2 usecases'
+    WHEN cnt_usecase >= 3 THEN '3+ usecases'
+  END AS usecase_range,
+  COUNT(DISTINCT agent_id) AS user_count
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2025-12-01'
+GROUP BY 1
+ORDER BY 1","3 row;  [{
+  ""usecase_range"": ""1 usecase"",
+  ""user_count"": ""514981""
+}, {
+  ""usecase_range"": ""2 usecases"",
+  ""user_count"": ""347842""
+}, {
+  ""usecase_range"": ""3+ usecases"",
+  ""user_count"": ""573783""
+}]",3.0,eval,DA_Team,2025-03-11,VTS
+VTS011,User có first usecase là airtime/data thì second usecase tập trung vào usecase nào? thang 1/2026,Window + Complex,Moderate,PAYLATER_ALL_TRANS,"user_id, core_id, service_category, created_millis, result_code, trans_type","Cần xác định thứ tự usecase theo thời gian cho mỗi user. Dùng ROW_NUMBER() PARTITION BY user_id ORDER BY created_millis để rank transaction. First usecase = service_category của transaction đầu tiên. Lọc user có first usecase là AIRTIME hoặc DATA. Second usecase = service_category của transaction thứ 2 (khác service_category đầu). Filter: result_code = 0, trans_type IN ('pay_pl','pay_ins','send_pl')","WITH trans_ranked AS (
+  SELECT user_id, service_category, created_millis,
+         ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_millis) AS rn
+  FROM `momovn-prod.BU_FI.PAYLATER_ALL_TRANS`
+  WHERE result_code = 0
+    AND trans_type IN ('pay_pl','pay_ins','send_pl')
+    AND created_date BETWEEN '2026-01-01' AND '2026-01-31' 
+),
+first_uc AS (
+  SELECT user_id, service_category AS first_usecase
+  FROM trans_ranked
+  WHERE rn = 1
+    AND UPPER(service_category) IN ('AIRTIME', 'DATA')
+),
+second_uc AS (
+  SELECT t.user_id, t.service_category AS second_usecase
+  FROM trans_ranked t
+  JOIN first_uc f ON t.user_id = f.user_id
+  WHERE t.rn > 1
+    AND t.service_category != f.first_usecase
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY t.user_id ORDER BY t.created_millis) = 1
+)
+SELECT s.second_usecase,
+       COUNT(DISTINCT s.user_id) AS user_count
+FROM second_uc s
+GROUP BY s.second_usecase
+ORDER BY user_count DESC","17 row:
+second_usecase        user_count
+UTILITIES        41579
+MARKETPLACE        32971
+APPLICATION STORE        27654
+LOGISTICS        23827
+SME OFFLINE        18693
+RETAIL        16532
+CINEMA        4557
+GAME        4215
+DIGITAL CONTENT        3666
+FNB        2690
+OTT        2586
+PUBLIC SERVICE        2249
+OTA        1835
+MEDIUM SIZE POS MC        1130
+ADS PAYMENT        780
+INSURANCE        684
+MONEY MARKET FUNDS        130",17.0,eval,DA_Team,2025-03-11,VTS
+VTS012,User active đầu tháng có retain cao hơn user active cuối tháng không? 11/2025,Conditional Logic,Moderate,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"agent_id, date_trans, month_trans, is_retain_next_month","date_trans là ngày giao dịch đầu tiên trong tháng. Đầu tháng: EXTRACT(DAY FROM date_trans) <= 15. Cuối tháng: EXTRACT(DAY FROM date_trans) > 15. So sánh SAFE_DIVIDE(SUM(is_retain_next_month), COUNT(DISTINCT agent_id)) giữa 2 nhóm","SELECT
+  CASE
+    WHEN EXTRACT(DAY FROM date_trans) <= 15 THEN 'early_month'
+    ELSE 'late_month'
+  END AS activation_period,
+  COUNT(DISTINCT agent_id) AS user_count,
+  SAFE_DIVIDE(SUM(is_retain_next_month), COUNT(DISTINCT agent_id)) AS retention_rate
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2025-11-01'
+GROUP BY 1
+ORDER BY 1","2 rows (early_month, late_month) với retention_rate
+activation_period        user_count        retention_rate
+early_month        1148487        0.868
+late_month        229431        0.706",2.0,eval,DA_Team,2025-03-11,VTS
+VTS013,"Phân tích hành vi giao dịch theo age_group: trung bình spending, số transaction, số usecase cho tháng 3/2025",Aggregation,Moderate,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"age_group, spending_vts, trans_vts, cnt_usecase, agent_id, month_trans","GROUP BY age_group. AVG spending, AVG trans, AVG usecase. age_group có 7 giá trị: [1] ≤22, [2] 23-26, [3] 27-30, [4] 31-35, [5] 36-40, [6] >40, [7] unknown","SELECT age_group,
+       COUNT(DISTINCT agent_id) AS user_count,
+       AVG(spending_vts) AS avg_spending,
+       AVG(trans_vts) AS avg_trans,
+       AVG(cnt_usecase) AS avg_usecase
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2025-03-01'
+GROUP BY age_group
+ORDER BY age_group","7 rows (7 age groups) với avg spending, trans, usecase",7.0,eval,DA_Team,2025-03-11,VTS
+VTS014,"User spend gần hết hạn mức có retain cao hơn k, tháng 3/2025",Multi-step,Complex,PAYLATER_MAU_SEGMENT,"agent_id, spending_vts, credit_limit, is_retain_next_month, month_trans","Utilization rate = SAFE_DIVIDE(spending_vts, credit_limit). 
+High utilization: > 0.7. Low utilization: <= 0.7. So sánh retention giữa 2 nhóm.","SELECT
+ CASE
+ WHEN SAFE_DIVIDE(spending_vts, credit_limit) > 0.7 THEN 'high_utilization'
+ ELSE 'low_utilization'
+ END AS utilization_group,
+ COUNT(DISTINCT agent_id) AS user_count,
+ AVG(SAFE_DIVIDE(spending_vts, credit_limit)) AS avg_utilization,
+ SAFE_DIVIDE(SUM(is_retain_next_month), COUNT(DISTINCT agent_id)) AS retention_rate
+FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+WHERE month_trans = '2025-03-01'
+ AND credit_limit > 0
+GROUP BY 1","2 rows (high vs low utilization) với retention; 
+utilization_group        user_count        avg_utilization        retention_rate
+low_utilization        1057760        0.20532526424316985        0.81610573286946
+high_utilization        378846        1.1662089345979383        0.85489618472941509",2.0,eval,DA_Team,2025-03-11,VTS
+VTS015,User có đc tăng limit ở tháng 9/2025 thì tăng spending bn %? quan sat sau 3 tháng,Window + Complex,Complex,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"agent_id, credit_limit, spending_vts, month_trans",Xác định user được tăng limit: so sánh credit_limit tháng N vs tháng N-1 bằng LAG(). Nếu credit_limit tăng → so sánh spending_vts trước/sau. ,"WITH user_monthly AS (
+  SELECT agent_id, month_trans, credit_limit, spending_vts
+  FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+  WHERE month_trans BETWEEN '2025-08-01' AND '2026-01-01'
+),
+
+limit_increased AS (
+  SELECT
+    a.agent_id,
+    a.spending_vts AS spending_before,
+    t1.spending_vts AS spending_t1,
+    t2.spending_vts AS spending_t2,
+    t3.spending_vts AS spending_t3
+  FROM user_monthly a
+  JOIN user_monthly b
+    ON a.agent_id = b.agent_id
+    AND a.month_trans = '2025-08-01'
+    AND b.month_trans = '2025-09-01'
+    AND b.credit_limit > a.credit_limit
+  LEFT JOIN user_monthly t1 ON a.agent_id = t1.agent_id AND t1.month_trans = '2025-10-01'
+  LEFT JOIN user_monthly t2 ON a.agent_id = t2.agent_id AND t2.month_trans = '2025-11-01'
+  LEFT JOIN user_monthly t3 ON a.agent_id = t3.agent_id AND t3.month_trans = '2025-12-01'
+)
+
+SELECT
+  COUNT(DISTINCT agent_id) AS users,
+  SAFE_DIVIDE(AVG(spending_t1) - AVG(spending_before), AVG(spending_before)) AS spending_change_t1_oct,
+  SAFE_DIVIDE(AVG(spending_t2) - AVG(spending_before), AVG(spending_before)) AS spending_change_t2_nov,
+  SAFE_DIVIDE(AVG(spending_t3) - AVG(spending_before), AVG(spending_before)) AS spending_change_t3_dec
+FROM limit_increased","1 row; 
+users	spending_change_t1_oct	spending_change_t2_nov	spending_change_t3_dec
+75503	0.39954237241173335	0.30689196073441921	0.360572284623127181",1.0,eval,DA_Team,2025-03-11,VTS
+VTS016,New MAU đang tăng từ gift nào?,Multi-step,Complex,PAYLATER_MAU_SEGMENT,"agent_id, mau_type, first_trans_gift_list, first_trans_gift_type, month_trans","first_trans_gift_list là REPEATED STRING (array gift IDs). Cần UNNEST để tách từng gift ID ra. New MAU = mau_type='1.New'. 'Đang tăng' = so sánh MoM. Agent phải biết dùng UNNEST cho REPEATED field trong BigQuery. COUNT DISTINCT agent_id theo gift_id, so sánh MoM xem gift nào đang drive new user tăng","WITH new_gift AS (
+  SELECT month_trans,
+         gift_id,
+         COUNT(DISTINCT agent_id) AS new_users
+  FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`,
+       UNNEST(first_trans_gift_list) AS gift_id
+  WHERE mau_type = '1.New'
+    AND month_trans >= DATE_SUB((SELECT MAX(month_trans) FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`), INTERVAL 2 MONTH)
+  GROUP BY 1, 2
+)
+SELECT *,
+       LAG(new_users) OVER (PARTITION BY gift_id ORDER BY month_trans) AS prev_month_users,
+       new_users - LAG(new_users) OVER (PARTITION BY gift_id ORDER BY month_trans) AS abs_change,
+       SAFE_DIVIDE(
+         new_users - LAG(new_users) OVER (PARTITION BY gift_id ORDER BY month_trans),
+         LAG(new_users) OVER (PARTITION BY gift_id ORDER BY month_trans)
+       ) AS mom_growth
+FROM new_gift
+QUALIFY LAG(new_users) OVER (PARTITION BY gift_id ORDER BY month_trans) IS NOT NULL
+ORDER BY abs_change DESC","N rows, mỗi gift_id có MoM growth, sắp xếp theo abs_change giảm dần → gift nào drive tăng trưởng",N,eval,DA_Team,2025-03-11,VTS
+VTS017,"User churn bao lâu quay lại, có dùng promo k",Multi-step,Complex,PAYLATER_MAU_SEGMENT,"agent_id, mau_type, first_trans_ispromo, is_using_promo, spending_vts, trans_vts, is_retain_next_month, month_trans","User Reactive: mau_type = '3.Reactive'. Promo-driven: first_trans_ispromo = 1 (giao dịch đầu tiên quay lại có dùng promo). Organic return: first_trans_ispromo = 0. Cần kết hợp với thời gian absent (từ LAG). So sánh spending, trans, retention giữa 2 nhóm, tách theo absent duration","WITH user_timeline AS (
+  SELECT agent_id, month_trans, mau_type, first_trans_ispromo,
+         spending_vts, trans_vts, is_retain_next_month,
+         LAG(month_trans) OVER (PARTITION BY agent_id ORDER BY month_trans) AS prev_active_month
+  FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+),
+reactive_detail AS (
+  SELECT *,
+         DATE_DIFF(month_trans, prev_active_month, MONTH) AS months_absent,
+         CASE WHEN first_trans_ispromo = 1 THEN 'promo_driven' ELSE 'organic_return' END AS return_type
+  FROM user_timeline
+  WHERE mau_type = '3.Reactive'
+    AND prev_active_month IS NOT NULL
+    AND month_trans BETWEEN '2025-10-01' AND '2026-01-01'
+)
+SELECT
+  CASE
+    WHEN months_absent <= 3 THEN 'short_absence (1-2m)'
+    WHEN months_absent <= 7 THEN 'medium_absence (3-6m)'
+    ELSE 'long_absence (>6m)'
+  END AS absence_group,
+  return_type,
+  COUNT(DISTINCT agent_id) AS users,
+  AVG(spending_vts) AS avg_spending,
+  AVG(trans_vts) AS avg_trans,
+  SAFE_DIVIDE(SUM(is_retain_next_month), COUNT(DISTINCT agent_id)) AS retention_rate
+FROM reactive_detail
+GROUP BY 1, 2
+ORDER BY 1, 2",~6 rows (3 absence groups × 2 return types) với spending + retention,6.0,eval,DA_Team,2025-03-11,VTS
+VTS018,Retention rate tháng này như nào?,Multi-step,Complex,"PAYLATER_MAU_SEGMENT, PAYLATER_ALL_TRANS","agent_id, is_retain_next_month, month_trans, user_id, created_date, result_code, trans_type","Agent cần hiểu 'tháng này như nào' = so sánh MTD (month-to-date). Retention rate tháng hiện tại chưa kết thúc → cần dùng proxy: tính % user tháng trước có giao dịch MTD tháng này (từ ALL_TRANS). So sánh running rate này với cùng thời điểm MTD tháng trước đó. Ví dụ: đang ngày 15 tháng 1/2026 → tính % user tháng 12 đã active trong 1-15/1 → compare với % user tháng 11 đã active trong 1-15/12. Nếu agent chỉ trả is_retain_next_month tháng trước = chưa đủ vì đó là full-month, không phải running rate","-- Giả sử đang ở ngày 15/1/2026
+-- Running retention tháng 1: % user tháng 12 đã có giao dịch trong 1-15/1
+WITH dec_users AS (
+  SELECT DISTINCT agent_id
+  FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+  WHERE month_trans = '2025-12-01'
+),
+jan_mtd_active AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-prod.BU_FI.PAYLATER_ALL_TRANS`
+  WHERE result_code = 0
+    AND trans_type IN ('pay_pl','pay_ins','send_pl')
+    AND created_date BETWEEN '2026-01-01' AND '2026-01-15'
+),
+-- So sánh: running retention tháng 12 tại cùng thời điểm (1-15/12)
+nov_users AS (
+  SELECT DISTINCT agent_id
+  FROM `momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT`
+  WHERE month_trans = '2025-11-01'
+),
+dec_mtd_active AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-prod.BU_FI.PAYLATER_ALL_TRANS`
+  WHERE result_code = 0
+    AND trans_type IN ('pay_pl','pay_ins','send_pl')
+    AND created_date BETWEEN '2025-12-01' AND '2025-12-15'
+)
+SELECT 'Jan 2026 MTD (1-15)' AS period,
+       COUNT(DISTINCT d.agent_id) AS prev_month_users,
+       COUNT(DISTINCT j.user_id) AS retained_mtd,
+       SAFE_DIVIDE(COUNT(DISTINCT j.user_id), COUNT(DISTINCT d.agent_id)) AS running_retention
+FROM dec_users d
+LEFT JOIN jan_mtd_active j ON d.agent_id = j.user_id
+UNION ALL
+SELECT 'Dec 2025 MTD (1-15)',
+       COUNT(DISTINCT n.agent_id),
+       COUNT(DISTINCT dm.user_id),
+       SAFE_DIVIDE(COUNT(DISTINCT dm.user_id), COUNT(DISTINCT n.agent_id))
+FROM nov_users n
+LEFT JOIN dec_mtd_active dm ON n.agent_id = dm.user_id",2 rows: MTD running retention vs Last month running retention (apples-to-apples),2.0,eval,DA_Team,2025-03-11,VTS
+VTS019,Cho t xem tình hình VTS tháng rồi,Ambiguous,Ambiguous,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"agent_id, spending_vts, trans_vts, mau_type, month_trans","Câu hỏi mơ hồ: 'tình hình' không rõ muốn xem gì (MAU, spending, retention?). 'Tháng rồi' không rõ tháng nào. Agent đúng khi hỏi lại clarify","-- Agent nên hỏi lại để clarify.
+-- Nếu assume: growth rate of MAU + growth rate of  spending tháng + gap retention rate
+",Agent nên hỏi lại. Nếu trả lời: 3 rows,3.0,ambiguous,DA_Team,2025-03-11,VTS
+VTS020,Promo có hiệu quả không?,Ambiguous,Ambiguous,momovn-prod.BU_FI.PAYLATER_MAU_SEGMENT,"is_using_promo, promo_amt, spending_vts, trans_vts, is_retain_next_month, agent_id, month_trans","Mơ hồ nhiều chiều: 'hiệu quả' = tăng spending? tăng retention? tăng frequency? ROI? Timeframe nào? Agent nên hỏi lại: hiệu quả theo góc nhìn nào, khoảng thời gian nào","-- Agent nên hỏi lại.
+-- Nếu assume: so sánh spending + retention giữa promo vs non-promo user tháng gần nhất, 
+-- promo ở first trans hay trong tháng",Agent nên hỏi lại. Nếu trả lời: 2 rows (promo vs non-promo),2.0,ambiguous,DA_Team,2025-03-11,VTS
+INS01,Có bao nhiêu user đã mua BHSK+ và đã từng gia hạn BHYT trước đó ?,JOIN,Ambiguous,"INS_CRITICAL_ILLNESS_V2, INS_PUBLIC_HEALTH","trans_date, user_payment",xSell các sản phẩm bảo hiểm trong lĩnh vực sức khỏe,,Agent nên hỏi các gói sản phẩm tương tác để segmentation 1 cách hiệu quả nhất,,ambiguous,DA_Team,2025-03-11,InsurTech
+INS02,So sánh doanh thu ngày thường vs cuối tuần vs ngày lễ — thời điểm nào khách hàng có xu hướng mua bảo hiểm nhiều nhất?,Date/Time,Simple,"INS_CRITICAL_ILLNESS_V2, INS_PUBLIC_HEALTH, INS_DIS_ALL_TRANS, INS_COL_ALL_TRANS","trans_date, user_payment, id, amount",User payment behavior,,Agent nên hỏi sản phẩm tương tác để segmentation 1 cách hiệu quả nhất,,ambiguous,DA_Team,2025-03-11,InsurTech
+INS03,Những giao dịch đã thanh toán thành công nhưng status hợp đồng không thành công — có bao nhiêu case như vậy và giá trị bao nhiêu,Conditional Logic,Simple,"INS_DIS_ALL_TRANS, INS_ACTIVE_POLICY","user, user_payment, staus, billid",Transaction detail,,,,ambiguous,DA_Team,2025-03-11,InsurTech
+INS04,Users có traffic vào luồng sản phẩn và ra đơn với first-source/last source nào ? Tốn bao nhiêu phút ?,Multi-step,Complex,"EVENT_INSURTECH, INS_DIS_ALL_TRANS_REVENUE, INS_CRITICAL_ILLNESS_V2, INS_PUBLIC_HEALTH","date, datetime, trans_datetime, user, product, time, service_name",Transaction Journey,,,,eval,DA_Team,2025-03-11,InsurTech
+INS05,"User vào luồng sản phẩm bao lâu, từ đâu, tới end-point nào, rớt ở step nào",Aggregation,Moderate,EVENT_INSURTECH,"date, datetime, user, momo_session_id_v2, key, value, event_name, service_name, screen_name, button_name, icon_name, component_name,block_name, tab_name, field_name",Funnel Event Tracking,,,,eval,DA_Team,2025-03-11,InsurTech
+INS06,Phân tích AiO các giao dịch bảo hiểm bundle của luồng OTA (Máy bay/Xe Khách),Conditional Logic,Ambiguous,"FI_PI_BUNDLE_INS, INS_OTA_AIRLINE_BUNDLE, INS_DIS_ALL_TRANS_REVENUE","trans_datetime, merchant, user_payment, ins_service, amount_bundle, amount_vexe, amount_ota, departure_time, arrival_time, days_to_trans, revenue",Product Transactions Analysis,,"Agent nên hỏi lại quy tắc sản phẩm, điểm khởi hành và nơi đến, thời gian chuyến đi,  merchant, metrics muốn theo dõi",,ambiguous,DA_Team,2025-03-11,InsurTech
+INS07,"Lượng truy vấn, kết quả và tần suất truy vấn Bảo Hiểm Y Tế trên MoMo",Date/Time,Simple,INS_PUBLIC_HEALTH_RAW,"created_datetime, request_id, user, billid, result_code",Truy vấn thông tin thẻ bảo hiểm y tế,,,,ambiguous,DA_Team,2025-03-11,InsurTech
+INS08,"Phân bổ ticket size theo merchant, money_source, sản phẩm của các dịch vụ kênh bán bảo hiểm",Ambiguous,Simple,INS_DIS_ALL_TRANS_REVENUE,"trans_date, merchant, sp, sp_detail, money_source, amount/id",Transaction detail,,,,ambiguous,DA_Team,2025-03-11,InsurTech
+INS09,Số new/retain của từng sản phẩm ở từng khoảng thời gian khác nhau,Ambiguous,Simple,INS_DIS_ALL_TRANS_REVENUE / INS_PUBLIC_HEALTH / INS_CRITICAL_ILLNESS_V2,"trans_date, sp, sp_detail, user_payment","User retention
+",,,,ambiguous,DA_Team,2025-03-11,InsurTech
+INS10,Tổng số lượng giao dịch organic và có sử dụng voucher mỗi ngày,Ambiguous,Simple,INS_DIS_ALL_TRANS_REVENUE,"trans_date, id , typeid",Transaction detail,,Mỗi ngày từ 8-10%,,ambiguous,DA_Team,2025-03-11,InsurTech
+INS11,Tỷ trọng loại hình giao dịch mỗi ngày,Ambiguous,Simple,INS_DIS_ALL_TRANS_REVENUE,"trans_date, payment_channel, id",Transaction detail,,"Mỗi ngày tầm 3-4000 giao dịch, 2-30 giao dịch auto debit/web",,ambiguous,DA_Team,2025-03-11,InsurTech
+INS12,Tỷ trọng thanh toán hộ của luồng Thu Hộ Bảo Hiểm Nhân Thọ,Ambiguous,Simple,INS_COL_ALL_TRANS,"trans_date, user_payment, id, billid, proxy_purchase",Transaction detail,,"Tỉ lệ nearly the same, 51-49",,ambiguous,DA_Team,2025-03-11,InsurTech
+INS13,Tỷ trọng PAYMENT/REPAYMENT của BHYT mỗi ngày thế nào,Ambiguous,Simple,INS_PUBLIC_HEALTH,"trans_date, id, flag_repayment",Transaction detail,,"Mỗi ngày 3-400 đơn PAYMENT, 80-100 REPAYMENT",,ambiguous,DA_Team,2025-03-11,InsurTech
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+BANK001,Thống kê số lượng giao dịch rút tiền theo từng bank_code trong tháng 12/2025,Aggregation,Simple,BANK_CO,"bank_code, date",Filter date BETWEEN '2025-12-01' AND '2025-12-31'. GROUP BY bank_code ORDER BY count DESC.,,33 rows,,,,,
+BANK002,"Liệt kê tất cả giao dịch rút tiền thành công có amount > 5,000,000 trong ngày 2025-12-01",Conditional Logic,Simple,BANK_CO,"status_final, amount, date, tid, user, bank_code",status_final = 2 AND amount > 5000000 AND date = '2025-12-01'.,,"19,717 rows",,,,,
+BANK003,"Tổng số tiền chuyển tiền W2B trong tháng 01/2026, chỉ tính giao dịch thành công",Aggregation,Simple,BANK_W2B_RAW,"amount, bank_code, status_final",SUM(amount) WHERE bank_code not in ('MoMo BE') and status_final = 2 AND date between '2026-01-01' and '2026-01-31',,26060872518689.0,,,,,
+BANK004,Tỷ lệ phần trăm giao dịch W2B theo từng channel (VietQR vs Other) trong toàn bộ dataset,Aggregation,Simple,BANK_W2B_RAW,channel,COUNT(*) GROUP BY channel. Tính % = count / total * 100.,,,,,,,
+BANK005,Top 10 error_category xuất hiện nhiều nhất trong các lần liên kết tại bước try_map,Ranking + Filter,Simple,BANK_MAP_ERROR,"error_category, stage",Filter stage = '02. try_map'. GROUP BY error_category ORDER BY count DESC LIMIT 10.,,,,,,,
+BANK006,"Với các giao dịch rút tiền thất bại, JOIN D_BANK_ERROR để lấy tên đầy đủ error_category và error_sub_category. Top 5 nhóm lỗi theo số lượng giao dịch",JOIN,Moderate,"BANK_CO, D_BANK_ERROR","ms_code, partner_code, error_category, error_sub_category, description","JOIN ON error_code (bank_code + ms_code + partner_code). status_final != 'SUCCESS'. GROUP BY error_category, error_sub_category LIMIT 5.",,,,,,,
+BANK007,"Với từng bank_code, tính số giao dịch cần đối soát (inquiry_try > 0) và tỷ lệ % so với tổng giao dịch. Chỉ hiển thị ngân hàng có tỷ lệ > 5%",Subquery,Moderate,BANK_CO,"bank_code, inquiry_try",CAST(inquiry_try AS INT) > 0. HAVING inquiry_rate > 0.05.,,,,,,,
+BANK008,So sánh average amount và success rate giữa giao dịch type = SAME (internal) và type = DIFF (external) theo từng bank_code. Chỉ lấy ngân hàng có >= 50 giao dịch mỗi loại,Subquery,Moderate,BANK_W2B_RAW,"bank_code, type, amount, status_final","GROUP BY bank_code, type. HAVING count >= 50. AVG(amount), COUNT(status_final='SUCCESS')/COUNT(*).",,,,,,,
+BANK009,"Tìm các bank_code có tỷ lệ liên kết thành công (stage = success_map, error_category = SUCCESS) dưới 60%, chỉ tính ngân hàng có tổng lượt try >= 100",Ranking + Filter,Moderate,BANK_MAP_ERROR,"bank_code, stage, error_category",Chỉ tính stage = '02. try_map' để đếm tổng lượt. JOIN với stage = '03. success_map' GROUP BY request_id để xác định kết quả. HAVING total >= 100 AND success_rate < 0.6.,,,,,,,
+BANK010,Phân tích tỷ lệ sử dụng từng luồng liên kết (flow: normal / one_click / counter) theo bank_code. Luồng nào có error_category = SUCCESS cao nhất?,Aggregation,Moderate,BANK_MAP_ERROR,"bank_code, flow, error_category, stage","Filter stage = '03. success_map' (kết quả cuối). GROUP BY bank_code, flow. Tính success_rate = COUNT(error_category='SUCCESS') / COUNT(*).",,,,,,,
+BANK011,"Với mỗi user, tính thời gian giữa 2 giao dịch rút tiền liên tiếp (date_time). Tính trung bình khoảng cách giao dịch theo từng bank_code — ngân hàng nào có user quay lại thường xuyên nhất?",Window + Complex,Complex,BANK_CO,"user, bank_code, date_time",LAG(date_time) OVER (PARTITION BY user ORDER BY date_time). AVG(diff) GROUP BY bank_code. Loại bỏ null (lần giao dịch đầu tiên).,,,,,,,
+BANK012,Tính moving average 7 ngày của tổng amount W2B theo date. Xác định các ngày có tổng giao dịch vượt 120% moving average (ngày bất thường về doanh số),Window + Complex,Complex,BANK_W2B_RAW,"date, amount, status_final",CTE1: SUM(amount) GROUP BY date WHERE status_final='SUCCESS'. CTE2: AVG(daily_amount) OVER (ORDER BY date ROWS 6 PRECEDING). Filter daily > avg_7d * 1.2.,,,,,,,
+BANK013,Phân tích funnel liên kết theo stage (select_map → try_map → success_map): tính drop-off rate giữa từng bước theo bank_code. Ngân hàng nào có tỷ lệ rớt cao nhất ở bước try?,Window + Complex,Complex,BANK_MAP_ERROR,"bank_code, stage, request_id, user","CTE: COUNT(DISTINCT request_id) GROUP BY bank_code, stage. Tính drop_off = (cnt_select - cnt_try) / cnt_select. RANK() OVER (ORDER BY drop_off DESC).",,,,,,,
+BANK014,Phân tích funnel giao dịch treo (CO): tỷ lệ giao dịch có status != SUCCESS ban đầu nhưng inquiry_status = SUCCESS sau đối soát. Rank các ngân hàng theo tỷ lệ tự phục hồi và thời gian phục hồi trung bình,Window + Complex,Complex,BANK_CO,"bank_code, status, status_final, inquiry_status, inquiry_time, date_time",CTE lọc status != 'SUCCESS' AND inquiry_status = 'SUCCESS'. Tính recovery_time = inquiry_time - date_time. DENSE_RANK() OVER (ORDER BY recovery_rate DESC).,,,,,,,
+BANK015,"Với user liên kết thành công (stage = success_map, error_category = SUCCESS) lần đầu tiên theo bank_code, bao nhiêu % có giao dịch CO trong vòng 7 ngày sau? Tính thời gian trung bình từ lúc liên kết đến CO đầu tiên, group by bank_code",Multi-step,Complex,"BANK_MAP_ERROR, BANK_CO","user, bank_code, date_time, stage, error_category | user, bank_code, date_time, status_final","CTE1: lấy first success map per user per bank (MIN(date_time) WHERE stage='03. success_map' AND error_category='SUCCESS'). CTE2: JOIN BANK_CO ON user, lấy MIN(date_time) sau success. Tính diff <= 7 days. GROUP BY bank_code.",,,,,,,
+BANK016,Tỷ lệ thành công của giao dịch rút tiền theo ngân hàng là bao nhiêu?,Ambiguous,Ambiguous,BANK_CO,"bank_code, status, status_final",Không rõ dùng 'status' (trạng thái ban đầu) hay 'status_final' (sau đối soát). Hai trường cho kết quả khác nhau — agent nên hỏi lại trước khi viết SQL.,,,,,,,
+BANK017,Thống kê giao dịch W2B theo tháng trong năm ngoái,Date/Time,Ambiguous,BANK_W2B_RAW,"date, amount, status_final",Không rõ 'năm ngoái' là năm nào (phụ thuộc ngày chạy query). Agent cần confirm: YEAR(date) = YEAR(CURRENT_DATE) - 1.,,,,,,,
+BANK018,Đếm số lần liên kết của mỗi user,Ambiguous,Ambiguous,BANK_MAP_ERROR,"user, request_id, stage, date_time",Không rõ đơn vị 'một lần liên kết': theo request_id? theo lần có stage = try_map? hay chỉ đếm lần thành công (success_map + error_category = SUCCESS)? Mỗi cách đếm cho kết quả khác nhau.,,,,,,,
+BANK019,Lấy các giao dịch rút tiền có giá trị bất thường,Conditional Logic,Ambiguous,BANK_CO,"amount, bank_code, user, date",Không có định nghĩa 'bất thường': ngưỡng cố định (>50M)? Outlier thống kê (> mean + 2*stddev)? Top N%? Theo từng bank_code hay toàn bộ? Agent nên hỏi lại metric.,,,,,,,
+BANK020,So sánh hiệu quả liên kết giữa các luồng (flow),Ambiguous,Ambiguous,BANK_MAP_ERROR,"flow, stage, error_category, date_time",Hiệu quả' chưa được định nghĩa: success rate? latency (date_time giữa try_map và success_map)? tỷ lệ drop-off? Agent nên hỏi lại metric và timeframe cụ thể.,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,

@@ -1,0 +1,4054 @@
+index,Prompt,Domain,Expected_SQL,Expected_Response,Answer_version_1,Answer_version_2,Answer_version_3,Answer_version_4,Answer_version_5,Score,Answer_version_5 + DA Document (production),Score,Answer ver 6 (Mimir 2.0 agentic),Score,Mimir LangGraph v0.1,Score,Mimir LangGraph v0.2,Score,Next action,,,,,,,
+0.0,Số lượng người dùng theo từng dịch vụ trong quý 1 năm 2024,Transaction MoMo,"SELECT usecase, COUNT(DISTINCT user_id) AS number_of_users
+FROM momovn-mimir.MIMIR.iDeA_TRANS_CORE
+WHERE date BETWEEN '2024-01-01' AND '2024-03-31'
+GROUP BY usecase
+ORDER BY number_of_users DESC",,"SELECT 
+    t.usecase,
+    COUNT(DISTINCT t.user_id) AS user_count
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+    t.user_id = d.user_id
+WHERE
+    t.date BETWEEN '2024-01-01' AND '2024-03-31'
+GROUP BY 
+    t.usecase;","SELECT 
+  usecase, 
+  COUNT(DISTINCT user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  DATE_TRUNC(date, QUARTER) = '2024-01-01'
+GROUP BY 
+  usecase
+","SELECT 
+  usecase,
+  COUNT(DISTINCT user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  date BETWEEN '2024-01-01' AND '2024-03-31'
+GROUP BY 
+  usecase
+ORDER BY 
+  usecase
+LIMIT 10;","SELECT 
+    usecase,
+    COUNT(DISTINCT user_id) AS number_of_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE DATE BETWEEN '2024-01-01' AND '2024-03-31'
+GROUP BY usecase
+ORDER BY number_of_users DESC
+LIMIT 10","SELECT 
+    usecase,
+    COUNT(DISTINCT user_id) as number_of_users
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+    EXTRACT(YEAR FROM date) = 2024
+    AND EXTRACT(QUARTER FROM date) = 1
+GROUP BY 
+    usecase
+ORDER BY 
+    number_of_users DESC
+LIMIT 25
+",1.0,"SELECT 
+    usecase,
+    COUNT(DISTINCT user_id) as number_of_users
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+    EXTRACT(YEAR FROM date) = 2024
+    AND EXTRACT(QUARTER FROM date) = 1
+GROUP BY 
+    usecase
+ORDER BY 
+    number_of_users DESC
+LIMIT 25
+",1.0,"SELECT 
+  usecase,
+  COUNT(DISTINCT user_id) as user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE date BETWEEN '2024-01-01' AND '2024-03-31'
+  AND user_id IS NOT NULL
+GROUP BY usecase
+ORDER BY user_count DESC;",1.0,,,,,,,,,,,,
+1.0,Số người dùng có giao dịch trong tháng 1 năm 2024 và vẫn tiếp tục giao dịch trong tháng 2 năm 2024,Transaction MoMo,"WITH January_Transactions AS (
+SELECT DISTINCT user_id
+FROM momovn-mimir.MIMIR.iDeA_TRANS_CORE
+WHERE date BETWEEN '2024-01-01' AND '2024-01-31'
+),
+February_Transactions AS (
+SELECT DISTINCT user_id
+FROM momovn-mimir.MIMIR.iDeA_TRANS_CORE
+WHERE date BETWEEN '2024-02-01' AND '2024-02-29'
+)
+SELECT COUNT(DISTINCT January_Transactions.user_id) AS number_of_users
+FROM January_Transactions
+JOIN February_Transactions
+ON January_Transactions.user_id = February_Transactions.user_id",,"WITH Jan_2024_Transactions AS (
+    SELECT DISTINCT user_id
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE DATE_TRUNC(date, MONTH) = '2024-01-01'
+),
+Feb_2024_Transactions AS (
+    SELECT DISTINCT user_id
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE DATE_TRUNC(date, MONTH) = '2024-02-01'
+)
+SELECT COUNT(*) AS user_count
+FROM Jan_2024_Transactions j
+JOIN Feb_2024_Transactions f
+ON j.user_id = f.user_id;","SELECT COUNT(DISTINCT t1.user_id) as continuing_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t1
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t2
+ON t1.user_id = t2.user_id
+WHERE
+  EXTRACT(YEAR FROM t1.date) = 2024 AND EXTRACT(MONTH FROM t1.date) = 1
+  AND EXTRACT(YEAR FROM t2.date) = 2024 AND EXTRACT(MONTH FROM t2.date) = 2;","SELECT COUNT(DISTINCT transaction_january.user_id) AS user_count
+FROM (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE EXTRACT(YEAR FROM date) = 2024 AND EXTRACT(MONTH FROM date) = 1
+) AS transaction_january
+JOIN (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE EXTRACT(YEAR FROM date) = 2024 AND EXTRACT(MONTH FROM date) = 2
+) AS transaction_february
+ON transaction_january.user_id = transaction_february.user_id
+","SELECT COUNT(DISTINCT t1.user_id) AS active_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS t1
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS t2
+ON t1.user_id = t2.user_id
+WHERE t1.date BETWEEN '2024-01-01' AND '2024-01-31'
+  AND t2.date BETWEEN '2024-02-01' AND '2024-02-29'
+LIMIT 10;","SELECT COUNT(DISTINCT a.user_id) as user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` a
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_CORE` b
+ON a.user_id = b.user_id
+WHERE a.date BETWEEN '2024-01-01' AND '2024-01-31'
+AND b.date BETWEEN '2024-02-01' AND '2024-02-29'
+",1.0,"SELECT COUNT(DISTINCT a.user_id) as user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` a
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_CORE` b
+ON a.user_id = b.user_id
+WHERE a.date BETWEEN '2024-01-01' AND '2024-01-31'
+AND b.date BETWEEN '2024-02-01' AND '2024-02-29'
+",1.0,"WITH jan_users AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE DATE_TRUNC(date, MONTH) = '2024-01-01'
+  AND user_id IS NOT NULL
+),
+feb_users AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE DATE_TRUNC(date, MONTH) = '2024-02-01'
+  AND user_id IS NOT NULL
+)
+SELECT COUNT(DISTINCT j.user_id) as retained_users
+FROM jan_users j
+INNER JOIN feb_users f
+ON j.user_id = f.user_id;",1.0,,,,,,,,,,,,
+2.0,Số lượng tập người dùng hardcore trong tháng 2 năm 2024,Transaction MoMo,,Vui lòng định nghĩa tập hardcore,"WITH transactions_feb_2024 AS (
+  SELECT
+    user_id,
+    DATE(date) as tran_date
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE
+    EXTRACT(YEAR FROM date) = 2024
+    AND EXTRACT(MONTH FROM date) = 2
+),
+daily_transactions AS (
+  SELECT
+    user_id,
+    COUNT(DISTINCT tran_date) as days_active
+  FROM transactions_feb_2024
+  GROUP BY user_id
+)
+SELECT
+  COUNT(*) as hardcore_users_count
+FROM daily_transactions
+WHERE days_active = 29 -- Tháng 2 năm nhuận có 29 ngày
+","SELECT COUNT(DISTINCT t.user_id) AS hardcore_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+WHERE t.date >= '2024-02-01' AND t.date <= '2024-02-29'
+AND t.transaction_amount > 1000000
+AND t.transaction_type = 'Hardcore';","SELECT COUNT(DISTINCT user_id) AS hardcore_user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE DATE_TRUNC(date, MONTH) = '2024-02-01'
+  AND (
+    SELECT COUNT(*) 
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS t 
+    WHERE t.user_id = iDeA_TRANS_CORE.user_id 
+      AND DATE_TRUNC(t.date, MONTH) = '2024-02-01'
+  ) > 10
+LIMIT 10
+","SELECT COUNT(DISTINCT user_id) AS hardcore_user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE DATE_TRUNC(date, MONTH) = '2024-02-01'
+  AND transaction_amount >= 10000000","SELECT COUNT(DISTINCT a.user_id) AS hardcore_user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` a
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` b
+ON a.user_id = b.user_id
+WHERE DATE_TRUNC(a.date, MONTH) = '2024-02'
+AND a.usecase = 'hardcore'
+",0.0,"SELECT COUNT(DISTINCT a.user_id) AS hardcore_user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` a
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` b
+ON a.user_id = b.user_id
+WHERE DATE_TRUNC(a.date, MONTH) = '2024-02'
+AND a.usecase = 'hardcore'
+",0.0,,0.0,,,,,,,,,,,,
+3.0,Chênh lệch số lượng người dùng hiện tại phân bổ tại Hà Nội là bao nhiêu trong tháng 4 2024 và tháng 5 2024?,Transaction MoMo,"SELECT
+COUNT(DISTINCT core.user_id) AS user_count,
+DATE_TRUNC(core.date, MONTH) as month
+FROM momovn-mimir.MIMIR.iDeA_TRANS_CORE AS core
+JOIN momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC AS demo
+ON core.user_id = demo.user_id
+WHERE demo.city = 'Hà Nội'
+AND core.date BETWEEN '2024-04-01' AND '2024-05-31'
+GROUP BY DATE_TRUNC(core.date, MONTH)
+ORDER BY month;",,"WITH ActiveUsers AS (
+  SELECT DISTINCT core.user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` core
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` demo
+  ON core.user_id = demo.user_id
+  WHERE demo.city = 'Hà Nội' 
+    AND core.date BETWEEN '2024-04-01' AND '2024-05-31'
+    AND EXTRACT(YEAR FROM core.date) = 2024 
+    AND EXTRACT(MONTH FROM core.date) IN (4, 5)
+),
+UserCount AS (
+  SELECT 
+    EXTRACT(MONTH FROM core.date) AS month,
+    COUNT(DISTINCT core.user_id) AS user_count
+  FROM ActiveUsers au
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_CORE` core
+  ON au.user_id = core.user_id
+  GROUP BY EXTRACT(MONTH FROM core.date)
+)
+SELECT 
+  (SELECT user_count FROM UserCount WHERE month = 5) -
+  (SELECT user_count FROM UserCount WHERE month = 4) AS user_diff
+","SELECT 
+    (COUNT(DISTINCT CASE WHEN EXTRACT(MONTH FROM t.date) = 5 THEN t.user_id END) -
+     COUNT(DISTINCT CASE WHEN EXTRACT(MONTH FROM t.date) = 4 THEN t.user_id END)) AS user_difference
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+    t.user_id = d.user_id
+WHERE 
+    d.city = 'Hà Nội' AND 
+    EXTRACT(YEAR FROM t.date) = 2024 AND 
+    EXTRACT(MONTH FROM t.date) IN (4, 5);","SELECT 
+    COUNT(DISTINCT user_id) AS user_count, 
+    EXTRACT(MONTH FROM date) AS month
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS tc
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS td
+ON 
+    tc.user_id = td.user_id
+WHERE 
+    td.city = 'Hà Nội' 
+    AND DATE(date) BETWEEN '2024-04-01' AND '2024-05-31'
+GROUP BY 
+    EXTRACT(MONTH FROM date)
+ORDER BY 
+    month
+LIMIT 10;","WITH user_counts AS (
+    SELECT
+        DATE_TRUNC(date, MONTH) AS month,
+        COUNT(DISTINCT t.user_id) AS user_count
+    FROM
+        `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+    JOIN
+        `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+    ON
+        t.user_id = d.user_id
+    WHERE
+        d.city = 'Hà Nội'
+        AND date BETWEEN '2024-04-01' AND '2024-05-31'
+    GROUP BY
+        DATE_TRUNC(date, MONTH)
+)
+SELECT
+    (SELECT user_count FROM user_counts WHERE month = '2024-05-01') - 
+    (SELECT user_count FROM user_counts WHERE month = '2024-04-01') AS user_difference
+;","WITH users_april AS (
+  SELECT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` USING (user_id)
+  WHERE city = 'Hà Nội' AND EXTRACT(MONTH FROM date) = 4 AND EXTRACT(YEAR FROM date) = 2024
+  GROUP BY user_id
+),
+users_may AS (
+  SELECT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` USING (user_id)
+  WHERE city = 'Hà Nội' AND EXTRACT(MONTH FROM date) = 5 AND EXTRACT(YEAR FROM date) = 2024
+  GROUP BY user_id
+)
+SELECT 
+  (SELECT COUNT(*) FROM users_april) - (SELECT COUNT(*) FROM users_may) AS difference
+",1.0,"WITH users_april AS (
+  SELECT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` USING (user_id)
+  WHERE city = 'Hà Nội' AND EXTRACT(MONTH FROM date) = 4 AND EXTRACT(YEAR FROM date) = 2024
+  GROUP BY user_id
+),
+users_may AS (
+  SELECT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` USING (user_id)
+  WHERE city = 'Hà Nội' AND EXTRACT(MONTH FROM date) = 5 AND EXTRACT(YEAR FROM date) = 2024
+  GROUP BY user_id
+)
+SELECT 
+  (SELECT COUNT(*) FROM users_april) - (SELECT COUNT(*) FROM users_may) AS difference
+",1.0,"WITH users_by_month AS (
+  SELECT 
+    DATE_TRUNC(t.date, MONTH) as month,
+    COUNT(DISTINCT t.user_id) as user_count
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+  ON t.user_id = d.user_id
+  WHERE 
+    d.city_group = 'Hà Nội'
+    AND t.date BETWEEN '2024-04-01' AND '2024-05-31'
+  GROUP BY DATE_TRUNC(t.date, MONTH)
+)
+SELECT 
+  ABS(MAX(CASE WHEN month = '2024-05-01' THEN user_count END) - 
+      MAX(CASE WHEN month = '2024-04-01' THEN user_count END)) as user_difference
+FROM users_by_month;",1.0,,,,,,,,,,,,
+4.0,Số lượng người dùng cashin trong quý 1 năm 2024,Transaction MoMo,"SELECT
+COUNT(DISTINCT core.user_id) AS user_count
+FROM momovn-mimir.MIMIR.iDeA_TRANS_CORE AS core
+WHERE core.transaction_type = 'CASHIN'
+AND core.date BETWEEN '2024-01-01' AND '2024-03-31';",,"SELECT 
+    COUNT(DISTINCT tc.user_id) AS num_users_cashin_Q1_2024
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` tc
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` td
+ON 
+    tc.user_id = td.user_id
+WHERE 
+    tc.transaction_type = 'cashin' 
+    AND DATE(tc.date) BETWEEN '2024-01-01' AND '2024-03-31';","SELECT 
+    COUNT(DISTINCT user_id) AS user_count
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+    transaction_type = 'cashin' AND
+    DATE(date) BETWEEN '2024-01-01' AND '2024-03-31';","SELECT COUNT(DISTINCT user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN' 
+  AND date BETWEEN '2024-01-01' AND '2024-03-31';","SELECT COUNT(DISTINCT user_id) as number_of_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND DATE BETWEEN '2024-01-01' AND '2024-03-31'","SELECT COUNT(DISTINCT user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND DATE BETWEEN '2024-01-01' AND '2024-03-31'
+",1.0,"SELECT COUNT(DISTINCT user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND DATE BETWEEN '2024-01-01' AND '2024-03-31'
+",1.0,"SELECT COUNT(DISTINCT user_id) as unique_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND date BETWEEN '2024-01-01' AND '2024-03-31';",1.0,,,,,,,,,,,,
+5.0,MAU trend from the beginning of 2024 until now,Transaction MoMo,"SELECT date_trunc(date, month) as month, COUNT(DISTINCT user_id) as MAU
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t1
+WHERE t1.date >= ""2024-01-01""
+GROUP BY 1
+ORDER BY 1 DESC",,"SELECT 
+    DATE_TRUNC(date, MONTH) as month,
+    COUNT(DISTINCT user_id) as monthly_active_users
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+    DATE_TRUNC(date, MONTH) BETWEEN '2024-01-01' AND CURRENT_DATE()
+GROUP BY 
+    DATE_TRUNC(date, MONTH)
+ORDER BY 
+    DATE_TRUNC(date, MONTH);","SELECT 
+  DATE_TRUNC(date, MONTH) AS month,
+  COUNT(DISTINCT user_id) AS mau
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  date >= '2024-01-01'
+GROUP BY 
+  month
+ORDER BY 
+  month;","SELECT
+  EXTRACT(MONTH FROM date) AS month,
+  COUNT(DISTINCT user_id) AS monthly_active_users
+FROM
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE
+  date >= '2024-01-01'
+GROUP BY
+  month
+ORDER BY
+  month;","SELECT 
+  DATE_TRUNC(date, MONTH) AS month,
+  COUNT(DISTINCT user_id) AS mau
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  date >= '2024-01-01'
+GROUP BY 
+  month
+ORDER BY 
+  month
+LIMIT 10;","SELECT 
+  DATE_TRUNC(date, MONTH) AS month,
+  COUNT(DISTINCT user_id) AS monthly_active_users
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  date BETWEEN '2024-01-01' AND CURRENT_DATE()
+GROUP BY 
+  month
+ORDER BY 
+  month
+LIMIT 25;",1.0,"SELECT 
+  DATE_TRUNC(date, MONTH) AS month,
+  COUNT(DISTINCT user_id) AS monthly_active_users
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  date BETWEEN '2024-01-01' AND CURRENT_DATE()
+GROUP BY 
+  month
+ORDER BY 
+  month
+LIMIT 25;",1.0,"WITH monthly_users AS (
+  SELECT 
+    DATE_TRUNC(date, MONTH) as month,
+    COUNT(DISTINCT user_id) as monthly_active_users
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE 
+    date >= '2024-01-01'
+    AND user_id IS NOT NULL
+  GROUP BY 1
+  ORDER BY 1
+)
+SELECT 
+  FORMAT_DATE('%B %Y', month) as month,
+  monthly_active_users,
+  ROUND((monthly_active_users - LAG(monthly_active_users) OVER (ORDER BY month)) / LAG(monthly_active_users) OVER (ORDER BY month) * 100, 2) as mom_growth
+FROM monthly_users",1.0,,,,,,,,,,,,
+6.0,How many users use APPLICATION STORE in March 2024?,Transaction MoMo,"SELECT COUNT(DISTINCT user_id) as APPLICATION_STORE
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE date_trunc(date, month) = ""2024-03-01""
+AND usecase = ""APPLICATION STORE""",,"SELECT COUNT(DISTINCT trans.user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS trans
+WHERE trans.usecase = 'APPLICATION STORE'
+  AND DATE(trans.date) BETWEEN '2024-03-01' AND '2024-03-31';","SELECT COUNT(DISTINCT t.user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+WHERE t.usecase = 'APPLICATION STORE'
+  AND EXTRACT(YEAR FROM t.date) = 2024
+  AND EXTRACT(MONTH FROM t.date) = 3;","SELECT COUNT(DISTINCT t.user_id) AS total_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+WHERE t.usecase = 'APPLICATION STORE'
+  AND t.date BETWEEN '2024-03-01' AND '2024-03-31';","SELECT COUNT(DISTINCT t.user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+WHERE t.usecase = 'APPLICATION STORE'
+  AND t.date BETWEEN '2024-03-01' AND '2024-03-31';","SELECT COUNT(DISTINCT trans.user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` trans
+WHERE trans.usecase = 'APPLICATION STORE'
+  AND DATE_TRUNC(trans.date, MONTH) = '2024-03-01'
+",1.0,"SELECT COUNT(DISTINCT trans.user_id) AS user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` trans
+WHERE trans.usecase = 'APPLICATION STORE'
+  AND DATE_TRUNC(trans.date, MONTH) = '2024-03-01'
+",1.0,"SELECT COUNT(DISTINCT user_id) as unique_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE usecase = 'APPLICATION STORE'
+AND DATE_TRUNC(date, MONTH) = '2024-03-01'",1.0,,,,,,,,,,,,
+7.0,How many CASHIN transactions in March 2024?,Transaction MoMo,"SELECT COUNT(DISTINCT tranid) as CASHIN
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE date_trunc(date, month) = ""2024-03-01""
+AND transaction_type = ""CASHIN""",,"SELECT COUNT(*) AS cashin_transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN' 
+AND EXTRACT(YEAR FROM date) = 2024
+AND EXTRACT(MONTH FROM date) = 3;","SELECT COUNT(*) AS cashin_transactions_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+  AND DATE BETWEEN '2024-03-01' AND '2024-03-31';","SELECT COUNT(*) as cashin_transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE DATE_TRUNC(date, MONTH) = '2024-03-01' 
+AND transaction_type = 'CASHIN'
+","SELECT COUNT(*) AS cashin_transactions_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND DATE_TRUNC(date, MONTH) = '2024-03-01'
+","SELECT COUNT(*) AS cashin_transactions
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+  AND DATE BETWEEN '2024-03-01' AND '2024-03-31'
+",0.5,"SELECT COUNT(*) AS cashin_transactions
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+  AND DATE BETWEEN '2024-03-01' AND '2024-03-31'
+",0.5,"SELECT COUNT(*) as cashin_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND DATE_TRUNC(date, MONTH) = '2024-03-01'",0.5,,,,,,,,,,,,
+8.0,How many transactions make in GOOGLE merchant in March 2024?,Transaction MoMo,"SELECT COUNT(DISTINCT tranid) as GOOGLE
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE date_trunc(date, month) = ""2024-03-01""
+AND merchant = ""GOOGLE""",,"SELECT COUNT(tranid) AS transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE'
+  AND DATE_TRUNC(DATE(date), MONTH) = '2024-03-01';","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE' AND 
+      DATE_TRUNC(date, MONTH) = '2024-03-01';","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE'
+  AND DATE_TRUNC(date, MONTH) = '2024-03-01'
+","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE'
+  AND DATE_TRUNC(date, MONTH) = '2024-03-01'","SELECT COUNT(*) as total_transactions
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE' 
+  AND DATE BETWEEN '2024-03-01' AND '2024-03-31'
+",0.5,"SELECT COUNT(*) as total_transactions
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE' 
+  AND DATE BETWEEN '2024-03-01' AND '2024-03-31'
+",0.5,"SELECT COUNT(*) as transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE'
+AND date BETWEEN '2024-03-01' AND '2024-03-31';",0.5,,,,,,,,,,,,
+9.0,MAU in Hà Nội city in 2024,Transaction MoMo,"SELECT COUNT(DISTINCT core.user_id) AS MAU
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS core
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS demo
+ON core.user_id = demo.user_id
+WHERE demo.city = 'Hà Nội' 
+  AND DATE_TRUNC(core.date, MONTH) BETWEEN '2024-01-01' AND '2024-12-31';",,"SELECT 
+  EXTRACT(MONTH FROM date) AS month,
+  COUNT(DISTINCT core.user_id) AS MAU
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` core
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` demo
+  ON core.user_id = demo.user_id
+WHERE 
+  demo.city = 'Hà Nội'
+  AND EXTRACT(YEAR FROM core.date) = 2024
+GROUP BY month
+ORDER BY month;","SELECT 
+  COUNT(DISTINCT user_id) AS MAU
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS core
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS demo
+ON 
+  core.user_id = demo.user_id
+WHERE 
+  demo.city = 'Hà Nội' 
+  AND EXTRACT(YEAR FROM core.date) = 2024;","SELECT 
+  EXTRACT(MONTH FROM date) AS month,
+  COUNT(DISTINCT t.user_id) AS mau
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+  t.user_id = d.user_id
+WHERE 
+  d.city = 'Hà Nội' 
+  AND EXTRACT(YEAR FROM t.date) = 2024
+GROUP BY 
+  month
+ORDER BY 
+  month
+LIMIT 10;","SELECT COUNT(DISTINCT user_id) AS MAU
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS core
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS demo
+ON core.user_id = demo.user_id
+WHERE demo.city = 'Hà Nội'
+AND EXTRACT(YEAR FROM core.date) = 2024","SELECT COUNT(DISTINCT t.user_id) AS MAU
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON t.user_id = d.user_id
+WHERE d.city = 'Hà Nội'
+AND EXTRACT(YEAR FROM t.date) = 2024
+",1.0,"SELECT COUNT(DISTINCT t.user_id) AS MAU
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON t.user_id = d.user_id
+WHERE d.city = 'Hà Nội'
+AND EXTRACT(YEAR FROM t.date) = 2024
+",1.0,"WITH monthly_users AS (
+  SELECT 
+    EXTRACT(MONTH FROM t.date) as month,
+    COUNT(DISTINCT t.user_id) as monthly_active_users
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+    ON t.user_id = d.user_id
+  WHERE 
+    EXTRACT(YEAR FROM t.date) = 2024
+    AND d.city = 'Hà Nội'
+  GROUP BY 
+    EXTRACT(MONTH FROM t.date)
+  ORDER BY 
+    month
+)
+SELECT 
+  month,
+  monthly_active_users
+FROM monthly_users;
+      ",1.0,,,,,,,,,,,,
+10.0,User by age group in April 2024,Transaction MoMo,"SELECT age_group, COUNT(DISTINCT core.user_id) as user_count
+FROM momovn-mimir.MIMIR.iDeA_TRANS_CORE AS core
+JOIN momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC AS demo
+ON core.user_id = demo.user_id
+WHERE DATE_TRUNC(core.date, MONTH) = '2024-04-01'
+GROUP BY age_group;",,"SELECT 
+    d.age_group,
+    COUNT(DISTINCT t.user_id) AS user_count
+FROM 
+    `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN 
+    `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+    t.user_id = d.user_id
+WHERE 
+    DATE(t.date) BETWEEN '2024-04-01' AND '2024-04-30'
+GROUP BY 
+    d.age_group
+ORDER BY 
+    d.age_group;","SELECT 
+  d.age_group,
+  COUNT(DISTINCT d.user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` as c
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` as d
+ON 
+  c.user_id = d.user_id
+WHERE 
+  EXTRACT(YEAR FROM c.date) = 2024
+  AND EXTRACT(MONTH FROM c.date) = 4
+GROUP BY 
+  d.age_group;","SELECT 
+  age_group, 
+  COUNT(DISTINCT user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS demo
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS core
+ON 
+  demo.user_id = core.user_id
+WHERE 
+  DATE(core.date) BETWEEN '2024-04-01' AND '2024-04-30'
+GROUP BY 
+  age_group
+ORDER BY 
+  age_group
+LIMIT 10;","SELECT 
+  d.age_group, 
+  COUNT(DISTINCT d.user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS c
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` AS d
+ON 
+  c.user_id = d.user_id
+WHERE 
+  DATE_TRUNC(c.date, MONTH) = '2024-04-01'
+GROUP BY 
+  d.age_group
+ORDER BY 
+  d.age_group
+LIMIT 
+  10;","SELECT 
+  d.age_group, 
+  COUNT(DISTINCT d.user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` c
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+  c.user_id = d.user_id
+WHERE 
+  c.date BETWEEN '2024-04-01' AND '2024-04-30'
+GROUP BY 
+  d.age_group
+ORDER BY 
+  d.age_group
+LIMIT 25
+",1.0,"SELECT 
+  d.age_group, 
+  COUNT(DISTINCT d.user_id) AS user_count
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` c
+JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON 
+  c.user_id = d.user_id
+WHERE 
+  c.date BETWEEN '2024-04-01' AND '2024-04-30'
+GROUP BY 
+  d.age_group
+ORDER BY 
+  d.age_group
+LIMIT 25
+",1.0,"SELECT 
+  d.age_group,
+  COUNT(DISTINCT t.user_id) as user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+  ON t.user_id = d.user_id
+WHERE DATE_TRUNC(t.date, MONTH) = '2024-04-01'
+GROUP BY d.age_group
+ORDER BY d.age_group",1.0,,,,,,,,,,,,
+11.0,Retention rate of MoMo users in 2025,Transaction MoMo,"with mau AS (
+  SELECT DISTINCT date_trunc(date, month) as month, user_id 
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+), pre_month AS (
+  SELECT month, user_id
+         , LEAD(month, 1) OVER(PARTITION BY user_id ORDER BY month) as lead_month
+  FROM mau
+)
+SELECT month
+       , COUNT(DISTINCT IF(DATE_DIFF(lead_month, month, month)=1, user_id, null)) as retain
+       , COUNT(DISTINCT user_id) as cur
+       , COUNT(DISTINCT IF(DATE_DIFF(lead_month, month, month)=1, user_id, null))/COUNT(DISTINCT user_id) as retention_rate
+FROM pre_month
+GROUP BY 1
+ORDER BY 1 DESC",Please define the formular of retention rate like month or daily retention rate,"WITH users_2023 AS (
+    SELECT DISTINCT user_id
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE EXTRACT(YEAR FROM date) = 2023
+),
+users_2024 AS (
+    SELECT DISTINCT user_id
+    FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE EXTRACT(YEAR FROM date) = 2024
+),
+retained_users AS (
+    SELECT user_id
+    FROM users_2023
+    WHERE user_id IN (SELECT user_id FROM users_2024)
+)
+
+SELECT 
+    (SELECT COUNT(*) FROM retained_users) AS retained_users_count,
+    (SELECT COUNT(*) FROM users_2023) AS total_users_2023,
+    (SELECT COUNT(*) FROM retained_users) * 100.0 / (SELECT COUNT(*) FROM users_2023) AS retention_rate
+;","The provided context does not contain information about retention metrics or dates beyond 2023. Therefore, it's insufficient to generate the SQL query needed to determine the retention rate of MoMo users in 2024. 
+
+To gather the required context, you might need additional details such as user activity logs for 2023 and 2024, and specific criteria for determining user retention.","WITH users_2023 AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE EXTRACT(YEAR FROM date) = 2023
+),
+
+-- Step 2: Find the number of these users who were active in 2024
+users_2024 AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE EXTRACT(YEAR FROM date) = 2024
+)
+
+-- Step 3: Calculate the retention rate
+SELECT
+  COUNT(users_2024.user_id) / COUNT(users_2023.user_id) * 100 AS retention_rate_2024
+FROM
+  users_2023
+LEFT JOIN
+  users_2024
+ON
+  users_2023.user_id = users_2024.user_id;","SELECT
+  DATE_TRUNC(date, MONTH) AS month,
+  COUNT(DISTINCT user_id) AS active_users
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  EXTRACT(YEAR FROM date) = 2024
+GROUP BY 
+  month
+ORDER BY 
+  month
+LIMIT 10;","SELECT 
+  COUNT(DISTINCT t1.user_id) AS retained_users,
+  COUNT(DISTINCT t2.user_id) AS total_users,
+  (COUNT(DISTINCT t1.user_id) / COUNT(DISTINCT t2.user_id)) * 100 AS retention_rate
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t1
+RIGHT JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t2
+ON 
+  t1.user_id = t2.user_id
+WHERE 
+  t1.date BETWEEN '2024-01-01' AND '2024-12-31'
+  AND t2.date < '2024-01-01'
+",0.0,"SELECT 
+  COUNT(DISTINCT t1.user_id) AS retained_users,
+  COUNT(DISTINCT t2.user_id) AS total_users,
+  (COUNT(DISTINCT t1.user_id) / COUNT(DISTINCT t2.user_id)) * 100 AS retention_rate
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t1
+RIGHT JOIN 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t2
+ON 
+  t1.user_id = t2.user_id
+WHERE 
+  t1.date BETWEEN '2024-01-01' AND '2024-12-31'
+  AND t2.date < '2024-01-01'
+",0.0,"WITH monthly_active_users AS (
+  SELECT DISTINCT
+    user_id,
+    DATE_TRUNC(date, MONTH) as month
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE 
+    EXTRACT(YEAR FROM date) = 2024
+    AND user_id IS NOT NULL
+),
+retention_calculation AS (
+  SELECT
+    current_month.month as current_month,
+    next_month.month as next_month,
+    COUNT(DISTINCT current_month.user_id) as total_users,
+    COUNT(DISTINCT next_month.user_id) as retained_users
+  FROM monthly_active_users current_month
+  LEFT JOIN monthly_active_users next_month
+    ON current_month.user_id = next_month.user_id
+    AND next_month.month = DATE_ADD(current_month.month, INTERVAL 1 MONTH)
+  GROUP BY current_month.month, next_month.month
+  ORDER BY current_month.month
+)
+SELECT
+  FORMAT_DATE('%B %Y', current_month) as month,
+  total_users,
+  retained_users,
+  ROUND(SAFE_DIVIDE(retained_users, total_users) * 100, 2) as retention_rate_percentage
+FROM retention_calculation
+WHERE current_month < DATE_TRUNC(CURRENT_DATE(), MONTH)",0.0,,,,,"Viết chưa tới nhưng cũng tốt hơn model cũ, gần chạm tới công thức retention rate rồi",,,,,,,
+12.0,Cohort rate of MoMo users in 2024,Transaction MoMo,"WITH neww as (
+  SELECT user_id, MIN(DATE_TRUNC(date, month)) as first_month
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  GROUP BY 1
+), curr as (
+  SELECT DISTINCT user_id, DATE_TRUNC(date,month) as active_month
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+), pre_final as (
+  SELECT curr.user_id, curr.active_month, neww.first_month, DATE_DIFF(curr.active_month, neww.first_month, month) as month_diff
+  FROM curr
+  LEFT JOIN neww USING(user_id)
+), frs as (
+  SELECT first_month, COUNT(DISTINCT user_id) as user
+  FROM neww
+  GROUP BY 1
+), final as (
+  SELECT first_month, month_diff, COUNT(DISTINCT user_id) AS user
+  FROM pre_final
+  GROUP BY 1,2
+)
+SELECT final.*, frs.user as first_user, final.user/frs.user as cohort_rate
+FROM final
+LEFT JOIN frs USING(first_month)
+ORDER BY final.first_month, final.month_diff",Please define detail formular of cohort rate,"WITH initial_users AS (
+    SELECT 
+        user_id,
+        MIN(DATE(date)) AS first_transaction_date
+    FROM 
+        `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+    WHERE
+        EXTRACT(YEAR FROM DATE(date)) = 2024
+    GROUP BY 
+        user_id
+),
+cohort_activity AS (
+    SELECT
+        iu.user_id,
+        EXTRACT(MONTH FROM iu.first_transaction_date) AS cohort_month,
+        EXTRACT(MONTH FROM DATE(t.date)) AS active_month,
+        COUNT(DISTINCT t.tranid) AS transaction_count
+    FROM
+        initial_users AS iu
+    JOIN
+        `momovn-mimir.MIMIR.iDeA_TRANS_CORE` AS t
+    ON 
+        iu.user_id = t.user_id
+    WHERE
+        EXTRACT(YEAR FROM DATE(t.date)) = 2024
+    GROUP BY
+        iu.user_id, cohort_month, active_month
+)
+SELECT
+    cohort_month,
+    active_month,
+    COUNT(DISTINCT user_id) AS active_users,
+    COUNT(DISTINCT user_id) * 100.0 / SUM(COUNT(DISTINCT user_id)) OVER (PARTITION BY cohort_month) AS retention_rate
+FROM
+    cohort_activity
+GROUP BY
+    cohort_month, active_month
+ORDER BY
+    cohort_month, active_month;","The provided context does not contain information about the cohort definitions or the specific date range for 2024. Therefore, it is insufficient to generate the required SQL query.
+
+To accurately generate this query, please provide:
+
+1. Definition of what constitutes a ""cohort"" (e.g., users who made their first transaction in a particular month).
+2. The specific date range for 2024 (e.g., from January 1st, 2024 to December 31st, 2024).
+3. Specific metrics to determine the ""cohort rate"" (e.g., retention rate, churn rate).
+
+Once this information is provided, a more precise SQL query can be generated.","SELECT
+  EXTRACT(YEAR FROM date) AS year,
+  EXTRACT(MONTH FROM date) AS month,
+  COUNT(DISTINCT user_id) AS cohort_size
+FROM
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE
+  EXTRACT(YEAR FROM date) = 2024
+GROUP BY
+  year, month
+ORDER BY
+  year, month
+LIMIT 10;","SELECT 
+  COUNT(DISTINCT user_id) AS user_count, 
+  EXTRACT(YEAR FROM date) AS year 
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE` 
+WHERE 
+  EXTRACT(YEAR FROM date) = 2024 
+GROUP BY 
+  year 
+ORDER BY 
+  year 
+LIMIT 10;","SELECT 
+  DATE_TRUNC(date, MONTH) AS cohort_month,
+  COUNT(DISTINCT user_id) AS num_users
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  EXTRACT(YEAR FROM date) = 2024
+GROUP BY 
+  cohort_month
+ORDER BY 
+  cohort_month
+LIMIT 25;",0.0,"SELECT 
+  DATE_TRUNC(date, MONTH) AS cohort_month,
+  COUNT(DISTINCT user_id) AS num_users
+FROM 
+  `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE 
+  EXTRACT(YEAR FROM date) = 2024
+GROUP BY 
+  cohort_month
+ORDER BY 
+  cohort_month
+LIMIT 25;",0.0,"WITH user_first_transaction AS (
+  SELECT 
+    user_id,
+    DATE_TRUNC(date, MONTH) as cohort_month,
+    MIN(DATE_TRUNC(date, MONTH)) OVER (PARTITION BY user_id) as first_month
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE user_id IS NOT NULL
+    AND EXTRACT(YEAR FROM date) = 2024
+),
+cohort_size AS (
+  SELECT 
+    first_month,
+    COUNT(DISTINCT user_id) as cohort_users
+  FROM user_first_transaction
+  GROUP BY first_month
+),
+retention_by_month AS (
+  SELECT 
+    first_month,
+    cohort_month,
+    COUNT(DISTINCT user_id) as active_users,
+    DATE_DIFF(cohort_month, first_month, MONTH) as month_number
+  FROM user_first_transaction
+  GROUP BY first_month, cohort_month
+)
+SELECT 
+  r.first_month,
+  r.month_number,
+  c.cohort_users,
+  r.active_users,
+  ROUND(100.0 * r.active_users / c.cohort_users, 2) as retention_rate
+FROM retention_by_month r
+JOIN cohort_size c ON r.first_month = c.first_month
+WHERE r.month_number >= 0
+ORDER BY r.first_month, r.month_number;",0.5,,,,,"Gần tính đúng rồi, chưa pivot table thôi, bảng bị dài hơn limit",,,,,,,
+15.0,Tổng Transactions của nhóm Light User của cate ADS PAYMENT trong 3 tháng quý 2 năm 2024,DLS ONLINE,"SELECT 
+  sum(TRANS) AS total_transactions
+FROM 
+  momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3
+WHERE 
+  USER_SEGMENT = '3. Light' AND 
+  CATE = 'ADS PAYMENT' AND 
+  MONTH BETWEEN '2024-04-01' AND '2024-06-30'
+  ",,"SELECT
+    COUNT(*) AS total_transactions
+FROM
+    `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` trans
+JOIN 
+    `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` segment
+ON
+    trans.USER_ID = segment.USER_ID 
+    AND trans.MONTH = segment.MONTH
+    AND trans.CATE = segment.CATE
+WHERE
+    segment.USER_SEGMENT = 'Light' 
+    AND trans.CATE = 'ADS PAYMENT' 
+    AND trans.DATE BETWEEN '2024-04-01' AND '2024-06-30';","SELECT
+    SUM(TRANS) AS Total_Transactions
+FROM
+    `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE
+    USER_SEGMENT = 'Light'
+    AND CATE = 'ADS PAYMENT'
+    AND MONTH BETWEEN '2024-04-01' AND '2024-06-30';","SELECT 
+  COUNT(*) AS total_transactions
+FROM 
+  `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` us
+JOIN 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` trans
+ON 
+  us.USER_ID = trans.USER_ID 
+  AND us.MONTH = trans.DATE
+  AND us.CATE = trans.CATE
+WHERE 
+  us.CATE = 'ADS PAYMENT'
+  AND us.USER_SEGMENT = '3. Light'
+  AND EXTRACT(YEAR FROM us.MONTH) = 2024
+  AND EXTRACT(QUARTER FROM us.MONTH) = 2
+LIMIT 10
+","SELECT 
+  MONTH, 
+  SUM(TRANS) AS TOTAL_TRANS
+FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE USER_SEGMENT = '3. Light' 
+  AND CATE = 'ADS PAYMENT'
+  AND MONTH BETWEEN '2024-04-01' AND '2024-06-30'
+GROUP BY MONTH
+ORDER BY MONTH
+LIMIT 10
+","SELECT 
+  COUNT(*) AS total_transactions
+FROM 
+  `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE 
+  USER_SEGMENT = '3. Light' AND 
+  CATE = 'ADS PAYMENT' AND 
+  MONTH BETWEEN '2024-04-01' AND '2024-06-30'
+",0.0,"SELECT 
+  COUNT(*) AS total_transactions
+FROM 
+  `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE 
+  USER_SEGMENT = '3. Light' AND 
+  CATE = 'ADS PAYMENT' AND 
+  MONTH BETWEEN '2024-04-01' AND '2024-06-30'
+",0.0,"SELECT 
+  SUM(TRANS) as total_transactions
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE USER_SEGMENT = '3. Light'
+  AND CATE = 'ADS PAYMENT'
+  AND MONTH BETWEEN '2024-04-01' AND '2024-06-01'",1.0,,,,,"SUM trans trên bảng User segment, nhìn nhận level data tốt hơn",,,,,,,
+16.0,Tổng GMV trong tháng 4 năm 2024 của User có các amount = 19000 trong tháng 6,DLS ONLINE,"with target_user as (
+select distinct user_id
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+where DATE_TRUNC(date, month) = '2024-06-01' and gmv = 19000
+)
+
+
+select
+sum(gmv) as total_gmv
+from target_user t1
+inner join momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t2 using (user_id)
+where DATE_TRUNC(t2.date, month) = '2024-04-01'",,"WITH users_with_specific_amount AS (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE EXTRACT(MONTH FROM DATE) = 6 AND EXTRACT(YEAR FROM DATE) = 2024 AND GMV = 19000
+)
+
+SELECT SUM(GMV) AS total_gmv
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE EXTRACT(MONTH FROM DATE) = 4 AND EXTRACT(YEAR FROM DATE) = 2024
+  AND USER_ID IN (SELECT USER_ID FROM users_with_specific_amount)
+;","WITH USER_IDS_JUNE AS (
+    SELECT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE DATE >= '2024-06-01' AND DATE < '2024-07-01' AND GMV = 19000
+)
+SELECT SUM(GMV) AS TOTAL_GMV
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE >= '2024-04-01' AND DATE < '2024-05-01' 
+  AND USER_ID IN (SELECT USER_ID FROM USER_IDS_JUNE);","SELECT SUM(GMV) AS total_GMV
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-04-01' AND '2024-04-30'
+AND USER_ID IN (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE DATE BETWEEN '2024-06-01' AND '2024-06-30'
+    AND GMV = 19000
+);","SELECT SUM(GMV) AS total_gmv_april_2024
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-04-01' AND '2024-04-30'
+AND USER_ID IN (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE DATE BETWEEN '2024-06-01' AND '2024-06-30'
+    AND GMV = 19000
+)","SELECT SUM(GMV) as total_gmv
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE MONTH = '2024-04-01' 
+AND USER_ID IN (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+    WHERE MONTH = '2024-06-01' AND GMV = 19000
+)
+",1.0,"SELECT SUM(GMV) as total_gmv
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE MONTH = '2024-04-01' 
+AND USER_ID IN (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+    WHERE MONTH = '2024-06-01' AND GMV = 19000
+)
+",1.0,"WITH June_Users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE EXTRACT(MONTH FROM DATE) = 6 
+  AND EXTRACT(YEAR FROM DATE) = 2024
+  AND GMV = 19000
+)
+SELECT 
+  SUM(t.GMV) as Total_GMV,
+  COUNT(DISTINCT t.USER_ID) as User_Count
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t
+INNER JOIN June_Users ju ON t.USER_ID = ju.USER_ID
+WHERE EXTRACT(MONTH FROM t.DATE) = 4
+AND EXTRACT(YEAR FROM t.DATE) = 2024",1.0,,,,,,,,,,,,
+18.0,Số user chỉ dùng nguồn tiền NHLK từ tháng 2/2024 đến tháng 5/2024,DLS ONLINE,"with raw as (
+select user_id, count (distinct order_id) as total_trans, count (distinct case when money_source = 2 then order_id end) as banklink_trans
+from `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+where DATE_TRUNC(date,month) >= '2024-02-01' and DATE_TRUNC(date,month) <= '2024-05-01'
+
+group by 1
+having total_trans = banklink_trans
+)
+
+select count (distinct user_id)
+from raw",,"SELECT COUNT(DISTINCT USER_ID) AS user_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+  AND MONEY_SOURCE = 'NHLK'
+  AND USER_ID NOT IN (
+    SELECT DISTINCT USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+      AND MONEY_SOURCE != 'NHLK'
+  );","SELECT COUNT(DISTINCT USER_ID) AS user_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31' 
+  AND MONEY_SOURCE = 'NHLK';","SELECT USER_ID
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+AND MONEY_SOURCE = 2
+GROUP BY USER_ID
+HAVING COUNT(DISTINCT MONEY_SOURCE) = 1
+ORDER BY USER_ID
+LIMIT 10;","SELECT 
+  USER_ID
+FROM 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE 
+  MONEY_SOURCE = 2
+  AND DATE >= '2024-02-01' 
+  AND DATE <= '2024-05-31'
+GROUP BY 
+  USER_ID","SELECT DISTINCT USER_ID
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE MONEY_SOURCE_NAME = 'NHLK'
+  AND DATE BETWEEN '2024-02-01' AND '2024-05-31'
+ORDER BY USER_ID
+LIMIT 25;",0.0,"SELECT DISTINCT USER_ID
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE MONEY_SOURCE_NAME = 'NHLK'
+  AND DATE BETWEEN '2024-02-01' AND '2024-05-31'
+ORDER BY USER_ID
+LIMIT 25;",0.0,"WITH all_users_payment_methods AS (
+  SELECT 
+    USER_ID,
+    COUNT(DISTINCT MONEY_SOURCE_NAME) as payment_methods_count,
+    ARRAY_AGG(DISTINCT MONEY_SOURCE_NAME) as payment_methods
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+    AND USER_ID IS NOT NULL
+  GROUP BY USER_ID
+)
+SELECT 
+  COUNT(DISTINCT USER_ID) as exclusive_banklink_users
+FROM all_users_payment_methods
+WHERE payment_methods_count = 1 
+  AND payment_methods[OFFSET(0)] = 'Banklink'",1.0,,,,,,,,,,,,
+19.0,số lượng transaction Facebook ads ngày 26/9/2024,DLS ONLINE,"SELECT
+COUNT(DISTINCT ORDER_ID) AS TOTAL_TRANSACTIONS
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26'
+AND MERCHANT = 'FACEBOOK'
+AND CATE = ""ADS PAYMENT""",Định nghĩa Facebook Ads có phải là Merchant Facebook và Cate là Ads payment không?,"SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26'
+  AND PARTNER_CODE = 'Facebook Ads';","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26' AND SERVICE_CODE = 'Facebook ads';","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26'
+  AND PARTNER_CODE = 'Facebook'
+LIMIT 10;","SELECT COUNT(*) AS transaction_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26' AND MERCHANT = 'FACEBOOK ADS'","SELECT COUNT(*) as transaction_count
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26' AND MERCHANT = 'Facebook ads'
+",0.0,"SELECT COUNT(*) as transaction_count
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26' AND MERCHANT = 'Facebook ads'
+",0.0,"SELECT 
+  COUNT(*) as transaction_count
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26'
+  AND MERCHANT = 'FACEBOOK'",0.2,,,,,Đỡ sai hơn,,,,,,,
+20.0,Nhóm người dùng Light của Ads Payment tháng 8/2024 bao nhiêu,DLS ONLINE,"select count(distinct user_id) as user
+from `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+where month = '2024-08-01' and cate = 'ADS PAYMENT' and USER_SEGMENT = '3. Light'",,"SELECT COUNT(USER_ID) AS Light_User_Count
+FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE CATE = 'Ads Payment'
+AND MONTH = '2024-08'
+AND USER_SEGMENT = 'Light';","SELECT COUNT(*) AS Light_User_Count
+FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE CATE = 'Ads Payment'
+  AND MONTH = '2024-08-01'
+  AND USER_SEGMENT = 'Light';","SELECT COUNT(DISTINCT USER_ID) AS Light_User_Count
+FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE CATE = 'Ads Payment' 
+  AND USER_SEGMENT = '3. Light'
+  AND FORMAT_DATE('%Y-%m', MONTH) = '2024-08'
+","SELECT COUNT(USER_ID) AS light_user_count
+FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE CATE = 'ADS PAYMENT'
+  AND USER_SEGMENT = '3. Light'
+  AND MONTH = '2024-08-01'
+","SELECT COUNT(DISTINCT USER_ID) AS light_user_count
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE MONTH = '2024-08-01'
+AND CATE = 'Ads Payment'
+AND USER_SEGMENT = '3. Light';",0.0,"SELECT COUNT(DISTINCT USER_ID) AS light_user_count
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE MONTH = '2024-08-01'
+AND CATE = 'Ads Payment'
+AND USER_SEGMENT = '3. Light';",1.0,"SELECT 
+  COUNT(DISTINCT USER_ID) as light_users_count
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE MONTH = '2024-08-01'
+  AND CATE = 'ADS PAYMENT'
+  AND USER_SEGMENT = '3. Light';",1.0,,,,,Nhìn nhận ,,,,,,,
+21.0,Rev của Ads Payment tháng 9/2024,DLS ONLINE,"SELECT
+SUM(NET_REV) AS TOTAL_REV
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+WHERE DATE_TRUNC(DATE, MONTH) = '2024-09-01'
+AND CATE = 'ADS PAYMENT'",,"SELECT SUM(TOTAL_REV) as REV
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE CATE = 'Ads Payment'
+  AND EXTRACT(YEAR FROM DATE) = 2024
+  AND EXTRACT(MONTH FROM DATE) = 9;","SELECT SUM(TOTAL_REV) AS total_revenue
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE CATE = 'Ads Payment'
+  AND EXTRACT(YEAR FROM DATE) = 2024
+  AND EXTRACT(MONTH FROM DATE) = 9;","SELECT 
+  DATE,
+  TOTAL_REV
+FROM 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE 
+  CATE = 'ADS PAYMENT' AND 
+  EXTRACT(MONTH FROM DATE) = 9 AND 
+  EXTRACT(YEAR FROM DATE) = 2024
+ORDER BY DATE
+LIMIT 10
+","SELECT SUM(REV) AS total_rev
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+WHERE CATE = 'ADS PAYMENT' AND DATE >= '2024-09-01' AND DATE < '2024-10-01'
+LIMIT 10;","SELECT
+SUM(tbl_dls.NET_REV) AS total_net_rev
+FROM
+momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 AS tbl_dls
+WHERE
+tbl_dls.CATE = ""ADS PAYMENT""
+AND EXTRACT(MONTH FROM tbl_dls.DATE) = 9
+AND EXTRACT(YEAR FROM tbl_dls.DATE) = 2024
+LIMIT 25",1.0,"SELECT
+SUM(tbl_dls.NET_REV) AS total_net_rev
+FROM
+momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 AS tbl_dls
+WHERE
+tbl_dls.CATE = ""ADS PAYMENT""
+AND EXTRACT(MONTH FROM tbl_dls.DATE) = 9
+AND EXTRACT(YEAR FROM tbl_dls.DATE) = 2024
+LIMIT 25",1.0,"SELECT 
+  COALESCE(SUM(NET_REV), 0) as TOTAL_NET_REV,
+  COALESCE(COUNT(DISTINCT ORDER_ID), 0) as TOTAL_TRANSACTIONS,
+  COALESCE(COUNT(DISTINCT USER_ID), 0) as TOTAL_USERS
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE MONTH = '2024-09-01'
+  AND CATE = 'ADS PAYMENT';",1.0,,,,,,,,,,,,
+22.0,how many user using airtime in Apr 2024,Airtime,"SELECT count(distinct user_payment) as user
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE date_trunc(date,month) = ""2024-04-01""",,,,"SELECT COUNT(DISTINCT user_payment) AS user_count
+FROM project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS
+WHERE DATE_TRUNC(date, MONTH) = '2024-04'",,"SELECT COUNT(DISTINCT user_payment) AS user_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE EXTRACT(MONTH FROM date) = 4 AND EXTRACT(YEAR FROM date) = 2024;",1.0,"SELECT COUNT(DISTINCT user_payment) AS user_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE EXTRACT(MONTH FROM date) = 4 AND EXTRACT(YEAR FROM date) = 2024;",1.0,"SELECT 
+  COUNT(DISTINCT user_payment) as total_users
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE month_active = '2024-04-01'
+AND statusid = 2;",1.0,,,,,,,,,,,,
+23.0,GMV trend by month in 2024 of Airtime,Airtime,"SELECT date_trunc(date,month) as month, sum(amount) as gmv
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE date >= ""2024-01-01""
+GROUP BY 1
+ORDER BY 1 DESC
+LIMIT 25",,,,"SELECT
+DATE_TRUNC(date, MONTH) AS month,
+SUM(gmv_mtd) AS total_gmv
+FROM
+project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS
+WHERE
+statusid = 2 AND
+EXTRACT(YEAR FROM date) = 2024
+GROUP BY
+month
+ORDER BY
+month;",,"SELECT 
+  month_active,
+  SUM(GMV) AS total_gmv
+FROM 
+  `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER`
+WHERE 
+  EXTRACT(YEAR FROM month_active) = 2024
+GROUP BY 
+  month_active
+ORDER BY 
+  month_active
+LIMIT 25;",0.0,"SELECT 
+  month_active,
+  SUM(GMV) AS total_gmv
+FROM 
+  `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER`
+WHERE 
+  EXTRACT(YEAR FROM month_active) = 2024
+GROUP BY 
+  month_active
+ORDER BY 
+  month_active
+LIMIT 25;",0.0,"SELECT 
+  month_active,
+  SUM(amount) as total_gmv,
+  COUNT(DISTINCT user_payment) as total_users,
+  SUM(amount)/COUNT(DISTINCT user_payment) as gmv_per_user
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE EXTRACT(YEAR FROM month_active) = 2024
+  AND statusid = 2
+GROUP BY month_active
+ORDER BY month_active ASC;",1.0,,,,,"Tại sao nó biết lấy statusid=2 ta
+Chọn đúng bảng hơn",,,,,,,
+24.0,How many fail transaction in Mar 2024,Airtime,"SELECT count(distinct id) as transaction
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE date_trunc(date,month) = ""2024-03-01""
+and statusid =6",,,,"The provided context is insufficient. The AIRTIME_DETAILS table contains data only up to the present date and does not include data for March 2024. Therefore, it is not possible to generate a query to retrieve the number of failed transactions in March 2024 based on the given dataset.",,"SELECT COUNT(*) as fail_transaction_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE statusid = 6
+AND date BETWEEN '2024-03-01' AND '2024-03-31'
+",1.0,"SELECT COUNT(*) as fail_transaction_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE statusid = 6
+AND date BETWEEN '2024-03-01' AND '2024-03-31'
+",1.0,"SELECT COUNT(*) as failed_transactions
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE statusid = 6 
+AND DATE_TRUNC(date, MONTH) = '2024-03-01';",1.0,,,,,"không count distinct id, cái này lỗi DA không clean bảng nên tạm cho nó đúng",,,,,,,
+25.0,The most popular mobile network in Airtime in 2024,Airtime,"SELECT cate, count(distinct id) as transaction
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE date_trunc(date,month) >= ""2024-01-01""
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 1",,,,"SELECT cate, COUNT(*) as transaction_count
+FROM project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS
+WHERE statusid = 2 AND EXTRACT(YEAR FROM date) = 2024
+GROUP BY cate
+ORDER BY transaction_count DESC
+LIMIT 1;",,"SELECT cate, COUNT(id) as transaction_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE EXTRACT(YEAR FROM date) = 2024
+GROUP BY cate
+ORDER BY transaction_count DESC
+LIMIT 1;",1.0,"SELECT cate, COUNT(id) as transaction_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE EXTRACT(YEAR FROM date) = 2024
+GROUP BY cate
+ORDER BY transaction_count DESC
+LIMIT 1;",1.0,"WITH network_counts AS (
+  SELECT 
+    cate as network,
+    COUNT(*) as transaction_count,
+    SUM(amount) as total_amount
+  FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+  WHERE EXTRACT(YEAR FROM date) = 2024
+    AND statusid = 2
+    AND cate IS NOT NULL
+  GROUP BY cate
+)
+SELECT 
+  network,
+  transaction_count,
+  total_amount,
+  ROUND(transaction_count * 100.0 / SUM(transaction_count) OVER(), 2) as percentage_of_transactions
+FROM network_counts
+ORDER BY transaction_count DESC;",1.0,,,,,,,,,,,,
+26.0,Top 3 productid bought the most of Viettel in 2024,Airtime,"SELECT goi_cuoc, count(distinct id) as transaction
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE date_trunc(date,month) >= ""2024-01-01""
+AND cate = ""Viettel""
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 3",,,,"SELECT goi_cuoc AS productid, SUM(quantity) AS total_quantity
+FROM project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS
+WHERE cate = 'Viettel' AND statusid = 2 AND EXTRACT(YEAR FROM date) = 2024
+GROUP BY goi_cuoc
+ORDER BY total_quantity DESC
+LIMIT 3;",,"SELECT goi_cuoc AS productid, SUM(quantity) as total_quantity
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE cate = 'Viettel' AND EXTRACT(YEAR FROM date) = 2024
+GROUP BY goi_cuoc
+ORDER BY total_quantity DESC
+LIMIT 3
+",0.5,"SELECT goi_cuoc AS productid, SUM(quantity) as total_quantity
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE cate = 'Viettel' AND EXTRACT(YEAR FROM date) = 2024
+GROUP BY goi_cuoc
+ORDER BY total_quantity DESC
+LIMIT 3
+",0.5,"WITH viettel_products AS (
+  SELECT 
+    goi_cuoc as product_id,
+    COUNT(*) as transaction_count,
+    SUM(quantity) as total_quantity,
+    SUM(amount) as total_amount
+  FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+  WHERE EXTRACT(YEAR FROM date) = 2024
+    AND cate = 'Viettel'
+    AND statusid = 2  -- successful transactions only
+    AND goi_cuoc IS NOT NULL
+  GROUP BY goi_cuoc
+  ORDER BY transaction_count DESC
+  LIMIT 3
+)
+SELECT * FROM viettel_products;",1.0,,,,,"Lấy nhiều chỉ số, dùng cột tốt hơn",,,,,,,
+27.0,"which entrypoint do user come from the most in ""Hà Nội"" city in Mar 2024?",Airtime,"SELECT telcosource, count(distinct user_payment) as user
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE date_trunc(date,month) = ""2024-03-01""
+AND province_group = ""Hà Nội""
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 1",,,,"SELECT telcosource, COUNT(DISTINCT user_payment) as user_count
+FROM project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS
+WHERE province = 'Hà Nội'
+AND statusid = 2
+AND DATE_TRUNC(date, MONTH) = DATE '2024-03-01'
+GROUP BY telcosource
+ORDER BY user_count DESC
+LIMIT 1;",,"SELECT telcosource, COUNT(*) as entrypoint_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE province = 'Hà Nội'
+  AND DATE_TRUNC(month_active, MONTH) = '2024-03-01'
+GROUP BY telcosource
+ORDER BY entrypoint_count DESC
+LIMIT 1
+",0.5,"SELECT telcosource, COUNT(*) as entrypoint_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE province = 'Hà Nội'
+  AND DATE_TRUNC(month_active, MONTH) = '2024-03-01'
+GROUP BY telcosource
+ORDER BY entrypoint_count DESC
+LIMIT 1
+",0.5,"SELECT 
+  telcosource,
+  COUNT(*) as entry_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE province = 'Hà Nội'
+  AND DATE_TRUNC(date, MONTH) = '2024-03-01'
+  AND telcosource IS NOT NULL
+GROUP BY telcosource
+ORDER BY entry_count DESC
+LIMIT 5",0.5,,,,,,,,,,,,
+28.0,MAU contribution by province/gender in Apr 2024,Airtime,"SELECT province, gender, count(distinct user_payment) as user
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE DATE_TRUNC(date,month)=""2024-04-01""
+GROUP BY 1,2
+ORDER BY 1,2
+LIMIT 25",,,,"SELECT
+province,
+COUNT(DISTINCT user_payment) AS MAU_contribution
+FROM
+project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS
+WHERE
+statusid = 2 AND
+EXTRACT(YEAR FROM date) = 2024 AND
+EXTRACT(MONTH FROM date) = 4
+GROUP BY
+province
+ORDER BY
+MAU_contribution DESC;",,"SELECT 
+    province,
+    gender,
+    COUNT(DISTINCT user_payment) AS MAU_contribution
+FROM 
+    `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE 
+    EXTRACT(MONTH FROM month_active) = 4 AND EXTRACT(YEAR FROM month_active) = 2024
+GROUP BY 
+    province, 
+    gender
+ORDER BY 
+    MAU_contribution DESC
+LIMIT 25
+",1.0,"SELECT 
+    province,
+    gender,
+    COUNT(DISTINCT user_payment) AS MAU_contribution
+FROM 
+    `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE 
+    EXTRACT(MONTH FROM month_active) = 4 AND EXTRACT(YEAR FROM month_active) = 2024
+GROUP BY 
+    province, 
+    gender
+ORDER BY 
+    MAU_contribution DESC
+LIMIT 25
+",1.0,"WITH total_mau AS (
+  SELECT COUNT(DISTINCT user_payment) as total_users
+  FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+  WHERE month_active = '2024-04-01'
+)
+SELECT 
+  IFNULL(province, 'Unknown') as province,
+  IFNULL(gender, 'Unknown') as gender,
+  COUNT(DISTINCT user_payment) as users,
+  ROUND(COUNT(DISTINCT user_payment) * 100.0 / MAX(total_users), 2) as contribution_percentage
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+CROSS JOIN total_mau
+WHERE month_active = '2024-04-01'
+GROUP BY province, gender
+ORDER BY users DESC
+",1.0,,,,,"Câu này đúng rồi, viết hay hơn cả ref, nhưng hơi không optimize thôi",,,,,,,
+29.0,average AOV of recover_user (segemnt_user) with churn_duration above 3 month in 2023,Airtime,"with tb as (
+  SELECT user_payment, SUM(amount)/COUNT(DISTINCT id) as AOV
+  FROM `project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS`
+  WHERE date between ""2023-01-01"" and ""2023-12-31""
+    AND user_segment = ""recover_user""
+    AND churn_duration >= 3
+  GROUP BY 1
+)
+SELECT AVG(AOV) AS AVG_AOV
+FROM tb",,,,"SELECT AVG(amount) AS average_aov
+FROM project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS
+WHERE user_segment = 'recover_user'
+AND churn_duration > 3
+AND DATE(datetime) BETWEEN '2023-01-01' AND '2023-12-31'
+AND statusid = 2;",,"SELECT 
+  AVG(amount) AS average_AOV
+FROM 
+  `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS` ad
+JOIN 
+  `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER` asu 
+ON 
+  ad.user_payment = asu.reference
+WHERE 
+  asu.user_segment = 'recover_user'
+  AND asu.churn_duration > 3
+  AND EXTRACT(YEAR FROM ad.date) = 2023;",0.0,"SELECT 
+  AVG(amount) AS average_AOV
+FROM 
+  `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS` ad
+JOIN 
+  `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER` asu 
+ON 
+  ad.user_payment = asu.reference
+WHERE 
+  asu.user_segment = 'recover_user'
+  AND asu.churn_duration > 3
+  AND EXTRACT(YEAR FROM ad.date) = 2023;",0.0,"SELECT 
+  FORMAT_DATE('%Y-%m', month_active) as month,
+  ROUND(AVG(GMV/TRANS), 0) as average_aov,
+  COUNT(DISTINCT reference) as number_users
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER`
+WHERE 
+  EXTRACT(YEAR FROM month_active) = 2023
+  AND user_segment = 'recover_user'
+  AND churn_duration > 3
+GROUP BY 1
+ORDER BY 1;",1.0,,,,,Đúng công thức AOV,,,,,,,
+30.0,New Airtime users each months trend in 2024,Airtime,"SELECT
+DATE_TRUNC(date, MONTH) AS month,
+COUNT(DISTINCT id) AS new_data_users
+FROM
+project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS
+WHERE
+EXTRACT(YEAR FROM date) = 2024
+AND user_segment = 'new_user'
+GROUP BY
+month
+ORDER BY
+month;",,,,"SELECT
+DATE_TRUNC(date, MONTH) AS month,
+COUNT(DISTINCT id) AS new_data_users
+FROM
+project-5400504384186300846.BU_UTILITIES_TELCO.DATA_DETAILS
+WHERE
+EXTRACT(YEAR FROM date) = 2024
+AND statusid = 2
+AND user_segment = 'new'
+GROUP BY
+month
+ORDER BY
+month;",,"SELECT 
+  month_active, 
+  COUNT(DISTINCT reference) as new_users
+FROM 
+  `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER`
+WHERE 
+  EXTRACT(YEAR FROM month_active) = 2024 
+  AND user_segment = 'new_user'
+GROUP BY 
+  month_active
+ORDER BY 
+  month_active
+LIMIT 25
+",1.0,"SELECT 
+  month_active, 
+  COUNT(DISTINCT reference) as new_users
+FROM 
+  `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER`
+WHERE 
+  EXTRACT(YEAR FROM month_active) = 2024 
+  AND user_segment = 'new_user'
+GROUP BY 
+  month_active
+ORDER BY 
+  month_active
+LIMIT 25
+",1.0,"SELECT 
+  month_active,
+  COUNT(DISTINCT reference) as new_users
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER`
+WHERE 
+  EXTRACT(YEAR FROM month_active) = 2024
+  AND user_segment = 'new_user'
+GROUP BY month_active
+ORDER BY month_active;",1.0,,,,,,,,,,,,
+33.0,Tổng GMV/Trans trong tháng 4 năm 2024 của User có các amount = 19000 trong tháng 6  ,DLS ONLINE,"with target_user as (
+  select distinct user_id
+  from `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  where month = '2024-06-01' and gmv = 19000 
+)
+
+select 
+  month,
+  count (distinct t2.user_id) as total_user,
+  sum(gmv) as gmv,
+  sum (net_rev) as rev
+from target_user t1
+inner join `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t2 using (user_id)
+where month = '2024-04-01'
+group by 1
+order by 1",,,,"WITH UsersWithAmount19000 AS (
+    SELECT 
+        DISTINCT USER_ID 
+    FROM 
+        `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    WHERE 
+        DATE BETWEEN '2023-06-01' AND '2023-06-30'
+        AND GMV = 19000
+)
+SELECT 
+    SUM(GMV) AS total_gmv,
+    COUNT(*) AS total_transactions
+FROM 
+    `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` AS trans
+WHERE 
+    DATE BETWEEN '2023-04-01' AND '2023-04-30'
+    AND USER_ID IN (SELECT USER_ID FROM UsersWithAmount19000)
+LIMIT 10",,"SELECT SUM(GMV) as Total_GMV, SUM(TRANS) as Total_Trans
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE USER_ID IN (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+  WHERE GMV = 19000 AND DATE(MONTH) = '2024-06-01'
+)
+AND DATE(MONTH) = '2024-04-01'
+",0.5,"SELECT SUM(GMV) as Total_GMV, SUM(TRANS) as Total_Trans
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE USER_ID IN (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+  WHERE GMV = 19000 AND DATE(MONTH) = '2024-06-01'
+)
+AND DATE(MONTH) = '2024-04-01'
+",0.5,"WITH June_Users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE EXTRACT(MONTH FROM DATE) = 6
+  AND GMV = 19000
+)
+SELECT 
+  SUM(t.GMV) as Total_GMV,
+  COUNT(t.ORDER_ID) as Total_Transactions
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t
+INNER JOIN June_Users ju ON t.USER_ID = ju.USER_ID
+WHERE EXTRACT(YEAR FROM t.DATE) = 2024
+AND EXTRACT(MONTH FROM t.DATE) = 4",1.0,,,,,"Chọn đúng bảng hơn, join nhẹ hơn",,,,,,,
+34.0,Số inactive user trong tháng 3 năm 2024 họ theo user segment?,DLS ONLINE,"  select user_segment, count (distinct t1.user_id)
+  -- distinct t1.user_id, t1.user_segment, t2.user_id
+  from `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`  t1
+  left join `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t2
+    on t1.user_id = t2.user_id 
+    and t1.cate = t2.cate
+    and t1.month = DATE_SUB(T2.MONTH, INTERVAL 1 MONTH)
+
+  where t1.month = '2024-03-01' and t1.cate = 'ADS PAYMENT' and t2.user_id is null 
+  group by 1
+  order by 1",,,,"SELECT 
+  t2.USER_SEGMENT,
+  COUNT(DISTINCT t1.USER_ID) AS inactive_user_count
+FROM `momovn-mimir.MIMIR.DLS_MONTHLY_USER_TYPE_BY_CATE_V3` AS t1
+JOIN `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` AS t2
+ON t1.USER_ID = t2.USER_ID
+WHERE t1.MONTH = '2024-03-01'
+  AND t1.USER_TYPE = 'INACTIVE'
+GROUP BY t2.USER_SEGMENT
+ORDER BY t2.USER_SEGMENT
+LIMIT 10;",,"SELECT 
+  USER_SEGMENT, 
+  COUNT(DISTINCT USER_ID) AS inactive_users
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE MONTH = '2024-03-01'
+GROUP BY USER_SEGMENT
+ORDER BY USER_SEGMENT
+LIMIT 25
+",0.0,"SELECT 
+  USER_SEGMENT, 
+  COUNT(DISTINCT USER_ID) AS inactive_users
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE MONTH = '2024-03-01'
+GROUP BY USER_SEGMENT
+ORDER BY USER_SEGMENT
+LIMIT 25
+",0.0,"
+WITH active_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MONTH = '2024-03-01'
+),
+all_segmented_users AS (
+  SELECT DISTINCT USER_ID, USER_SEGMENT
+  FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+  WHERE MONTH = '2024-03-01'
+  AND USER_SEGMENT IS NOT NULL
+)
+SELECT 
+  USER_SEGMENT,
+  COUNT(DISTINCT u.USER_ID) as inactive_users
+FROM all_segmented_users u
+LEFT JOIN active_users a ON u.USER_ID = a.USER_ID
+WHERE a.USER_ID IS NULL
+GROUP BY USER_SEGMENT
+ORDER BY USER_SEGMENT;\",0.0,,,,,"inactive là có active tháng 3 nhưng không còn active tháng 4
+Cái này nó lấy user segment đúng nhưng lại active trong bảng segment và không active trong bảng transaction trong cùng tháng 3
+Tư duy SQL Logic chưa tới",,,,,,,
+35.0,Số user chỉ dùng nguồn tiền NHLK từ tháng 2/2024 đến tháng 5/2024,DLS ONLINE,"with raw as (
+select user_id, count (distinct order_id) as total_trans, count (distinct case when money_source = 2 then order_id end) as banklink_trans
+from `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+where cate in ('LOGISTICS','ADS PAYMENT','APPLICATION STORE','MARKETPLACE','GAME','OTT','DIGITAL CONTENT')
+  and month >= '2024-02-01' and month <= '2024-05-01'
+
+group by 1
+having total_trans = banklink_trans
+)
+
+select count (distinct user_id)
+from raw",,,,"SELECT COUNT(DISTINCT t1.USER_ID) AS user_count
+FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` AS t1
+WHERE t1.MONEY_SOURCE = 2
+AND t1.DATE BETWEEN '2024-02-01' AND '2024-05-31'
+AND t1.USER_ID NOT IN (
+    SELECT DISTINCT t2.USER_ID
+    FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` AS t2
+    WHERE t2.DATE BETWEEN '2024-02-01' AND '2024-05-31'
+    AND t2.MONEY_SOURCE != 2
+)
+LIMIT 10;",,"SELECT DISTINCT USER_ID
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE MONEY_SOURCE_NAME = 'NHLK'
+  AND MONTH BETWEEN '2024-02-01' AND '2024-05-31'
+LIMIT 25
+",0.0,"SELECT DISTINCT USER_ID
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE MONEY_SOURCE_NAME = 'NHLK'
+  AND MONTH BETWEEN '2024-02-01' AND '2024-05-31'
+LIMIT 25
+",0.0,"WITH all_users_payment_methods AS (
+  SELECT 
+    USER_ID,
+    COUNT(DISTINCT MONEY_SOURCE_NAME) as payment_methods_count,
+    ARRAY_AGG(DISTINCT MONEY_SOURCE_NAME) as payment_methods
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+    AND USER_ID IS NOT NULL
+  GROUP BY USER_ID
+)
+SELECT 
+  COUNT(DISTINCT USER_ID) as exclusive_banklink_users
+FROM all_users_payment_methods
+WHERE payment_methods_count = 1 
+  AND payment_methods[OFFSET(0)] = 'Banklink'",1.0,,,,,Đúng logic,,,,,,,
+36.0,Số lượng user dùng 2 usecase hàng tháng,DLS ONLINE,"with raw as (
+  select distinct month, user_id, cate 
+  from `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+  where month >= '2024-06-01' and USECASE_TYPE = '2 USECASE'
+),
+
+cate_combine as (
+  select 
+    month,
+    user_id,
+    STRING_AGG (CATE, ""-"" ORDER BY CATE) as cate_combo
+  from raw
+  group by 1,2
+
+)
+select 
+  month,
+  cate_combo,
+  count (distinct user_id)
+from cate_combine
+group by 1,2
+order by 1 desc, 3 desc 
+",,,,"SELECT 
+  DATE_TRUNC(t2.MONTH, MONTH) AS MONTH,
+  t2.USECASE_TYPE,
+  COUNT(DISTINCT t2.USER_ID) AS USER_COUNT
+FROM 
+  `momovn-mimir.MIMIR.MAU_BY_USECASE_VER2` AS t2
+WHERE 
+  t2.USECASE_TYPE = ""2 USECASE""
+GROUP BY 
+  MONTH, 
+  t2.USECASE_TYPE
+ORDER BY 
+  MONTH 
+LIMIT 10;",,"SELECT DATE_TRUNC(t.DATE, MONTH) AS month, COUNT(DISTINCT t.USER_ID) AS user_count
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t
+GROUP BY month
+HAVING COUNT(DISTINCT t.CATE) = 2
+ORDER BY month DESC
+LIMIT 25",0.0,"SELECT 
+  MONTH,
+  COUNT(DISTINCT USER_ID) AS user_count
+FROM 
+  `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+WHERE 
+  USECASE_TYPE = '2 USECASE'
+GROUP BY 
+  MONTH
+ORDER BY 
+  MONTH
+LIMIT 25;",1.0,"SELECT 
+  MONTH,
+  COUNT(DISTINCT USER_ID) as user_count
+FROM `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+WHERE USECASE_TYPE = '2 USECASE'
+GROUP BY MONTH
+ORDER BY MONTH DESC
+",1.0,,,,,Test set viết sai,,,,,,,
+37.0,"Nhóm user là single use case tháng này, qua tháng sau có bao nhiêu lên > 2 use case năm 2024",DLS ONLINE,"with raw as (
+  select distinct month, user_id, usecase_type
+  from `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+  where month = '2024-06-01' and USECASE_TYPE = '1 USECASE'
+)
+
+select 
+  count (distinct t1. user_id) as total_user, count (distinct t2.user_id) as uplift_usecase_user
+from raw t1
+left join 
+(select * from `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2` where month = '2024-07-01' and USECASE_TYPE != '1 USECASE' ) t2
+ using (user_id)",,,,"WITH single_usecase_users AS (
+    SELECT
+        USER_ID,
+        DATE_TRUNC(MONTH, MONTH) AS MONTH
+    FROM
+        `momovn-mimir.MIMIR.MAU_BY_USECASE_VER2`
+    WHERE
+        USECASE_TYPE = '1 USECASE'
+),
+next_month_usecase_users AS (
+    SELECT
+        USER_ID,
+        DATE_TRUNC(DATE_ADD(MONTH, INTERVAL 1 MONTH), MONTH) AS NEXT_MONTH
+    FROM
+        `momovn-mimir.MIMIR.MAU_BY_USECASE_VER2`
+    WHERE
+        USECASE_TYPE = '2 USECASE' OR USECASE_TYPE = 'FROM 4 USECASE'
+)
+SELECT
+    su.MONTH,
+    COUNT(DISTINCT su.USER_ID) AS USER_COUNT
+FROM
+    single_usecase_users su
+JOIN
+    next_month_usecase_users nu ON su.USER_ID = nu.USER_ID AND su.MONTH = nu.NEXT_MONTH
+GROUP BY
+    su.MONTH
+ORDER BY
+    su.MONTH
+LIMIT 10;",,"WITH single_use_case_users AS (
+    SELECT 
+        USER_ID,
+        MONTH,
+        COUNT(DISTINCT USECASE_TYPE) AS usecase_count
+    FROM `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+    WHERE EXTRACT(YEAR FROM MONTH) = 2024
+    GROUP BY USER_ID, MONTH
+    HAVING usecase_count = 1
+),
+multi_use_case_users_next_month AS (
+    SELECT 
+        a.USER_ID,
+        a.MONTH AS current_month,
+        b.MONTH AS next_month,
+        COUNT(DISTINCT b.USECASE_TYPE) AS next_month_usecase_count
+    FROM single_use_case_users a
+    JOIN `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2` b
+    ON a.USER_ID = b.USER_ID
+    AND DATE_TRUNC(b.MONTH, MONTH) = DATE_TRUNC(DATE_ADD(a.MONTH, INTERVAL 1 MONTH), MONTH)
+    GROUP BY a.USER_ID, a.MONTH, b.MONTH
+    HAVING next_month_usecase_count > 2
+)
+SELECT 
+    COUNT(DISTINCT USER_ID) AS total_users
+FROM multi_use_case_users_next_month;",0.0,"WITH single_use_case_users AS (
+    SELECT 
+        USER_ID,
+        MONTH,
+        COUNT(DISTINCT USECASE_TYPE) AS usecase_count
+    FROM `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+    WHERE EXTRACT(YEAR FROM MONTH) = 2024
+    GROUP BY USER_ID, MONTH
+    HAVING usecase_count = 1
+),
+multi_use_case_users_next_month AS (
+    SELECT 
+        a.USER_ID,
+        a.MONTH AS current_month,
+        b.MONTH AS next_month,
+        COUNT(DISTINCT b.USECASE_TYPE) AS next_month_usecase_count
+    FROM single_use_case_users a
+    JOIN `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2` b
+    ON a.USER_ID = b.USER_ID
+    AND DATE_TRUNC(b.MONTH, MONTH) = DATE_TRUNC(DATE_ADD(a.MONTH, INTERVAL 1 MONTH), MONTH)
+    GROUP BY a.USER_ID, a.MONTH, b.MONTH
+    HAVING next_month_usecase_count > 2
+)
+SELECT 
+    COUNT(DISTINCT USER_ID) AS total_users
+FROM multi_use_case_users_next_month;",0.0,"WITH single_usecase_users AS (
+  SELECT 
+    MONTH,
+    USER_ID,
+    USECASE_TYPE
+  FROM `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+  WHERE USECASE_TYPE = '1 USECASE'
+  AND EXTRACT(YEAR FROM MONTH) = 2024
+),
+next_month_status AS (
+  SELECT 
+    a.MONTH as current_month,
+    a.USER_ID,
+    a.USECASE_TYPE as current_usecase,
+    b.MONTH as next_month,
+    b.USECASE_TYPE as next_usecase
+  FROM single_usecase_users a
+  LEFT JOIN `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2` b
+  ON a.USER_ID = b.USER_ID
+  AND b.MONTH = DATE_ADD(a.MONTH, INTERVAL 1 MONTH)
+  WHERE b.USECASE_TYPE IN ('2 USECASE', '3 USECASE', 'FROM 4 USECASE')
+)
+SELECT 
+  current_month,
+  COUNT(DISTINCT USER_ID) as users_upgraded
+FROM next_month_status
+GROUP BY current_month
+ORDER BY current_month;",1.0,,,,,"Dùng usecase type khá hiệu quả, đúng ý của DA
+Model cũ đếm usecase type sai",,,,,,,
+38.0,"Số user overlap 2 merchant Google và Facebook của cate ADS PAYMENT, và % số lượng users trong tổng users mỗi merchant trong tháng 10 năm 2024",DLS ONLINE,"with merchant_type as (
+select distinct user_id, merchant
+from `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+where month >= '2024-04-01' and month <= '2024-06-01' and cate = 'ADS PAYMENT'
+and merchant in ('TIKTOK','GOOGLE','FACEBOOK')
+),
+final as (
+select distinct
+user_id,
+STRING_AGG (MERCHANT, ""-"" ORDER BY MERCHANT) as type_merchant
+from merchant_type
+group by 1
+)
+
+select type_merchant, count (distinct user_id)
+from final
+group by 1
+order by 1",,,,"WITH user_overlap AS (
+    SELECT 
+        a.USER_ID,
+        a.MERCHANT AS MERCHANT_A,
+        b.MERCHANT AS MERCHANT_B
+    FROM 
+        `momovn-mimir.MIMIR.DLS_MONTHLY_USER_TYPE_BY_MERCHANT_V3` a
+    JOIN 
+        `momovn-mimir.MIMIR.DLS_MONTHLY_USER_TYPE_BY_MERCHANT_V3` b
+    ON 
+        a.USER_ID = b.USER_ID
+    WHERE 
+        a.MERCHANT != b.MERCHANT
+),
+
+overlap_stats AS (
+    SELECT
+        u.USER_ID,
+        SUM(t.GMV) AS TOTAL_GMV,
+        COUNT(t.USER_ID) AS TOTAL_TRANS,
+        SUM(t.TOTAL_REV) AS TOTAL_REV
+    FROM
+        user_overlap u
+    JOIN
+        `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` t
+    ON
+        u.USER_ID = t.USER_ID
+    GROUP BY
+        u.USER_ID
+),
+
+merchant_gmv AS (
+    SELECT
+        MERCHANT,
+        SUM(GMV) AS GMV
+    FROM
+        `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+    GROUP BY
+        MERCHANT
+)
+
+SELECT
+    u.MERCHANT_A,
+    u.MERCHANT_B,
+    COUNT(DISTINCT o.USER_ID) AS TOTAL_OVERLAP_USERS,
+    SUM(o.TOTAL_GMV) AS TOTAL_GMV,
+    SUM(o.TOTAL_TRANS) AS TOTAL_TRANS,
+    SUM(o.TOTAL_REV) AS TOTAL_REV,
+    (SUM(o.TOTAL_GMV) / mg1.GMV) * 100 AS PERCENT_GMV_A,
+    (SUM(o.TOTAL_GMV) / mg2.GMV) * 100 AS PERCENT_GMV_B
+FROM
+    user_overlap u
+JOIN
+    overlap_stats o
+ON
+    u.USER_ID = o.USER_ID
+JOIN
+    merchant_gmv mg1
+ON
+    u.MERCHANT_A = mg1.MERCHANT
+JOIN
+    merchant_gmv mg2
+ON
+    u.MERCHANT_B = mg2.MERCHANT
+GROUP BY
+    u.MERCHANT_A,
+    u.MERCHANT_B,
+    mg1.GMV,
+    mg2.GMV
+ORDER BY
+    TOTAL_OVERLAP_USERS DESC
+LIMIT 10;",,"WITH merchant_users AS (
+SELECT
+USER_ID,
+MERCHANT
+FROM
+momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+WHERE
+DATE_TRUNC(DATE, MONTH) = '2024-10-01'
+AND CATE = ""ADS PAYMENT""
+AND MERCHANT IN (""FACEBOOK"", ""GOOGLE"")
+GROUP BY
+USER_ID,
+MERCHANT
+),
+overlap_users AS (
+SELECT
+USER_ID
+FROM
+merchant_users
+GROUP BY
+USER_ID
+HAVING
+COUNT(DISTINCT MERCHANT) > 1
+),
+total_users_per_merchant AS (
+SELECT
+MERCHANT,
+COUNT(DISTINCT USER_ID) AS total_users
+FROM
+merchant_users
+GROUP BY
+MERCHANT
+)
+SELECT
+m.MERCHANT,
+COUNT(DISTINCT o.USER_ID) AS overlap_user_count,
+(COUNT(DISTINCT o.USER_ID) / t.total_users) * 100 AS overlap_user_percentage
+FROM
+overlap_users o
+JOIN
+merchant_users m ON o.USER_ID = m.USER_ID
+JOIN
+total_users_per_merchant t ON m.MERCHANT = t.MERCHANT
+GROUP BY
+m.MERCHANT, t.total_users
+ORDER BY
+overlap_user_percentage DESC
+LIMIT 25;",1.0,"WITH merchant_users AS (
+SELECT
+USER_ID,
+MERCHANT
+FROM
+momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+WHERE
+DATE_TRUNC(DATE, MONTH) = '2024-10-01'
+AND CATE = ""ADS PAYMENT""
+AND MERCHANT IN (""FACEBOOK"", ""GOOGLE"")
+GROUP BY
+USER_ID,
+MERCHANT
+),
+overlap_users AS (
+SELECT
+USER_ID
+FROM
+merchant_users
+GROUP BY
+USER_ID
+HAVING
+COUNT(DISTINCT MERCHANT) > 1
+),
+total_users_per_merchant AS (
+SELECT
+MERCHANT,
+COUNT(DISTINCT USER_ID) AS total_users
+FROM
+merchant_users
+GROUP BY
+MERCHANT
+)
+SELECT
+m.MERCHANT,
+COUNT(DISTINCT o.USER_ID) AS overlap_user_count,
+(COUNT(DISTINCT o.USER_ID) / t.total_users) * 100 AS overlap_user_percentage
+FROM
+overlap_users o
+JOIN
+merchant_users m ON o.USER_ID = m.USER_ID
+JOIN
+total_users_per_merchant t ON m.MERCHANT = t.MERCHANT
+GROUP BY
+m.MERCHANT, t.total_users
+ORDER BY
+overlap_user_percentage DESC
+LIMIT 25;",1.0,"WITH merchant_users AS (
+  SELECT DISTINCT USER_ID, MERCHANT
+  FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+  WHERE MONTH = '2024-10-01'
+  AND CATE = 'ADS PAYMENT'
+  AND MERCHANT IN ('GOOGLE', 'FACEBOOK')
+),
+total_users_by_merchant AS (
+  SELECT 
+    MERCHANT,
+    COUNT(DISTINCT USER_ID) as total_users
+  FROM merchant_users
+  GROUP BY MERCHANT
+),
+overlap_users AS (
+  SELECT 
+    COUNT(DISTINCT USER_ID) as overlap_count
+  FROM (
+    SELECT USER_ID
+    FROM merchant_users
+    GROUP BY USER_ID
+    HAVING COUNT(DISTINCT MERCHANT) = 2
+  )
+)
+SELECT 
+  o.overlap_count as overlap_users,
+  m.MERCHANT,
+  m.total_users,
+  ROUND(o.overlap_count * 100.0 / m.total_users, 2) as overlap_percentage
+FROM total_users_by_merchant m
+CROSS JOIN overlap_users o;",1.0,,,,,Sửa lại cách prompt thì cả 2 model đều oke,,,,,,,
+40.0,"Số user overlap 2 merchant Google và Facebook của cate ADS PAYMENT, và %GMV và Revenue của nhóm users đó trên tổng GMV và Revenue của tổng users của mỗi merchant đó trong tháng 10 năm 2024",DLS ONLINE,"WITH OVERLAP_USER AS (
+  SELECT 
+    USER_ID, 
+    SUM(GMV) AS GMV_OVERLAP,
+    SUM(NET_REV) AS REV_OVERLAP
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE CATE = 'ADS PAYMENT' 
+    AND MERCHANT IN ('FACEBOOK', 'GOOGLE')
+    AND MONTH = '2024-10-01'
+  GROUP BY USER_ID
+  HAVING COUNT(DISTINCT MERCHANT) = 2
+),
+TOTAL_GMV_REV AS (
+  SELECT
+    MERCHANT, 
+    SUM(GMV) AS TOTAL_GMV, 
+    SUM(NET_REV) AS TOTAL_REV
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE CATE = 'ADS PAYMENT' 
+    AND MERCHANT IN ('FACEBOOK', 'GOOGLE')
+    AND MONTH = '2024-10-01'
+  GROUP BY MERCHANT
+),
+TOTAL_OVERLAP AS (
+  SELECT 
+    COUNT(USER_ID) AS TOTAL_USER_OVERLAP, 
+    SUM(GMV_OVERLAP) AS TOTAL_GMV_OVERLAP,
+    SUM(REV_OVERLAP) AS TOTAL_REV_OVERLAP
+  FROM OVERLAP_USER
+)
+SELECT 
+  TOTAL_USER_OVERLAP,
+  ROUND((TOTAL_GMV_OVERLAP / (SELECT TOTAL_GMV FROM TOTAL_GMV_REV WHERE MERCHANT = 'FACEBOOK')) * 100, 2) AS GMV_PERCENT_FACEBOOK,
+  ROUND((TOTAL_REV_OVERLAP / (SELECT TOTAL_REV FROM TOTAL_GMV_REV WHERE MERCHANT = 'FACEBOOK')) * 100, 2) AS REV_PERCENT_FACEBOOK,
+  ROUND((TOTAL_GMV_OVERLAP / (SELECT TOTAL_GMV FROM TOTAL_GMV_REV WHERE MERCHANT = 'GOOGLE')) * 100, 2) AS GMV_PERCENT_GOOGLE,
+  ROUND((TOTAL_REV_OVERLAP / (SELECT TOTAL_REV FROM TOTAL_GMV_REV WHERE MERCHANT = 'GOOGLE')) * 100, 2) AS REV_PERCENT_GOOGLE
+FROM TOTAL_OVERLAP 
+",,,,,,"with google_users as (
+select distinct t1.user_id
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t1
+where DATE_TRUNC(t1.date, month) = '2024-10-01' and t1.cate = 'ADS PAYMENT' and t1.merchant = 'GOOGLE'
+),
+facebook_users as (
+select distinct t1.user_id
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t1
+where DATE_TRUNC(t1.date, month) = '2024-10-01' and t1.cate = 'ADS PAYMENT' and t1.merchant = 'FACEBOOK'
+),
+overlap_users as (
+select user_id
+from google_users
+intersect
+select user_id
+from facebook_users
+),
+google_metrics as (
+select
+count(distinct user_id) as total_google_users,
+sum(gmv) as total_google_gmv,
+sum(net_rev) as total_google_rev
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+where DATE_TRUNC(date, month) = '2024-10-01' and cate = 'ADS PAYMENT' and merchant = 'GOOGLE'
+),
+facebook_metrics as (
+select
+count(distinct user_id) as total_facebook_users,
+sum(gmv) as total_facebook_gmv,
+sum(net_rev) as total_facebook_rev
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+where DATE_TRUNC(date, month) = '2024-10-01' and cate = 'ADS PAYMENT' and merchant = 'FACEBOOK'
+)
+select
+count(distinct o.user_id) as overlap_user_count,
+sum(case when t1.merchant = 'GOOGLE' then t1.gmv end) as overlap_google_gmv,
+sum(case when t1.merchant = 'FACEBOOK' then t1.gmv end) as overlap_facebook_gmv,
+(sum(case when t1.merchant = 'GOOGLE' then t1.gmv end) / g.total_google_gmv) * 100 as percent_overlap_google_gmv,
+(sum(case when t1.merchant = 'FACEBOOK' then t1.gmv end) / f.total_facebook_gmv) * 100 as percent_overlap_facebook_gmv,
+sum(case when t1.merchant = 'GOOGLE' then t1.net_rev end) as overlap_google_rev,
+sum(case when t1.merchant = 'FACEBOOK' then t1.net_rev end) as overlap_facebook_rev,
+(sum(case when t1.merchant = 'GOOGLE' then t1.net_rev end) / g.total_google_rev) * 100 as percent_overlap_google_rev,
+(sum(case when t1.merchant = 'FACEBOOK' then t1.net_rev end) / f.total_facebook_rev) * 100 as percent_overlap_facebook_rev
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t1
+join overlap_users o on t1.user_id = o.user_id
+cross join google_metrics g
+cross join facebook_metrics f
+where DATE_TRUNC(t1.date, month) = '2024-10-01'
+limit 25",0.0,"with google_users as (
+select distinct t1.user_id
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t1
+where DATE_TRUNC(t1.date, month) = '2024-10-01' and t1.cate = 'ADS PAYMENT' and t1.merchant = 'GOOGLE'
+),
+facebook_users as (
+select distinct t1.user_id
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t1
+where DATE_TRUNC(t1.date, month) = '2024-10-01' and t1.cate = 'ADS PAYMENT' and t1.merchant = 'FACEBOOK'
+),
+overlap_users as (
+select user_id
+from google_users
+intersect
+select user_id
+from facebook_users
+),
+google_metrics as (
+select
+count(distinct user_id) as total_google_users,
+sum(gmv) as total_google_gmv,
+sum(net_rev) as total_google_rev
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+where DATE_TRUNC(date, month) = '2024-10-01' and cate = 'ADS PAYMENT' and merchant = 'GOOGLE'
+),
+facebook_metrics as (
+select
+count(distinct user_id) as total_facebook_users,
+sum(gmv) as total_facebook_gmv,
+sum(net_rev) as total_facebook_rev
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+where DATE_TRUNC(date, month) = '2024-10-01' and cate = 'ADS PAYMENT' and merchant = 'FACEBOOK'
+)
+select
+count(distinct o.user_id) as overlap_user_count,
+sum(case when t1.merchant = 'GOOGLE' then t1.gmv end) as overlap_google_gmv,
+sum(case when t1.merchant = 'FACEBOOK' then t1.gmv end) as overlap_facebook_gmv,
+(sum(case when t1.merchant = 'GOOGLE' then t1.gmv end) / g.total_google_gmv) * 100 as percent_overlap_google_gmv,
+(sum(case when t1.merchant = 'FACEBOOK' then t1.gmv end) / f.total_facebook_gmv) * 100 as percent_overlap_facebook_gmv,
+sum(case when t1.merchant = 'GOOGLE' then t1.net_rev end) as overlap_google_rev,
+sum(case when t1.merchant = 'FACEBOOK' then t1.net_rev end) as overlap_facebook_rev,
+(sum(case when t1.merchant = 'GOOGLE' then t1.net_rev end) / g.total_google_rev) * 100 as percent_overlap_google_rev,
+(sum(case when t1.merchant = 'FACEBOOK' then t1.net_rev end) / f.total_facebook_rev) * 100 as percent_overlap_facebook_rev
+from momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t1
+join overlap_users o on t1.user_id = o.user_id
+cross join google_metrics g
+cross join facebook_metrics f
+where DATE_TRUNC(t1.date, month) = '2024-10-01'
+limit 25",0.0,"WITH overlap_users AS (
+  SELECT DISTINCT USER_ID
+  FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+  WHERE DATE_TRUNC(DATE, MONTH) = '2024-10-01'
+  AND CATE = 'ADS PAYMENT'
+  AND MERCHANT IN ('GOOGLE', 'FACEBOOK')
+  GROUP BY USER_ID
+  HAVING COUNT(DISTINCT MERCHANT) = 2
+),
+merchant_metrics AS (
+  SELECT 
+    MERCHANT,
+    COUNT(DISTINCT USER_ID) as total_users,
+    SUM(GMV) as total_gmv,
+    SUM(NET_REV) as total_revenue
+  FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+  WHERE DATE_TRUNC(DATE, MONTH) = '2024-10-01'
+  AND CATE = 'ADS PAYMENT'
+  AND MERCHANT IN ('GOOGLE', 'FACEBOOK')
+  GROUP BY MERCHANT
+),
+overlap_metrics AS (
+  SELECT 
+    t.MERCHANT,
+    COUNT(DISTINCT t.USER_ID) as overlap_users,
+    SUM(t.GMV) as overlap_gmv,
+    SUM(t.NET_REV) as overlap_revenue
+  FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t
+  INNER JOIN overlap_users o ON t.USER_ID = o.USER_ID
+  WHERE DATE_TRUNC(t.DATE, MONTH) = '2024-10-01'
+  AND t.CATE = 'ADS PAYMENT'
+  AND t.MERCHANT IN ('GOOGLE', 'FACEBOOK')
+  GROUP BY t.MERCHANT
+)
+
+SELECT 
+  m.MERCHANT,
+  o.overlap_users,
+  ROUND(o.overlap_gmv/m.total_gmv * 100, 2) as overlap_gmv_percentage,
+  ROUND(o.overlap_revenue/m.total_revenue * 100, 2) as overlap_revenue_percentage
+FROM merchant_metrics m
+JOIN overlap_metrics o ON m.MERCHANT = o.MERCHANT
+ORDER BY m.MERCHANT;
+",1.0,,,,,,,,,,,,
+41.0,số lượng giao dịch thành công của TiktokShop ngày 9/12/2024 bằng Ví Trả Sau là bao nhiêu,DLS ONLINE,"  SELECT 
+    COUNT(DISTINCT ORDER_ID) AS TOTAL_TRANS
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MERCHANT = 'TIKTOK'
+  AND DATE = '2024-12-09'
+  AND CATE = 'MARKETPLACE'
+  AND MONEY_SOURCE_NAME = 'Paylater'
+",,,,,,"SELECT COUNT(*) AS successful_transactions_count
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+WHERE DATE = '2024-12-09'
+AND MERCHANT = 'TIKTOK'
+AND MONEY_SOURCE_NAME = 'VTS'
+LIMIT 25",0.0,"SELECT COUNT(*) AS successful_transactions_count
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+WHERE DATE = '2024-12-09'
+AND MERCHANT = 'TIKTOK'
+AND CATE = 'MARKETPLACE'
+AND MONEY_SOURCE_NAME = 'VTS'
+LIMIT 25",0.0,"SELECT 
+  COUNT(*) as transaction_count
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-12-09'
+  AND MERCHANT = 'TIKTOK'
+  AND MONEY_SOURCE_NAME = 'Paylater'
+  AND GMV > 0
+  AND REFUND_AMOUNT IS NULL;",0.0,,,,,"Chọn đúng Paylater
+Nhưng model cũ có cân nhắc thêm MAKETPLACE",,,,,,,
+39.0,Số user có xài dịch vụ ADS PAYMENT của GOOGLE trong khoảng thời gian tháng 1 2024 đến tháng 3 2024 sau đó có bao nhiêu chuyển qua dịch vụ ADS PAYMENT của FACEBOOK trong tháng 4 2024,DLS ONLINE,"with target_user as (
+  select distinct user_id
+  from `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` 
+  where merchant = 'GOOGLE' and cate = 'ADS PAYMENT' and month >= '2024-01-01' and month <= '2024-03-01'
+), google_user as (
+  SELECT user_id
+  from `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t1 
+  where cate = 'ADS PAYMENT' and month = '2024-04-01'
+  GROUP BY user_id
+  HAVING 
+  COUNT(DISTINCT merchant) = 1
+  AND ANY_VALUE(merchant) = 'FACEBOOK' 
+)
+
+select COUNT(distinct target_user.user_id) as facebook_user
+       , COUNT(DISTINCT google_user.user_id) as switch_google_user
+
+FROM  target_user
+LEFT JOIN google_user using (user_id)
+",,,,,,"WITH google_users AS (
+SELECT DISTINCT D1.USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 D1
+WHERE DATE_TRUNC(D1.DATE, month) BETWEEN '2024-01-01' AND '2024-03-31'
+AND D1.MERCHANT = ""GOOGLE""
+AND D1.CATE = ""ADS PAYMENT""
+),
+facebook_users AS (
+SELECT DISTINCT D2.USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 D2
+WHERE DATE_TRUNC(D2.DATE, month) = '2024-04-01'
+AND D2.MERCHANT = ""FACEBOOK""
+AND D2.CATE = ""ADS PAYMENT""
+)
+SELECT COUNT(DISTINCT google_users.USER_ID) AS number_of_users
+FROM google_users
+JOIN facebook_users ON google_users.USER_ID = facebook_users.USER_ID
+LIMIT 25",0.0,"WITH google_users AS (
+SELECT DISTINCT D1.USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 D1
+WHERE DATE_TRUNC(D1.DATE, month) BETWEEN '2024-01-01' AND '2024-03-31'
+AND D1.MERCHANT = ""GOOGLE""
+AND D1.CATE = ""ADS PAYMENT""
+),
+facebook_users AS (
+SELECT DISTINCT D2.USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 D2
+WHERE DATE_TRUNC(D2.DATE, month) = '2024-04-01'
+AND D2.MERCHANT = ""FACEBOOK""
+AND D2.CATE = ""ADS PAYMENT""
+)
+SELECT COUNT(DISTINCT google_users.USER_ID) AS number_of_users
+FROM google_users
+JOIN facebook_users ON google_users.USER_ID = facebook_users.USER_ID
+LIMIT 25",1.0,"WITH google_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MERCHANT = 'GOOGLE' 
+  AND SUB_CATE = 'ADS PAYMENT'
+  AND DATE BETWEEN '2024-01-01' AND '2024-03-31'
+),
+facebook_switchers AS (
+  SELECT DISTINCT g.USER_ID
+  FROM google_users g
+  INNER JOIN `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` f
+  ON g.USER_ID = f.USER_ID
+  WHERE f.MERCHANT = 'FACEBOOK'
+  AND f.SUB_CATE = 'ADS PAYMENT'
+  AND f.DATE BETWEEN '2024-04-01' AND '2024-04-30'
+)
+SELECT 
+  COUNT(DISTINCT USER_ID) as google_users,
+  (SELECT COUNT(DISTINCT USER_ID) FROM facebook_switchers) as switched_to_facebook
+FROM google_users;",0.0,,,,,"Sai syntax, dùng truy vấn lồng vào SELCT không kèm điều kiện",,,,,,,
+42.0,có bao nhiêu user grab giao dịch từ 3 transaction trở lên trong tháng 12/2024,DLS ONLINE,"SELECT COUNT(DISTINCT USER_ID) AS num_user
+FROM (
+  SELECT t1.USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t1
+  WHERE t1.MERCHANT = 'GRAB-ENDUSER'
+    AND t1.MONTH = '2024-12-01'
+  GROUP BY t1.USER_ID
+  HAVING COUNT(t1.ORDER_ID) >= 3
+)",,,,,,"WITH google_users AS (
+SELECT DISTINCT D1.USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 D1
+WHERE DATE_TRUNC(D1.DATE, month) BETWEEN '2024-01-01' AND '2024-03-31'
+AND D1.MERCHANT = ""GOOGLE""
+AND D1.CATE = ""ADS PAYMENT""
+),
+facebook_users AS (
+SELECT DISTINCT D2.USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 D2
+WHERE DATE_TRUNC(D2.DATE, month) = '2024-04-01'
+AND D2.MERCHANT = ""FACEBOOK""
+AND D2.CATE = ""ADS PAYMENT""
+)
+SELECT COUNT(DISTINCT google_users.USER_ID) AS number_of_users
+FROM google_users
+JOIN facebook_users ON google_users.USER_ID = facebook_users.USER_ID
+LIMIT 25",0.0,"WITH google_users AS (
+SELECT DISTINCT D1.USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 D1
+WHERE DATE_TRUNC(D1.DATE, month) BETWEEN '2024-01-01' AND '2024-03-31'
+AND D1.MERCHANT = ""GOOGLE""
+AND D1.CATE = ""ADS PAYMENT""
+),
+facebook_users AS (
+SELECT DISTINCT D2.USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 D2
+WHERE DATE_TRUNC(D2.DATE, month) = '2024-04-01'
+AND D2.MERCHANT = ""FACEBOOK""
+AND D2.CATE = ""ADS PAYMENT""
+)
+SELECT COUNT(DISTINCT google_users.USER_ID) AS number_of_users
+FROM google_users
+JOIN facebook_users ON google_users.USER_ID = facebook_users.USER_ID
+LIMIT 25",0.0,"WITH grab_users AS (
+  SELECT 
+    USER_ID,
+    COUNT(*) as transaction_count
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE 
+    FORMAT_DATE('%Y-%m', DATE) = '2024-12'
+    AND MERCHANT = 'GRAB'
+    AND USER_ID IS NOT NULL
+  GROUP BY USER_ID
+  HAVING COUNT(*) >= 3
+)
+SELECT 
+  COUNT(DISTINCT USER_ID) as user_count
+FROM grab_users;",0.0,,,,,Sai tên Merchant nên ra số sai luôn,,,,,,,
+43.0,"Số lượng user dùng cả 3 dịch vụ GRAB-ENDUSER, BE GROUP, GSM trong tháng 11/2024",DLS ONLINE,,,,,,,"SELECT COUNT(DISTINCT t1.USER_ID) AS user_count
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t1
+WHERE t1.MERCHANT IN ('GRAB-ENDUSER', 'BE GROUP', 'GSM')
+AND EXTRACT(MONTH FROM t1.DATE) = 11
+AND EXTRACT(YEAR FROM t1.DATE) = 2024
+GROUP BY t1.USER_ID
+HAVING COUNT(DISTINCT t1.MERCHANT) = 3
+LIMIT 25",0.0,"WITH SERVICE1 AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+WHERE MONTH = '2024-11-01'
+AND MERCHANT = 'GRAB-ENDUSER'
+),
+SERVICE2 AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+WHERE MONTH = '2024-11-01'
+AND MERCHANT = 'BE GROUP'
+),
+SERVICE3 AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1
+WHERE MONTH = '2024-11-01'
+AND MERCHANT = 'GSM'
+)
+
+
+SELECT COUNT(DISTINCT S1.USER_ID) AS USER_COUNT
+FROM SERVICE1 S1
+INNER JOIN SERVICE2 S2 ON S1.USER_ID = S2.USER_ID
+INNER JOIN SERVICE3 S3 ON S1.USER_ID = S3.USER_ID",1.0,"WITH user_services AS (
+  SELECT 
+    USER_ID,
+    COUNT(DISTINCT SUB_MERCHANT) as service_count,
+    STRING_AGG(DISTINCT SUB_MERCHANT) as services
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE_TRUNC(DATE, MONTH) = '2024-11-01'
+  AND SUB_MERCHANT IN ('GRAB-ENDUSER', 'BE GROUP', 'GSM')
+  AND USER_ID IS NOT NULL
+  GROUP BY USER_ID
+  HAVING COUNT(DISTINCT SUB_MERCHANT) = 3
+)
+SELECT COUNT(*) as user_count
+FROM user_services;",0.0,,,,,Dùng sai cột,,,,,,,
+44.0,"Overlaped user who used both GRAB-ENDUSER, BE GROUP compared to MAU of logistics in 11/2024 ",DLS ONLINE,"WITH OVERLAP_USER AS (
+  SELECT 
+    USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE CATE = 'LOGISTICS'
+    AND MERCHANT IN ('GRAB-ENDUSER', 'BE GROUP')
+    AND MONTH = '2024-11-01'
+  GROUP BY USER_ID
+  HAVING COUNT(DISTINCT MERCHANT) = 2
+),
+MAU_LOGISTICS AS (
+  SELECT 
+    COUNT(DISTINCT USER_ID) AS TOTAL_MAU_LOGISTICS
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE CATE = 'LOGISTICS'
+    AND MONTH = '2024-11-01'
+)
+SELECT 
+  ROUND((SELECT COUNT(DISTINCT USER_ID) FROM OVERLAP_USER) / TOTAL_MAU_LOGISTICS * 100, 2) AS OVERLAP_PERCENT
+FROM MAU_LOGISTICS
+",,,,,,"WITH GRAB_ENDUSER_USERS AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_GIFT_V3_VER2
+WHERE MERCHANT = 'GRAB-ENDUSER' AND FORMAT_DATE('%Y-%m', DATE(TRAN_DATE)) = '2024-11'
+),
+BE_GROUP_USERS AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_GIFT_V3_VER2
+WHERE MERCHANT = 'BE GROUP' AND FORMAT_DATE('%Y-%m', DATE(TRAN_DATE)) = '2024-11'
+),
+MAU_LOGISTICS AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_GIFT_V3_VER2
+WHERE CATE = 'LOGISTICS' AND FORMAT_DATE('%Y-%m', DATE(TRAN_DATE)) = '2024-11'
+)
+
+
+SELECT
+COUNT(DISTINCT USER_ID) AS OVERLAPPED_USERS,
+(SELECT COUNT(DISTINCT USER_ID) FROM MAU_LOGISTICS) AS MAU_LOGISTICS
+FROM GRAB_ENDUSER_USERS
+JOIN BE_GROUP_USERS USING (USER_ID)
+LIMIT 25",0.0,"WITH GRAB_ENDUSER_USERS AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_GIFT_V3_VER2
+WHERE MERCHANT = 'GRAB-ENDUSER' AND FORMAT_DATE('%Y-%m', DATE(TRAN_DATE)) = '2024-11'
+),
+BE_GROUP_USERS AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_GIFT_V3_VER2
+WHERE MERCHANT = 'BE GROUP' AND FORMAT_DATE('%Y-%m', DATE(TRAN_DATE)) = '2024-11'
+),
+MAU_LOGISTICS AS (
+SELECT DISTINCT USER_ID
+FROM momovn-prod.BU_ECOM.DLS_GIFT_V3_VER2
+WHERE CATE = 'LOGISTICS' AND FORMAT_DATE('%Y-%m', DATE(TRAN_DATE)) = '2024-11'
+)
+
+
+SELECT
+COUNT(DISTINCT USER_ID) AS OVERLAPPED_USERS,
+(SELECT COUNT(DISTINCT USER_ID) FROM MAU_LOGISTICS) AS MAU_LOGISTICS
+FROM GRAB_ENDUSER_USERS
+JOIN BE_GROUP_USERS USING (USER_ID)
+LIMIT 25",0.0,"WITH both_services_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE_TRUNC(DATE, MONTH) = '2024-11-01'
+  AND USER_ID IS NOT NULL
+  AND SUB_MERCHANT IN ('GRAB-ENDUSER', 'BE GROUP')
+  GROUP BY USER_ID
+  HAVING COUNT(DISTINCT SUB_MERCHANT) = 2
+),
+logistics_users AS (
+  SELECT COUNT(DISTINCT USER_ID) as total_logistics_users
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE_TRUNC(DATE, MONTH) = '2024-11-01'
+  AND CATE = 'LOGISTICS'
+  AND USER_ID IS NOT NULL
+),
+overlap_count AS (
+  SELECT COUNT(*) as overlapped_users
+  FROM both_services_users
+)
+SELECT 
+  l.total_logistics_users,
+  o.overlapped_users,
+  ROUND(o.overlapped_users * 100.0 / l.total_logistics_users, 2) as overlap_percentage
+FROM logistics_users l
+CROSS JOIN overlap_count o",0.0,"Updated:
+https://mimir.mservice.io/chat/684110775e21754843ce470c",,"Updated:
+https://mimir.mservice.io/chat/684110775e21754843ce470c",,"Dùng sai cột
+Đụng tới grab là thấy dùng sai",,,,,,,
+45.0,tiktokshop tháng 11 có bao nhiêu user mới rồi?,DLS ONLINE,"WITH RANK_TEST AS(
+SELECT DISTINCT 
+    USER_ID,
+    BU_NAME,
+    CATE,
+    MERCHANT,
+    CASE WHEN SUB_MERCHANT = 'APPLE ICLOUD' THEN 'm4becomadyen_apple.icloud'
+          WHEN SUB_MERCHANT = 'APPLE YOUTUBE PREMIUM' THEN 'm4becomadyen_apple.youtube'
+          ELSE SERVICE_CODE END AS SERVICE_CODE,
+    ORDER_ID,
+    DATE_TRUNC(DATE(DATETIME),MONTH) AS MONTH,
+    DATE(DATETIME) AS DATE,
+    DATETIME,
+    ROW_NUMBER() OVER (PARTITION BY USER_ID ORDER BY DATETIME ASC) AS RANK_MOMO,
+    ROW_NUMBER() OVER (PARTITION BY USER_ID,CATE ORDER BY DATETIME ASC) AS RANK_CATE,
+    ROW_NUMBER() OVER (PARTITION BY USER_ID,MERCHANT ORDER BY DATETIME ASC) AS RANK_MERCHANT,
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` 
+)
+SELECT 
+  COUNT(DISTINCT NTMC)
+FROM(
+SELECT 
+  USER_ID,
+  CATE,
+  MERCHANT,
+  ORDER_ID,
+  MONTH,
+  DATE,
+  DATETIME,
+  CASE WHEN RANK_MOMO = 1 then USER_ID END AS NTMM,
+  CASE WHEN RANK_CATE = 1 then USER_ID END AS NTC,
+  CASE WHEN RANK_MERCHANT = 1 then USER_ID END AS NTMC,
+
+  CASE WHEN RANK_MOMO = 1 then DATE END AS DATE_NTMM,
+  CASE WHEN RANK_CATE = 1 then DATE END AS DATE_NTC,
+  CASE WHEN RANK_MERCHANT = 1 then DATE END AS DATE_NTMC,  
+
+FROM RANK_TEST
+)
+WHERE MONTH = '2024-11-01' AND MERCHANT = 'TIKTOK'  AND CATE = 'MARKETPLACE' ",,,,,,"SELECT 
+  COUNT(DISTINCT d.USER_ID) AS new_users
+FROM 
+  `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` d
+JOIN 
+  `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2` m
+ON 
+  d.USER_ID = m.USER_ID
+WHERE 
+  d.MONTH = '2024-11-01'
+  AND d.MERCHANT = 'TIKTOK'
+  AND d.CATE = 'MARKETPLACE'
+  AND m.MONTH = '2024-11-01'
+  AND m.USECASE_TYPE LIKE '%NEW%'
+LIMIT 25
+",0.0,"SELECT 
+  COUNT(DISTINCT d.USER_ID) AS new_users
+FROM 
+  `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` d
+JOIN 
+  `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2` m
+ON 
+  d.USER_ID = m.USER_ID
+WHERE 
+  d.MONTH = '2024-11-01'
+  AND d.MERCHANT = 'TIKTOK'
+  AND d.CATE = 'MARKETPLACE'
+  AND m.MONTH = '2024-11-01'
+  AND m.USECASE_TYPE LIKE '%NEW%'
+LIMIT 25
+",0.0,"WITH previous_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MERCHANT = 'TIKTOK'
+  AND DATE < '2024-11-01'
+),
+
+november_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MERCHANT = 'TIKTOK'
+  AND DATE >= '2024-11-01'
+  AND DATE < '2024-12-01'
+)
+
+SELECT COUNT(DISTINCT n.USER_ID) as new_users_count
+FROM november_users n
+LEFT JOIN previous_users p
+ON n.USER_ID = p.USER_ID
+WHERE p.USER_ID IS NULL;",0.0,"Updated:
+Example: https://mimir.mservice.io/chat/68410d3ef95aa40576d075d8",,"Updated:
+Example: https://mimir.mservice.io/chat/68410d3ef95aa40576d075d8",,Thiếu cate = MAKETPLACE nhưng đúng logic New,,,,,,,
+,,,,,,,,,,18.5,,22.5,,29.2,,,,,,,,,,,,
+,,,,,,,,,,0.4302325581,,0.523255814,,0.6790697674,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,"Suggest format câu hỏi giống DataGPT như:
+- @Retention MoM của dịch vụ ads trong tháng 1 năm 2025",,,,,,,,,,,,,,,,,,,,,,,,,
+31.0,Tổng GMV và Trans của Nhóm Light User của cate ADS PAYMENT ntn trong 3 tháng quý 2 năm 2024,DLS ONLINE,"with light_user as (
+  select distinct user_id
+  from `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+  where month between '2024-04-01' and '2024-06-01' and cate = 'ADS PAYMENT' and USER_SEGMENT = '3. Light'
+)
+
+select 
+  month,
+  count (distinct t2.user_id) as total_user,
+  count (distinct order_id) as total_trans,
+  sum (net_rev) as rev,
+
+  count (distinct case when cate = 'ADS PAYMENT' then t2.user_id end) as ad_user,
+  count( distinct case when cate = 'ADS PAYMENT' then order_id end) as ads_trans,
+  sum (case when cate = 'ADS PAYMENT' then net_rev end) as ads_rev
+
+from light_user t1
+inner join `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t2 using (user_id)
+where month >= '2024-04-01' and month <= '2024-06-01'
+group by 1
+order by 1",,,,"SELECT 
+  user_spend.USER_ID, 
+  SUM(user_spend.GMV) AS total_gmv, 
+  SUM(user_spend.TRANS) AS total_trans
+FROM 
+  `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` AS user_spend
+JOIN 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` AS trans
+  ON user_spend.USER_ID = trans.USER_ID 
+  AND user_spend.CATE = trans.CATE
+WHERE 
+  user_spend.CATE = 'ADS PAYMENT'
+  AND user_spend.USER_SEGMENT = '3. Light'
+  AND trans.DATE BETWEEN '2024-04-01' AND '2024-06-30'
+GROUP BY 
+  user_spend.USER_ID
+ORDER BY 
+  total_gmv DESC
+LIMIT 10;",,,,"SELECT 
+    FORMAT_DATE('%Y-%m', MONTH) AS Month,
+    SUM(GMV) AS Total_GMV,
+    SUM(TRANS) AS Total_Transactions
+FROM 
+    `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE 
+    USER_SEGMENT = '3. Light' 
+    AND CATE = 'ADS PAYMENT'
+    AND MONTH BETWEEN '2024-04-01' AND '2024-06-30'
+GROUP BY 
+    Month
+ORDER BY 
+    Month
+LIMIT 25
+",,,,,,,,,,,,,,,
+32.0,Tổng Transactions và GMV của nhóm Light User của cate ADS PAYMENT trong 3 tháng quý 2 năm 2024,DLS ONLINE,"SELECT 
+  SUM(TRANS) AS total_transactions, 
+  SUM(GMV) AS total_gmv
+FROM 
+  `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE 
+  USER_SEGMENT = '3. Light' 
+  AND CATE = 'ADS PAYMENT'
+  AND MONTH BETWEEN '2024-04-01' AND '2024-06-30'
+LIMIT 10;",,,,"SELECT 
+  SUM(transactions) AS total_transactions,
+  SUM(GMV) AS total_GMV
+FROM (
+  SELECT 
+    COUNT(*) AS transactions,
+    SUM(t1.GMV) AS GMV
+  FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` AS t1
+  JOIN `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` AS t2
+  ON t1.USER_ID = t2.USER_ID
+  WHERE t2.USER_SEGMENT = '3. Light'
+  AND t1.CATE = 'ADS PAYMENT'
+  AND t1.DATE BETWEEN '2024-04-01' AND '2024-06-30'
+)
+LIMIT 10;",,,,"SELECT 
+  MONTH,
+  COUNT(ORDER_ID) as TOTAL_TRANSACTIONS,
+  SUM(GMV) as TOTAL_GMV
+FROM 
+  `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE 
+  CATE = ""ADS PAYMENT""
+  AND USER_ID IN (
+    SELECT USER_ID 
+    FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+    WHERE USER_SEGMENT = ""3. Light""
+  )
+  AND DATE >= '2024-04-01' AND DATE <= '2024-06-30'
+GROUP BY 
+  MONTH
+ORDER BY 
+  MONTH
+LIMIT 25;",,,,,,,,,,,,,,,
+17.0,Số inactive user trong tháng 3 năm 2024 họ theo user segment?,DLS ONLINE,"select user_segment, count(distinct t1.user_id) as inactive_user_count
+from momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3 t1
+left join momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1 t2
+on t1.user_id = t2.user_id
+and t1.cate = t2.cate
+and t1.month = DATE_SUB(DATE_TRUNC(t2.date, month), INTERVAL 1 month)
+where t1.month = '2024-03-01' and t2.user_id is null
+group by user_segment
+order by user_segment",,"WITH active_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1`
+  WHERE EXTRACT(MONTH FROM DATE) = 3 AND EXTRACT(YEAR FROM DATE) = 2024
+),
+inactive_users AS (
+  SELECT DISTINCT US.USER_ID, US.USER_SEGMENT
+  FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` US
+  LEFT JOIN active_users AU ON US.USER_ID = AU.USER_ID
+  WHERE AU.USER_ID IS NULL AND US.MONTH = '2024-03'
+)
+SELECT USER_SEGMENT, COUNT(USER_ID) AS INACTIVE_USER_COUNT
+FROM inactive_users
+GROUP BY USER_SEGMENT
+ORDER BY INACTIVE_USER_COUNT DESC;","SELECT 
+  usbc.USER_SEGMENT,
+  COUNT(DISTINCT t.USER_ID) AS inactive_users
+FROM 
+  `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` usbc
+LEFT JOIN 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` t
+ON 
+  usbc.USER_ID = t.USER_ID
+  AND t.DATE BETWEEN '2024-03-01' AND '2024-03-31'
+WHERE 
+  usbc.MONTH = '2024-03-01'
+  AND t.USER_ID IS NULL
+GROUP BY 
+  usbc.USER_SEGMENT;","SELECT 
+  u.USER_SEGMENT, 
+  COUNT(DISTINCT u.USER_ID) AS inactive_users
+FROM 
+  `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3` u 
+LEFT JOIN 
+  `momovn-mimir.MIMIR.DLS_ALL_TRANS_V3_1` t 
+ON 
+  u.USER_ID = t.USER_ID 
+  AND FORMAT_DATE('%Y-%m', u.MONTH) = FORMAT_DATE('%Y-%m', t.DATE)
+WHERE 
+  u.MONTH = '2024-03-01' 
+  AND t.USER_ID IS NULL
+GROUP BY 
+  u.USER_SEGMENT
+ORDER BY 
+  inactive_users DESC
+LIMIT 10;","SELECT 
+  USER_SEGMENT, 
+  COUNT(DISTINCT USER_ID) AS inactive_user_count
+FROM `momovn-mimir.MIMIR.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE MONTH = '2024-03-01' 
+  AND USER_SEGMENT IS NULL
+GROUP BY USER_SEGMENT
+ORDER BY inactive_user_count DESC
+LIMIT 10;",,,"SELECT USER_SEGMENT, COUNT(DISTINCT USER_ID) AS inact_user_count
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE USER_ID NOT IN (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MONTH = '2024-03-01'
+)
+AND MONTH = '2024-03-01'
+GROUP BY USER_SEGMENT
+ORDER BY inact_user_count DESC
+LIMIT 25
+",,"WITH active_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MONTH = '2024-03-01'
+),
+all_segmented_users AS (
+  SELECT DISTINCT USER_ID, USER_SEGMENT
+  FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+  WHERE MONTH = '2024-03-01'
+  AND USER_SEGMENT IS NOT NULL
+)
+SELECT 
+  USER_SEGMENT,
+  COUNT(DISTINCT u.USER_ID) as inactive_users
+FROM all_segmented_users u
+LEFT JOIN active_users a ON u.USER_ID = a.USER_ID
+WHERE a.USER_ID IS NULL
+GROUP BY USER_SEGMENT
+ORDER BY USER_SEGMENT;",,,,,,Đang nhờ chị Nga kiểm tra lại cách hỏi,,,,,,,
+,Số user chỉ dùng nguồn tiền NHLK theo tháng từ tháng 2/2024 đến tháng 5/2024,DLS ONLINE,,,,,,,,,,,"WITH all_users_money_sources AS (
+  SELECT 
+    DISTINCT USER_ID,
+    MONTH,
+    MONEY_SOURCE
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MONTH BETWEEN '2024-02-01' AND '2024-05-01'
+),
+
+only_banklink_users AS (
+  SELECT 
+    USER_ID,
+    MONTH
+  FROM all_users_money_sources a
+  WHERE NOT EXISTS (
+    SELECT 1 
+    FROM all_users_money_sources b 
+    WHERE a.USER_ID = b.USER_ID 
+    AND a.MONTH = b.MONTH 
+    AND b.MONEY_SOURCE != 2
+  )
+  AND MONEY_SOURCE = 2
+)
+
+SELECT 
+  MONTH,
+  COUNT(DISTINCT USER_ID) as user_count
+FROM only_banklink_users
+GROUP BY MONTH
+ORDER BY MONTH",,,,,,,,,,,,,
+13.0,Cách đọc số hiệu quả,Transaction MoMo,,"Câu hỏi nằm ngoài scope của MiMir, vui lòng hỏi các câu hỏi liên quan đến dữ liệu của Domain như là:
+","SELECT c.tranid, d.user_id, d.city, d.age, c.transaction_amount, c.transaction_type
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` c
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+ON c.user_id = d.user_id;","The provided context does not relate to the dataset, which contains transaction and demographic information. 
+
+To proceed with the dataset described, here are some example questions that might be asked related to it, along with the relevant tables:
+
+1. What is the total transaction amount per merchant?
+2. How many transactions occurred in each city?
+3. What is the average age of users by city group?
+4. Which transaction type is most common for each usecase?
+
+If you have any specific question related to the dataset, please provide it, and I'll help generate the appropriate SQL query.","SELECT 
+  date,
+  SUM(transaction_amount) AS total_transaction_amount
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+GROUP BY date
+ORDER BY date
+LIMIT 10;","Xin chào! Bạn có muốn tôi tìm hiểu thêm về cách tính tổng số giao dịch theo thành phố hoặc nhóm tuổi không? Nếu không, bạn có thể cung cấp thêm thông tin cụ thể về câu hỏi của mình.","Sure! Here's a list of some simple questions you might want to ask:
+- How to get the average transaction amount per user?
+- What is the total transaction amount for each merchant?
+- How many transactions happened in each month?
+
+If you have any specific query in mind, please provide more details so I can help you accordingly!",1.0,"Sure! Here's a list of some simple questions you might want to ask:
+- How to get the average transaction amount per user?
+- What is the total transaction amount for each merchant?
+- How many transactions happened in each month?
+
+If you have any specific query in mind, please provide more details so I can help you accordingly!",1.0,,,,,,,,,,,,,,
+14.0,Recommend possible analysis about domain,Transaction MoMo,,"Exploring your transaction and demographic data can be quite insightful. Here are some suggestions for analysis:
+
+Total Transaction Volume: Find the total volume of transactions within a specified date range.
+
+Average Transaction Value: Calculate the average transaction amount per user.
+
+Top Merchants: Identify the top 10 merchants based on transaction volume.
+
+User Demographics: Analyze the distribution of users by age group or city group.
+
+Voucher Utilization: Measure how often vouchers are used across transactions.
+
+Source of Funds Analysis: Determine the most common sources of funds for transactions.
+
+If you would like to proceed with any specific analysis, please let me know!","SELECT 
+    (COUNT(CASE WHEN voucher_amount > 0 THEN 1 END) / COUNT(*)) * 100 AS percentage_with_voucher
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`;","Based on the provided schema, here are some possible questions that could be analyzed:
+
+1. What are the total transaction amounts per use case?
+2. Which city has the highest number of users?
+3. What is the average transaction amount by age group?
+4. How much voucher amount is used by each source of fund?
+5. What is the total transaction amount for each merchant?
+6. What are the most common transaction types by city group?
+
+These questions leverage different aspects of the provided data, such as transaction details and user demographics. You can generate SQL queries accordingly to analyze these questions.","Certainly! Here are some suggestions for simple questions you can analyze with your data:
+
+1. Total number of transactions for each use case.
+2. Total transaction amount for each city.
+3. Average transaction amount by age group.
+4. Distribution of transaction types (CASHIN, CASHOUT, etc.).
+5. Average voucher amount by source of fund.
+
+Would you like a query for any of these analyses or do you have another specific question in mind?","Sure, here are some simple questions that might be interesting for analysis:
+1. What is the total transaction amount segmented by different use cases?
+2. What are the top 10 users with the highest transaction amounts?
+3. How does the average transaction amount vary across different age groups?
+4. What is the distribution of transaction types in each city?
+5. Which merchants have the highest total transaction amounts?
+6. How many transactions are funded by different sources of funds?
+7. What is the trend of transaction amounts over months?
+
+You can start with any of these questions and I can help to generate the corresponding SQL query. Which one would you like to start with, or do you have any other specific analysis in mind?","Sure, here are some simple question suggestions for analysis within the domain:
+
+1. What is the total transaction amount by each use case?
+2. How many transactions occurred in each city group?
+3. What is the average age of users for each transaction type?
+4. Which merchant had the highest voucher amount redeemed?
+5. How much money was transferred through each source of fund?
+
+Would you like to get the SQL query for any of these questions?",1.0,"Sure, here are some simple question suggestions for analysis within the domain:
+
+1. What is the total transaction amount by each use case?
+2. How many transactions occurred in each city group?
+3. What is the average age of users for each transaction type?
+4. Which merchant had the highest voucher amount redeemed?
+5. How much money was transferred through each source of fund?
+
+Would you like to get the SQL query for any of these questions?",1.0,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,

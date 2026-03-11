@@ -1,0 +1,541 @@
+,questions,predict_sql
+0.0,Số inactive user trong tháng 3 năm 2024 họ theo user segment?,"WITH active_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MONTH = '2024-03-01'
+),
+all_segmented_users AS (
+  SELECT DISTINCT USER_ID, USER_SEGMENT
+  FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+  WHERE MONTH = '2024-03-01'
+  AND USER_SEGMENT IS NOT NULL
+)
+SELECT 
+  USER_SEGMENT,
+  COUNT(DISTINCT u.USER_ID) as inactive_users
+FROM all_segmented_users u
+LEFT JOIN active_users a ON u.USER_ID = a.USER_ID
+WHERE a.USER_ID IS NULL
+GROUP BY USER_SEGMENT
+ORDER BY USER_SEGMENT;"
+1.0,Số người dùng có giao dịch trong tháng 1 năm 2024 và vẫn tiếp tục giao dịch trong tháng 2 năm 2024,"WITH jan_users AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE DATE_TRUNC(date, MONTH) = '2024-01-01'
+  AND user_id IS NOT NULL
+),
+feb_users AS (
+  SELECT DISTINCT user_id
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE DATE_TRUNC(date, MONTH) = '2024-02-01'
+  AND user_id IS NOT NULL
+)
+SELECT COUNT(DISTINCT j.user_id) as retained_users
+FROM jan_users j
+INNER JOIN feb_users f
+ON j.user_id = f.user_id;"
+2.0,MAU contribution by province/gender in Apr 2024,"WITH total_mau AS (
+  SELECT COUNT(DISTINCT user_payment) as total_users
+  FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+  WHERE month_active = '2024-04-01'
+)
+SELECT 
+  IFNULL(province, 'Unknown') as province,
+  IFNULL(gender, 'Unknown') as gender,
+  COUNT(DISTINCT user_payment) as users,
+  ROUND(COUNT(DISTINCT user_payment) * 100.0 / MAX(total_users), 2) as contribution_percentage
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+CROSS JOIN total_mau
+WHERE month_active = '2024-04-01'
+GROUP BY province, gender
+ORDER BY users DESC"
+3.0,New Airtime users each months trend in 2024,"SELECT 
+  month_active,
+  COUNT(DISTINCT reference) as new_users
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER`
+WHERE 
+  EXTRACT(YEAR FROM month_active) = 2024
+  AND user_segment = 'new_user'
+GROUP BY month_active
+ORDER BY month_active;"
+4.0,Chênh lệch số lượng người dùng hiện tại phân bổ tại Hà Nội là bao nhiêu trong tháng 4 2024 và tháng 5 2024?,"WITH users_by_month AS (
+  SELECT 
+    DATE_TRUNC(t.date, MONTH) as month,
+    COUNT(DISTINCT t.user_id) as user_count
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+  ON t.user_id = d.user_id
+  WHERE 
+    d.city_group = 'Hà Nội'
+    AND t.date BETWEEN '2024-04-01' AND '2024-05-31'
+  GROUP BY DATE_TRUNC(t.date, MONTH)
+)
+SELECT 
+  ABS(MAX(CASE WHEN month = '2024-05-01' THEN user_count END) - 
+      MAX(CASE WHEN month = '2024-04-01' THEN user_count END)) as user_difference
+FROM users_by_month;"
+5.0,GMV trend by month in 2024 of Airtime,"SELECT 
+  month_active,
+  SUM(amount) as total_gmv,
+  COUNT(DISTINCT user_payment) as total_users,
+  SUM(amount)/COUNT(DISTINCT user_payment) as gmv_per_user
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE EXTRACT(YEAR FROM month_active) = 2024
+  AND statusid = 2
+GROUP BY month_active
+ORDER BY month_active ASC;"
+6.0,MAU in Hà Nội city in 2024,"WITH monthly_users AS (
+  SELECT 
+    EXTRACT(MONTH FROM t.date) as month,
+    COUNT(DISTINCT t.user_id) as monthly_active_users
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+  JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+    ON t.user_id = d.user_id
+  WHERE 
+    EXTRACT(YEAR FROM t.date) = 2024
+    AND d.city = 'Hà Nội'
+  GROUP BY 
+    EXTRACT(MONTH FROM t.date)
+  ORDER BY 
+    month
+)
+SELECT 
+  month,
+  monthly_active_users
+FROM monthly_users;"
+7.0,Số lượng người dùng cashin trong quý 1 năm 2024,"SELECT COUNT(DISTINCT user_id) as unique_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND date BETWEEN '2024-01-01' AND '2024-03-31';"
+8.0,"Số user overlap giữa 2 merchant? số GMV, Trans, Revenue của nhóm user overlap đó. % đối với tổng mỗi merchant","[TextBlock(text=""<analysis>\nTo find overlapping users between two merchants and analyze their metrics, I notice that I need:\n1. The specific two merchants the user wants to compare (this is missing from the request)\n2. Data about transactions including GMV, number of transactions, and revenue\n3. Calculate overlap metrics and percentages\n\nI should ask the user to specify which two merchants they want to compare before proceeding with the analysis.\n</analysis>\n\nI notice that you haven't specified which two merchants you'd like to compare. Could you please provide the names of the two merchants you're interested in analyzing? Once you provide those, I can help you with:\n1. Finding overlapping users between those merchants\n2. Calculating their GMV, transaction counts, and revenue\n3. Computing what percentage these metrics represent of each merchant's total\n\nPlease specify the two merchant names you'd like to compare, and I'll generate the appropriate analysis for you."", type='text')]"
+9.0,"Nhóm user là single use case tháng này, qua tháng sau có bao nhiêu lên > 2 use case năm 2024","WITH single_usecase_users AS (
+  SELECT 
+    MONTH,
+    USER_ID,
+    USECASE_TYPE
+  FROM `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+  WHERE USECASE_TYPE = '1 USECASE'
+  AND EXTRACT(YEAR FROM MONTH) = 2024
+),
+next_month_status AS (
+  SELECT 
+    a.MONTH as current_month,
+    a.USER_ID,
+    a.USECASE_TYPE as current_usecase,
+    b.MONTH as next_month,
+    b.USECASE_TYPE as next_usecase
+  FROM single_usecase_users a
+  LEFT JOIN `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2` b
+  ON a.USER_ID = b.USER_ID
+  AND b.MONTH = DATE_ADD(a.MONTH, INTERVAL 1 MONTH)
+  WHERE b.USECASE_TYPE IN ('2 USECASE', '3 USECASE', 'FROM 4 USECASE')
+)
+SELECT 
+  current_month,
+  COUNT(DISTINCT USER_ID) as users_upgraded
+FROM next_month_status
+GROUP BY current_month
+ORDER BY current_month;"
+10.0,User by age group in April 2024,"SELECT 
+  d.age_group,
+  COUNT(DISTINCT t.user_id) as user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE` t
+JOIN `momovn-mimir.MIMIR.iDeA_TRANS_DEMOGRAPHIC` d
+  ON t.user_id = d.user_id
+WHERE DATE_TRUNC(t.date, MONTH) = '2024-04-01'
+GROUP BY d.age_group
+ORDER BY d.age_group"
+11.0,Số lượng user dùng 2 usecase hàng tháng,"SELECT 
+  MONTH,
+  COUNT(DISTINCT USER_ID) as user_count
+FROM `momovn-prod.BU_ECOM.MAU_BY_USECASE_VER2`
+WHERE USECASE_TYPE = '2 USECASE'
+GROUP BY MONTH
+ORDER BY MONTH DESC"
+12.0,Tổng GMV trong tháng 4 năm 2024 của User có các amount = 19000 trong tháng 6,"WITH June_Users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE EXTRACT(MONTH FROM DATE) = 6 
+  AND EXTRACT(YEAR FROM DATE) = 2024
+  AND GMV = 19000
+)
+SELECT 
+  SUM(t.GMV) as Total_GMV,
+  COUNT(DISTINCT t.USER_ID) as User_Count
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t
+INNER JOIN June_Users ju ON t.USER_ID = ju.USER_ID
+WHERE EXTRACT(MONTH FROM t.DATE) = 4
+AND EXTRACT(YEAR FROM t.DATE) = 2024"
+13.0,số lượng transaction Facebook ads ngày 26/9/2024,"SELECT 
+  COUNT(*) as transaction_count
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-09-26'
+  AND MERCHANT = 'FACEBOOK'"
+14.0,Retention rate of MoMo users in 2024,"WITH monthly_active_users AS (
+  SELECT DISTINCT
+    user_id,
+    DATE_TRUNC(date, MONTH) as month
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE 
+    EXTRACT(YEAR FROM date) = 2024
+    AND user_id IS NOT NULL
+),
+retention_calculation AS (
+  SELECT
+    current_month.month as current_month,
+    next_month.month as next_month,
+    COUNT(DISTINCT current_month.user_id) as total_users,
+    COUNT(DISTINCT next_month.user_id) as retained_users
+  FROM monthly_active_users current_month
+  LEFT JOIN monthly_active_users next_month
+    ON current_month.user_id = next_month.user_id
+    AND next_month.month = DATE_ADD(current_month.month, INTERVAL 1 MONTH)
+  GROUP BY current_month.month, next_month.month
+  ORDER BY current_month.month
+)
+SELECT
+  FORMAT_DATE('%B %Y', current_month) as month,
+  total_users,
+  retained_users,
+  ROUND(SAFE_DIVIDE(retained_users, total_users) * 100, 2) as retention_rate_percentage
+FROM retention_calculation
+WHERE current_month < DATE_TRUNC(CURRENT_DATE(), MONTH)"
+15.0,How many users use APPLICATION STORE in March 2024?,"SELECT COUNT(DISTINCT user_id) as unique_users
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE usecase = 'APPLICATION STORE'
+AND DATE_TRUNC(date, MONTH) = '2024-03-01'"
+16.0,"Overlaped user who used both GRAB-ENDUSER, BE GROUP compared to MAU of logistics in 11/2024 ","WITH both_services_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE_TRUNC(DATE, MONTH) = '2024-11-01'
+  AND USER_ID IS NOT NULL
+  AND SUB_MERCHANT IN ('GRAB-ENDUSER', 'BE GROUP')
+  GROUP BY USER_ID
+  HAVING COUNT(DISTINCT SUB_MERCHANT) = 2
+),
+logistics_users AS (
+  SELECT COUNT(DISTINCT USER_ID) as total_logistics_users
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE_TRUNC(DATE, MONTH) = '2024-11-01'
+  AND CATE = 'LOGISTICS'
+  AND USER_ID IS NOT NULL
+),
+overlap_count AS (
+  SELECT COUNT(*) as overlapped_users
+  FROM both_services_users
+)
+SELECT 
+  l.total_logistics_users,
+  o.overlapped_users,
+  ROUND(o.overlapped_users * 100.0 / l.total_logistics_users, 2) as overlap_percentage
+FROM logistics_users l
+CROSS JOIN overlap_count o"
+17.0,"Số lượng user dùng cả 3 dịch vụ GRAB-ENDUSER, BE GROUP, GSM trong tháng 11/2024","WITH user_services AS (
+  SELECT 
+    USER_ID,
+    COUNT(DISTINCT SUB_MERCHANT) as service_count,
+    STRING_AGG(DISTINCT SUB_MERCHANT) as services
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE_TRUNC(DATE, MONTH) = '2024-11-01'
+  AND SUB_MERCHANT IN ('GRAB-ENDUSER', 'BE GROUP', 'GSM')
+  AND USER_ID IS NOT NULL
+  GROUP BY USER_ID
+  HAVING COUNT(DISTINCT SUB_MERCHANT) = 3
+)
+SELECT COUNT(*) as user_count
+FROM user_services;"
+18.0,có bao nhiêu user grab giao dịch từ 3 transaction trở lên trong tháng 12 năm 2024,"WITH grab_users AS (
+  SELECT 
+    USER_ID,
+    COUNT(*) as transaction_count
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE 
+    FORMAT_DATE('%Y-%m', DATE) = '2024-12'
+    AND MERCHANT = 'GRAB'
+    AND USER_ID IS NOT NULL
+  GROUP BY USER_ID
+  HAVING COUNT(*) >= 3
+)
+SELECT 
+  COUNT(DISTINCT USER_ID) as user_count
+FROM grab_users;"
+19.0,Số user có xài dịch vụ ADS PAYMENT của GOOGLE trong khoảng thời gian tháng 1 2024 đến tháng 3 2024 sau đó có bao nhiêu chuyển qua dịch vụ ADS PAYMENT của FACEBOOK trong tháng 4 2024,"WITH google_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MERCHANT = 'GOOGLE' 
+  AND SUB_CATE = 'ADS PAYMENT'
+  AND DATE BETWEEN '2024-01-01' AND '2024-03-31'
+),
+facebook_switchers AS (
+  SELECT DISTINCT g.USER_ID
+  FROM google_users g
+  INNER JOIN `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` f
+  ON g.USER_ID = f.USER_ID
+  WHERE f.MERCHANT = 'FACEBOOK'
+  AND f.SUB_CATE = 'ADS PAYMENT'
+  AND f.DATE BETWEEN '2024-04-01' AND '2024-04-30'
+)
+SELECT 
+  COUNT(DISTINCT USER_ID) as google_users,
+  (SELECT COUNT(DISTINCT USER_ID) FROM facebook_switchers) as switched_to_facebook
+FROM google_users;"
+20.0,How many transactions make in GOOGLE merchant in March 2024?,"SELECT COUNT(*) as transaction_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE merchant = 'GOOGLE'
+AND date BETWEEN '2024-03-01' AND '2024-03-31';"
+21.0,tiktokshop tháng 11 có bao nhiêu user mới rồi?,"WITH previous_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MERCHANT = 'TIKTOK'
+  AND DATE < '2024-11-01'
+),
+
+november_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MERCHANT = 'TIKTOK'
+  AND DATE >= '2024-11-01'
+  AND DATE < '2024-12-01'
+)
+
+SELECT COUNT(DISTINCT n.USER_ID) as new_users_count
+FROM november_users n
+LEFT JOIN previous_users p
+ON n.USER_ID = p.USER_ID
+WHERE p.USER_ID IS NULL;"
+22.0,Số lượng người dùng theo từng dịch vụ trong quý 1 năm 2024,"SELECT 
+  usecase,
+  COUNT(DISTINCT user_id) as user_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE date BETWEEN '2024-01-01' AND '2024-03-31'
+  AND user_id IS NOT NULL
+GROUP BY usecase
+ORDER BY user_count DESC;"
+23.0,average AOV of recover_user (segemnt_user) with churn_duration above 3 month in 2023,"SELECT 
+  FORMAT_DATE('%Y-%m', month_active) as month,
+  ROUND(AVG(GMV/TRANS), 0) as average_aov,
+  COUNT(DISTINCT reference) as number_users
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_SEGMENT_USER`
+WHERE 
+  EXTRACT(YEAR FROM month_active) = 2023
+  AND user_segment = 'recover_user'
+  AND churn_duration > 3
+GROUP BY 1
+ORDER BY 1;"
+24.0,Số user chỉ dùng nguồn tiền NHLK theo tháng từ tháng 2/2024 đến tháng 5/2024,"WITH all_users_money_sources AS (
+  SELECT 
+    DISTINCT USER_ID,
+    MONTH,
+    MONEY_SOURCE
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MONTH BETWEEN '2024-02-01' AND '2024-05-01'
+),
+
+only_banklink_users AS (
+  SELECT 
+    USER_ID,
+    MONTH
+  FROM all_users_money_sources a
+  WHERE NOT EXISTS (
+    SELECT 1 
+    FROM all_users_money_sources b 
+    WHERE a.USER_ID = b.USER_ID 
+    AND a.MONTH = b.MONTH 
+    AND b.MONEY_SOURCE != 2
+  )
+  AND MONEY_SOURCE = 2
+)
+
+SELECT 
+  MONTH,
+  COUNT(DISTINCT USER_ID) as user_count
+FROM only_banklink_users
+GROUP BY MONTH
+ORDER BY MONTH"
+25.0,Tổng GMV/Trans trong tháng 4 năm 2024 của User có các amount = 19000 trong tháng 6,"WITH June_Users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE EXTRACT(MONTH FROM DATE) = 6
+  AND GMV = 19000
+)
+SELECT 
+  SUM(t.GMV) as Total_GMV,
+  COUNT(t.ORDER_ID) as Total_Transactions
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1` t
+INNER JOIN June_Users ju ON t.USER_ID = ju.USER_ID
+WHERE EXTRACT(YEAR FROM t.DATE) = 2024
+AND EXTRACT(MONTH FROM t.DATE) = 4"
+26.0,How many fail transaction in Mar 2024,"SELECT COUNT(*) as failed_transactions
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE statusid = 6 
+AND DATE_TRUNC(date, MONTH) = '2024-03-01';"
+27.0,How many CASHIN transactions in March 2024?,"SELECT COUNT(*) as cashin_count
+FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+WHERE transaction_type = 'CASHIN'
+AND DATE_TRUNC(date, MONTH) = '2024-03-01'"
+28.0,Top 3 productid bought the most of Viettel in 2024,"WITH viettel_products AS (
+  SELECT 
+    goi_cuoc as product_id,
+    COUNT(*) as transaction_count,
+    SUM(quantity) as total_quantity,
+    SUM(amount) as total_amount
+  FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+  WHERE EXTRACT(YEAR FROM date) = 2024
+    AND cate = 'Viettel'
+    AND statusid = 2  -- successful transactions only
+    AND goi_cuoc IS NOT NULL
+  GROUP BY goi_cuoc
+  ORDER BY transaction_count DESC
+  LIMIT 3
+)
+SELECT * FROM viettel_products;"
+29.0,Cohort rate of MoMo users in 2024,"WITH user_first_transaction AS (
+  SELECT 
+    user_id,
+    DATE_TRUNC(date, MONTH) as cohort_month,
+    MIN(DATE_TRUNC(date, MONTH)) OVER (PARTITION BY user_id) as first_month
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE user_id IS NOT NULL
+    AND EXTRACT(YEAR FROM date) = 2024
+),
+cohort_size AS (
+  SELECT 
+    first_month,
+    COUNT(DISTINCT user_id) as cohort_users
+  FROM user_first_transaction
+  GROUP BY first_month
+),
+retention_by_month AS (
+  SELECT 
+    first_month,
+    cohort_month,
+    COUNT(DISTINCT user_id) as active_users,
+    DATE_DIFF(cohort_month, first_month, MONTH) as month_number
+  FROM user_first_transaction
+  GROUP BY first_month, cohort_month
+)
+SELECT 
+  r.first_month,
+  r.month_number,
+  c.cohort_users,
+  r.active_users,
+  ROUND(100.0 * r.active_users / c.cohort_users, 2) as retention_rate
+FROM retention_by_month r
+JOIN cohort_size c ON r.first_month = c.first_month
+WHERE r.month_number >= 0
+ORDER BY r.first_month, r.month_number;"
+30.0,Số inactive user trong tháng 3 năm 2024 họ theo user segment?,"WITH active_users AS (
+  SELECT DISTINCT USER_ID
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE MONTH = '2024-03-01'
+),
+all_segmented_users AS (
+  SELECT DISTINCT USER_ID, USER_SEGMENT
+  FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+  WHERE MONTH = '2024-03-01'
+  AND USER_SEGMENT IS NOT NULL
+)
+SELECT 
+  u.USER_SEGMENT,
+  COUNT(DISTINCT u.USER_ID) as inactive_users
+FROM all_segmented_users u
+LEFT JOIN active_users a ON u.USER_ID = a.USER_ID
+WHERE a.USER_ID IS NULL
+GROUP BY u.USER_SEGMENT
+ORDER BY 
+  CASE 
+    WHEN USER_SEGMENT = '1. Heavy' THEN 1
+    WHEN USER_SEGMENT = '2. Medium' THEN 2
+    WHEN USER_SEGMENT = '3. Light' THEN 3
+  END;"
+31.0,MAU trend from the beginning of 2024 until now,"WITH monthly_users AS (
+  SELECT 
+    DATE_TRUNC(date, MONTH) as month,
+    COUNT(DISTINCT user_id) as monthly_active_users
+  FROM `momovn-mimir.MIMIR.iDeA_TRANS_CORE`
+  WHERE 
+    date >= '2024-01-01'
+    AND user_id IS NOT NULL
+  GROUP BY 1
+  ORDER BY 1
+)
+SELECT 
+  FORMAT_DATE('%B %Y', month) as month,
+  monthly_active_users,
+  ROUND((monthly_active_users - LAG(monthly_active_users) OVER (ORDER BY month)) / LAG(monthly_active_users) OVER (ORDER BY month) * 100, 2) as mom_growth
+FROM monthly_users"
+32.0,Nhóm người dùng Light của Ads Payment tháng 8/2024 bao nhiêu,"SELECT 
+  COUNT(DISTINCT USER_ID) as light_users_count
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE MONTH = '2024-08-01'
+  AND CATE = 'ADS PAYMENT'
+  AND USER_SEGMENT = '3. Light';"
+33.0,số lượng giao dịch thành công của TiktokShop ngày 9/12/2024 bằng Ví Trả Sau là bao nhiêu,"SELECT 
+  COUNT(*) as transaction_count
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE DATE = '2024-12-09'
+  AND MERCHANT = 'TIKTOK'
+  AND MONEY_SOURCE_NAME = 'Paylater'
+  AND GMV > 0
+  AND REFUND_AMOUNT IS NULL;"
+34.0,Rev của Ads Payment tháng 9/2024,"SELECT 
+  COALESCE(SUM(NET_REV), 0) as TOTAL_NET_REV,
+  COALESCE(COUNT(DISTINCT ORDER_ID), 0) as TOTAL_TRANSACTIONS,
+  COALESCE(COUNT(DISTINCT USER_ID), 0) as TOTAL_USERS
+FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+WHERE MONTH = '2024-09-01'
+  AND CATE = 'ADS PAYMENT';"
+35.0,how many user using airtime in Apr 2024,"SELECT 
+  COUNT(DISTINCT user_payment) as total_users
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE month_active = '2024-04-01'
+AND statusid = 2;"
+36.0,"which entrypoint do user come from the most in \""Hà Nội\"" city in Mar 2024?","SELECT 
+  telcosource,
+  COUNT(*) as entry_count
+FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+WHERE province = 'Hà Nội'
+  AND DATE_TRUNC(date, MONTH) = '2024-03-01'
+  AND telcosource IS NOT NULL
+GROUP BY telcosource
+ORDER BY entry_count DESC
+LIMIT 5"
+37.0,Số user chỉ dùng nguồn tiền NHLK từ tháng 2/2024 đến tháng 5/2024,"WITH all_users_payment_methods AS (
+  SELECT 
+    USER_ID,
+    COUNT(DISTINCT MONEY_SOURCE_NAME) as payment_methods_count,
+    ARRAY_AGG(DISTINCT MONEY_SOURCE_NAME) as payment_methods
+  FROM `momovn-prod.BU_ECOM.DLS_ALL_TRANS_V3_1`
+  WHERE DATE BETWEEN '2024-02-01' AND '2024-05-31'
+    AND USER_ID IS NOT NULL
+  GROUP BY USER_ID
+)
+SELECT 
+  COUNT(DISTINCT USER_ID) as exclusive_banklink_users
+FROM all_users_payment_methods
+WHERE payment_methods_count = 1 
+  AND payment_methods[OFFSET(0)] = 'Banklink'"
+38.0,Tổng Transactions của nhóm Light User của cate ADS PAYMENT trong 3 tháng quý 2 năm 2024,"SELECT 
+  SUM(TRANS) as total_transactions
+FROM `momovn-prod.BU_ECOM.USER_SPENDING_SEGMENT_BY_CATE_V3`
+WHERE USER_SEGMENT = '3. Light'
+  AND CATE = 'ADS PAYMENT'
+  AND MONTH BETWEEN '2024-04-01' AND '2024-06-01'"
+39.0,The most popular mobile network in Airtime in 2024,"WITH network_counts AS (
+  SELECT 
+    cate as network,
+    COUNT(*) as transaction_count,
+    SUM(amount) as total_amount
+  FROM `project-5400504384186300846.BU_UTILITIES_TELCO.AIRTIME_DETAILS`
+  WHERE EXTRACT(YEAR FROM date) = 2024
+    AND statusid = 2
+    AND cate IS NOT NULL
+  GROUP BY cate
+)
+SELECT 
+  network,
+  transaction_count,
+  total_amount,
+  ROUND(transaction_count * 100.0 / SUM(transaction_count) OVER(), 2) as percentage_of_transactions
+FROM network_counts
+ORDER BY transaction_count DESC;"

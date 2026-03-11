@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoMo FS Performance: 2024 vs 2025 vs 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --momo-pink: #ae2070;
+  --momo-pink-light: #d4478a;
+  --momo-pink-dark: #8a1a5a;
+  --momo-bg: #fdf2f7;
+  --momo-white: #ffffff;
+  --momo-dark: #1a1a2e;
+  --momo-gray: #6b7280;
+  --momo-gray-light: #f3f4f6;
+  --momo-success: #4caf50;
+  --momo-error: #f44336;
+  --momo-warning: #ff9800;
+  --momo-blue: #48c4e7;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--momo-bg);
+  color: var(--momo-dark);
+  line-height: 1.5;
+}
+.header {
+  background: linear-gradient(135deg, #ae2070, #d4478a);
+  color: white;
+  padding: 24px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(174,32,112,0.2);
+}
+.header h1 { font-size: 22px; font-weight: 700; }
+.header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+.tabs {
+  display: flex;
+  gap: 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  margin-top: 16px;
+  overflow-x: auto;
+}
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab:hover { color: white; background: rgba(255,255,255,0.1); }
+.tab.active { color: white; border-bottom-color: white; background: rgba(255,255,255,0.15); }
+.container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* KPI Cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--momo-white);
+  border-radius: 12px;
+  padding: 20px;
+  border-left: 4px solid var(--momo-pink);
+  box-shadow: 0 2px 8px rgba(174,32,112,0.08);
+}
+.kpi-card .label { font-size: 12px; color: var(--momo-gray); text-transform: uppercase; letter-spacing: 0.5px; }
+.kpi-card .value { font-size: 28px; font-weight: 700; color: var(--momo-dark); margin: 4px 0; }
+.kpi-card .change { font-size: 13px; font-weight: 600; }
+.kpi-card .change.up { color: var(--momo-success); }
+.kpi-card .change.down { color: var(--momo-error); }
+
+/* Chart containers */
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.chart-box {
+  background: var(--momo-white);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(174,32,112,0.08);
+}
+.chart-box h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--momo-dark); }
+.chart-box canvas { max-height: 300px; }
+.chart-full { grid-column: 1 / -1; }
+
+/* Insight boxes */
+.insight-box {
+  background: var(--momo-bg);
+  border-left: 4px solid var(--momo-pink);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+.insight-box strong { color: var(--momo-pink-dark); }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--momo-pink); color: white; padding: 10px 12px; text-align: left; font-weight: 600; }
+td { padding: 8px 12px; border-bottom: 1px solid var(--momo-gray-light); }
+tr:nth-child(even) { background: var(--momo-gray-light); }
+tr:hover { background: #fce4ec; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 768px) {
+  .chart-row { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .header { padding: 16px; }
+  .container { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>MoMo Financial Services — Business Performance Dashboard</h1>
+  <p>2024 vs 2025 YoY Comparison | 2026 YTD & Projections | Data: BigQuery BU_FI | Generated 2026-03-09</p>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('overview')">Overview</div>
+    <div class="tab" onclick="showTab('paylater')">Paylater</div>
+    <div class="tab" onclick="showTab('vaynhanh')">Vay Nhanh</div>
+    <div class="tab" onclick="showTab('clo')">CLO</div>
+    <div class="tab" onclick="showTab('insurtech')">InsurTech</div>
+    <div class="tab" onclick="showTab('ttt')">TTT</div>
+    <div class="tab" onclick="showTab('moni')">Moni</div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== OVERVIEW ===== -->
+<div id="overview" class="section active">
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">FS Revenue 2025</div>
+      <div class="value">~980B</div>
+      <div class="change up">2026E: ~1.14T (+16%)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Paylater GMV 2025</div>
+      <div class="value">23.6T</div>
+      <div class="change up">+70% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Vay Nhanh Disbursed 2025</div>
+      <div class="value">24.2T</div>
+      <div class="change up">+240% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">TTT AUM Dec 2025</div>
+      <div class="value">11.3T</div>
+      <div class="change up">+23% in-year</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">CLO Revenue 2025</div>
+      <div class="value">57B</div>
+      <div class="change up">From 0 in 18mo</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">InsurTech Revenue 2025</div>
+      <div class="value">33.2B</div>
+      <div class="change up">+47% YoY</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box chart-full">
+      <h3>FS Revenue Composition 2025 (Estimated)</h3>
+      <canvas id="revenueComposition"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>YoY Growth Rates by Product</h3>
+      <canvas id="yoyGrowth"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Growth Phase Map</h3>
+      <canvas id="growthPhase"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Key Takeaway:</strong> MoMo FS had a breakout 2025. Paylater remains the revenue engine (91%), but CLO scaled from zero to 57B in 18 months. Vay Nhanh's 240% disbursement growth is the headline number. 2026 projection: ~1.14T total FS revenue (+16%).
+  </div>
+
+  <h3 style="margin: 20px 0 12px; font-size: 16px;">2026 Projections Summary</h3>
+  <table>
+    <tr><th>Product</th><th>Key Metric</th><th class="num">2024</th><th class="num">2025</th><th class="num">YoY</th><th class="num">2026E</th></tr>
+    <tr><td>Paylater</td><td>Fee Revenue</td><td class="num">460B</td><td class="num">888B</td><td class="num" style="color:#4caf50">+93%</td><td class="num">~1,020B</td></tr>
+    <tr><td>Paylater</td><td>GMV</td><td class="num">13.9T</td><td class="num">23.6T</td><td class="num" style="color:#4caf50">+70%</td><td class="num">~28T</td></tr>
+    <tr><td>Vay Nhanh</td><td>Disbursed</td><td class="num">7.1T</td><td class="num">24.2T</td><td class="num" style="color:#4caf50">+240%</td><td class="num">~34T</td></tr>
+    <tr><td>CLO</td><td>Revenue</td><td class="num">2.3B (H2)</td><td class="num">57B</td><td class="num" style="color:#4caf50">25x</td><td class="num">64-80B</td></tr>
+    <tr><td>InsurTech</td><td>Revenue</td><td class="num">22.6B</td><td class="num">33.2B</td><td class="num" style="color:#4caf50">+47%</td><td class="num">50-55B</td></tr>
+    <tr><td>TTT</td><td>AUM</td><td class="num">N/A</td><td class="num">11.3T</td><td class="num" style="color:#4caf50">+23%</td><td class="num">12-13T</td></tr>
+    <tr><td>Moni</td><td>Chat MAU</td><td class="num">14K (Sep)</td><td class="num">309K</td><td class="num" style="color:#4caf50">22x</td><td class="num">350-400K</td></tr>
+  </table>
+</div>
+
+<!-- ===== PAYLATER ===== -->
+<div id="paylater" class="section">
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">MAU Dec 2025</div>
+      <div class="value">1.44M</div>
+      <div class="change up">+44% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">GMV 2025</div>
+      <div class="value">23.6T</div>
+      <div class="change up">+70% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Fee Revenue 2025</div>
+      <div class="value">888B</div>
+      <div class="change up">+93% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Credit Utilization</div>
+      <div class="value">18%</div>
+      <div class="change">82% headroom</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Monthly MAU (2024-2026)</h3>
+      <canvas id="plMAU"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Monthly GMV (Trillion VND)</h3>
+      <canvas id="plGMV"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Monthly Fee Revenue (Billion VND)</h3>
+      <canvas id="plRevenue"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Fee Revenue Breakdown (2025)</h3>
+      <canvas id="plFeeBreakdown"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Paylater Insights:</strong> Revenue engine of FS (91% of total). Growth driven by both MAU expansion (+44%) and higher utilization. DPD fees now ~50% of total fees — credit quality needs monitoring. 82% credit headroom = biggest growth lever without new users.
+  </div>
+</div>
+
+<!-- ===== VAY NHANH ===== -->
+<div id="vaynhanh" class="section">
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">Loans 2025</div>
+      <div class="value">1.56M</div>
+      <div class="change up">+127% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Disbursed 2025</div>
+      <div class="value">24.2T</div>
+      <div class="change up">+240% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Avg Loan Size</div>
+      <div class="value">15.0M</div>
+      <div class="change up">+47% vs 2024</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Repeat Rate</div>
+      <div class="value">64%</div>
+      <div class="change">Strong retention</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Monthly Disbursement Volume (Billion VND)</h3>
+      <canvas id="vnDisbursed"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Average Loan Size (Million VND)</h3>
+      <canvas id="vnAvgLoan"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box chart-full">
+      <h3>Monthly Loan Count</h3>
+      <canvas id="vnLoanCount"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Vay Nhanh Insights:</strong> Most explosive growth in FS portfolio. Jun 2025 inflection (avg loan 12.8M → 15.7M) suggests new product tier or lender. MBV (MB Bank) joined Nov 2025. 2026 run rate: 34T/yr. Revenue contribution unclear (referral fee not in BQ).
+  </div>
+</div>
+
+<!-- ===== CLO ===== -->
+<div id="clo" class="section">
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">Contracts 2025</div>
+      <div class="value">55K</div>
+      <div class="change up">From 6.5K in H2 2024</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Disbursed 2025</div>
+      <div class="value">1.49T</div>
+      <div class="change up">8x vs H2 2024</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Revenue 2025</div>
+      <div class="value">57B</div>
+      <div class="change up">25x vs H2 2024</div>
+    </div>
+    <div class="kpi-card" style="border-left-color: var(--momo-warning);">
+      <div class="label">SHB Status Mar 2026</div>
+      <div class="value" style="color: var(--momo-error); font-size: 20px;">PAUSED</div>
+      <div class="change down">Credit policy tightening</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Monthly Disbursement (Billion VND)</h3>
+      <canvas id="cloDisbursed"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Monthly Revenue (Billion VND)</h3>
+      <canvas id="cloRevenue"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>CLO Alert:</strong> SHB (state bank, joined Nov 2025) has 0 contracts in Mar 1-5 2026 due to credit policy tightening. This is NOT a system failure — applications are being rejected at scoring stage. Escalation to CLO/SHB partnership team recommended.
+  </div>
+</div>
+
+<!-- ===== INSURTECH ===== -->
+<div id="insurtech" class="section">
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">Orders 2025</div>
+      <div class="value">1.06M</div>
+      <div class="change up">+30% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Revenue 2025</div>
+      <div class="value">33.2B</div>
+      <div class="change up">+47% YoY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Vehicle Revenue</div>
+      <div class="value">21.9B</div>
+      <div class="change up">66% of total</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">2026 Run Rate</div>
+      <div class="value">53B/yr</div>
+      <div class="change up">+60% vs 2025</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Monthly Revenue (Billion VND)</h3>
+      <canvas id="insRevenue"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Revenue by Product Line (2024 vs 2025)</h3>
+      <canvas id="insByProduct"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>InsurTech Insights:</strong> Vehicle Insurance drives 66% of revenue (+61% YoY). Travel and PA Bus are 100% organic — massive underinvestment. Property Insurance declining (-47% YoY). 2026 could be a breakout year if campaigns expand beyond Vehicle.
+  </div>
+</div>
+
+<!-- ===== TTT ===== -->
+<div id="ttt" class="section">
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">MAU Dec 2025</div>
+      <div class="value">3.47M</div>
+      <div class="change">Stable</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">AUM Dec 2025</div>
+      <div class="value">11.3T</div>
+      <div class="change up">+23% in-year</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Money Pool AUM</div>
+      <div class="value">1.5T</div>
+      <div class="change up">+387% in-year</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Net Spread/mo</div>
+      <div class="value">~20B</div>
+      <div class="change">AUM*6%/12 - interest</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Monthly MAU by Type (2025-2026)</h3>
+      <canvas id="tttMAU"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>End-of-Month AUM (Trillion VND)</h3>
+      <canvas id="tttAUM"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>TTT Insights:</strong> Individual MAU flat but Money Pool growing fast (163K → 453K users, 308B → 1.5T AUM). Interest rate ~3.85% (below bank 4-5%) — stickiness from ecosystem convenience. No 2024 BQ data available for YoY comparison.
+  </div>
+</div>
+
+<!-- ===== MONI ===== -->
+<div id="moni" class="section">
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">Moni Chat MAU Dec 2025</div>
+      <div class="value">309K</div>
+      <div class="change up">22x since launch</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">QLCT MAU Dec 2025</div>
+      <div class="value">3.15M</div>
+      <div class="change up">+120% since Sep 2024</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">H2/H1 Growth</div>
+      <div class="value">+322%</div>
+      <div class="change up">Jun inflection point</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Revenue</div>
+      <div class="value">$0</div>
+      <div class="change">Engagement play</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Moni Chat MAU Trajectory</h3>
+      <canvas id="moniMAU"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>QLCT MAU Trajectory</h3>
+      <canvas id="qlctMAU"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Moni Insights:</strong> V-shaped trajectory — dipped to 38K (May 2025), then exploded to 309K (Dec 2025). Jun 2025 inflection likely from product improvement. No revenue yet but strategic value as AI engagement layer. 2026 target: 350-400K MAU, define monetization path.
+  </div>
+</div>
+
+</div>
+
+<script>
+// ===== TAB NAVIGATION =====
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== CHART DEFAULTS =====
+Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+const PINK = '#ae2070';
+const PINK_LIGHT = '#d4478a';
+const BLUE = '#48c4e7';
+const GREEN = '#4caf50';
+const ORANGE = '#ff9800';
+const GRAY = '#9ca3af';
+const months24 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const months2425 = [...months24.map(m=>m+"'24"), ...months24.map(m=>m+"'25")];
+const months252601 = [...months24.map(m=>m+"'25"), 'Jan\'26','Feb\'26'];
+
+// ===== OVERVIEW CHARTS =====
+new Chart(document.getElementById('revenueComposition'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Paylater Fees (888B)', 'CLO Revenue (57B)', 'InsurTech Revenue (33B)'],
+    datasets: [{
+      data: [888, 57, 33],
+      backgroundColor: [PINK, BLUE, GREEN],
+      borderWidth: 2, borderColor: '#fff'
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'right' } } }
+});
+
+new Chart(document.getElementById('yoyGrowth'), {
+  type: 'bar',
+  data: {
+    labels: ['Vay Nhanh\nDisbursed', 'Paylater\nFees', 'Paylater\nGMV', 'InsurTech\nRevenue', 'TTT\nAUM'],
+    datasets: [{
+      label: 'YoY Growth %',
+      data: [240, 93, 70, 47, 23],
+      backgroundColor: [PINK, PINK_LIGHT, BLUE, GREEN, ORANGE]
+    }]
+  },
+  options: {
+    responsive: true, indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: { x: { ticks: { callback: v => v + '%' } } }
+  }
+});
+
+new Chart(document.getElementById('growthPhase'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      { label: 'Vay Nhanh', data: [{x: 2, y: 240}], backgroundColor: PINK, pointRadius: 12 },
+      { label: 'CLO', data: [{x: 1.5, y: 100}], backgroundColor: BLUE, pointRadius: 10 },
+      { label: 'Paylater', data: [{x: 4, y: 70}], backgroundColor: PINK_LIGHT, pointRadius: 14 },
+      { label: 'InsurTech', data: [{x: 3, y: 47}], backgroundColor: GREEN, pointRadius: 8 },
+      { label: 'TTT', data: [{x: 5, y: 23}], backgroundColor: ORANGE, pointRadius: 10 },
+      { label: 'Moni', data: [{x: 1, y: 150}], backgroundColor: '#9c27b0', pointRadius: 6 },
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { title: { display: true, text: 'Maturity (1=Early, 5=Mature)' }, min: 0, max: 6 },
+      y: { title: { display: true, text: 'Growth Rate %' }, min: 0 }
+    }
+  }
+});
+
+// ===== PAYLATER CHARTS =====
+const plMonths = months2425;
+const plMAUData = [693272,659119,729423,733487,761360,782343,797468,826425,851222,885771,921403,996016,
+  988551,970991,1042956,1071670,1108131,1165868,1211056,1257140,1275682,1314094,1377918,1436606];
+const plGMVData = [1009,883,1029,1044,1105,1157,1164,1196,1217,1281,1359,1454,
+  1486,1392,1638,1754,1877,2020,2088,2185,2181,2280,2283,2367];
+
+new Chart(document.getElementById('plMAU'), {
+  type: 'line',
+  data: {
+    labels: [...plMonths, "Jan'26", "Feb'26"],
+    datasets: [{
+      label: 'MAU',
+      data: [...plMAUData, 1453583, 1396599],
+      borderColor: PINK, backgroundColor: 'rgba(174,32,112,0.1)',
+      fill: true, tension: 0.3, pointRadius: 2
+    }]
+  },
+  options: { responsive: true, scales: { y: { ticks: { callback: v => (v/1e6).toFixed(1)+'M' } } } }
+});
+
+new Chart(document.getElementById('plGMV'), {
+  type: 'bar',
+  data: {
+    labels: [...plMonths, "Jan'26", "Feb'26"],
+    datasets: [{
+      label: 'GMV (T VND)',
+      data: [...plGMVData, 2447, 2182],
+      backgroundColor: plGMVData.map((_,i) => i < 12 ? BLUE : PINK).concat([PINK, PINK])
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+const plFees2024 = [27.5,27.2,28.6,28.8,30.9,30.9,31.4,43.7,46.2,54.0,54.9,56.2];
+const plFees2025 = [60.8,57.1,60.2,62.1,69.0,74.1,77.0,88.8,85.7,89.7,82.5,81.3];
+
+new Chart(document.getElementById('plRevenue'), {
+  type: 'bar',
+  data: {
+    labels: plMonths,
+    datasets: [
+      { label: '2024', data: plFees2024, backgroundColor: BLUE },
+      { label: '2025', data: plFees2025, backgroundColor: PINK }
+    ]
+  },
+  options: { responsive: true }
+});
+
+// Fee breakdown 2025
+const mgmtFees2025 = [25.6,25.6,27.5,28.4,29.3,30.6,31.9,33.3,34.2,35.1,36.5,38.2];
+const penaltyFees2025 = [14.6,12.8,13.6,13.7,16.4,17.8,17.8,22.2,20.4,22.0,18.3,17.1];
+const dpdFees2025 = plFees2025.map((t,i) => t - mgmtFees2025[i] - penaltyFees2025[i]);
+
+new Chart(document.getElementById('plFeeBreakdown'), {
+  type: 'bar',
+  data: {
+    labels: months24,
+    datasets: [
+      { label: 'Management', data: mgmtFees2025, backgroundColor: PINK },
+      { label: 'Penalty', data: penaltyFees2025, backgroundColor: ORANGE },
+      { label: 'DPD Fees', data: dpdFees2025, backgroundColor: '#f44336' }
+    ]
+  },
+  options: { responsive: true, scales: { x: {}, y: {} }, plugins: { legend: { position: 'top' } } }
+});
+
+// ===== VAY NHANH CHARTS =====
+const vnMonths = plMonths;
+const vnDisbursed = [454,345,463,472,525,537,513,577,620,770,853,978,
+  1163,966,1268,1335,1456,2173,2134,2238,2458,2949,2911,3129];
+const vnAvgLoan = [9.7,9.7,9.4,9.2,9.2,9.4,9.2,10.1,11.2,11.1,11.7,12.1,
+  12.0,12.0,11.9,12.5,12.8,15.7,15.9,15.8,17.1,17.7,18.4,18.0];
+const vnCount = [46763,35690,49321,51111,56876,57187,55763,56979,55349,69616,72667,80737,
+  97134,80321,106444,107022,114026,138044,134019,141213,143834,166453,157994,173946];
+
+new Chart(document.getElementById('vnDisbursed'), {
+  type: 'bar',
+  data: {
+    labels: [...vnMonths, "Jan'26", "Feb'26"],
+    datasets: [{
+      label: 'Disbursed (B VND)',
+      data: [...vnDisbursed, 3108, 2515],
+      backgroundColor: vnDisbursed.map((_,i) => i < 12 ? BLUE : PINK).concat([PINK, PINK])
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('vnAvgLoan'), {
+  type: 'line',
+  data: {
+    labels: vnMonths,
+    datasets: [{
+      label: 'Avg Loan (M VND)',
+      data: vnAvgLoan,
+      borderColor: PINK, backgroundColor: 'rgba(174,32,112,0.1)',
+      fill: true, tension: 0.3
+    }]
+  },
+  options: { responsive: true, plugins: { annotation: {} } }
+});
+
+new Chart(document.getElementById('vnLoanCount'), {
+  type: 'bar',
+  data: {
+    labels: [...vnMonths, "Jan'26", "Feb'26"],
+    datasets: [{
+      label: 'Loan Count',
+      data: [...vnCount, 171573, 143176],
+      backgroundColor: vnCount.map((_,i) => i < 12 ? BLUE : PINK).concat([PINK, PINK])
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+// ===== CLO CHARTS =====
+const cloMonths = ["Jun'24","Jul'24","Aug'24","Sep'24","Oct'24","Nov'24","Dec'24",
+  "Jan'25","Feb'25","Mar'25","Apr'25","May'25","Jun'25","Jul'25","Aug'25","Sep'25","Oct'25","Nov'25","Dec'25",
+  "Jan'26","Feb'26"];
+const cloDisbData = [0.9,14.4,17.5,27.8,40.9,32.4,51.2,53.7,105.6,124.2,124.6,129.7,133.9,114.2,117.4,151.7,180.4,131.6,125.2,124.9,149.7];
+const cloRevData = [0,0,0,0,0.55,0.61,1.1,2.0,4.1,4.8,4.8,5.0,5.2,4.4,4.5,5.8,6.9,5.1,4.8,4.8,5.9];
+
+new Chart(document.getElementById('cloDisbursed'), {
+  type: 'bar',
+  data: {
+    labels: cloMonths,
+    datasets: [{
+      label: 'Disbursed (B VND)',
+      data: cloDisbData,
+      backgroundColor: cloMonths.map(m => m.includes('26') ? PINK : m.includes('25') ? PINK_LIGHT : BLUE)
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('cloRevenue'), {
+  type: 'line',
+  data: {
+    labels: cloMonths,
+    datasets: [{
+      label: 'Revenue (B VND)',
+      data: cloRevData,
+      borderColor: PINK, backgroundColor: 'rgba(174,32,112,0.1)',
+      fill: true, tension: 0.3
+    }]
+  },
+  options: { responsive: true }
+});
+
+// ===== INSURTECH CHARTS =====
+const insMonths = plMonths;
+const insRevData = [2.0,2.4,1.8,1.8,1.6,1.7,2.0,2.0,1.6,1.7,1.8,2.2,
+  8.8,2.8,1.9,2.1,2.0,2.0,2.0,2.0,1.8,2.1,2.4,3.3];
+
+new Chart(document.getElementById('insRevenue'), {
+  type: 'bar',
+  data: {
+    labels: [...insMonths, "Jan'26", "Feb'26"],
+    datasets: [{
+      label: 'Revenue (B VND)',
+      data: [...insRevData, 4.1, 4.7],
+      backgroundColor: insRevData.map((_,i) => i < 12 ? BLUE : PINK).concat([PINK, PINK])
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('insByProduct'), {
+  type: 'bar',
+  data: {
+    labels: ['Vehicle', 'Travel', 'PA Bus', 'Property', 'Health', 'Cyber'],
+    datasets: [
+      { label: '2024', data: [13.6, 5.4, 3.1, 0.16, 0.15, 0.02], backgroundColor: BLUE },
+      { label: '2025', data: [21.9, 6.7, 4.3, 0.10, 0.17, 0.02], backgroundColor: PINK }
+    ]
+  },
+  options: { responsive: true }
+});
+
+// ===== TTT CHARTS =====
+const tttMonths = [...months24.map(m=>m+"'25"), "Jan'26", "Feb'26"];
+const tttIndMAU = [3247552,2904268,2723987,2597053,2743059,2857439,3116574,3086244,3009282,2915868,2914881,3012444,2998000,3012756];
+const tttMPMAU = [162773,195586,208214,242708,282284,294265,333765,373661,415399,432861,429990,452755,462873,434410];
+const tttIndAUM = [8.875,8.994,8.968,9.206,9.289,9.478,9.475,9.613,9.613,9.581,9.725,9.796,9.312,10.043];
+const tttMPAUM = [0.308,0.433,0.533,0.684,0.808,0.905,0.998,1.106,1.237,1.324,1.400,1.501,1.575,1.701];
+
+new Chart(document.getElementById('tttMAU'), {
+  type: 'bar',
+  data: {
+    labels: tttMonths,
+    datasets: [
+      { label: 'Individual', data: tttIndMAU, backgroundColor: PINK },
+      { label: 'Money Pool', data: tttMPMAU, backgroundColor: BLUE }
+    ]
+  },
+  options: { responsive: true, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => (v/1e6).toFixed(1)+'M' } } } }
+});
+
+new Chart(document.getElementById('tttAUM'), {
+  type: 'line',
+  data: {
+    labels: tttMonths,
+    datasets: [
+      { label: 'Individual AUM (T)', data: tttIndAUM, borderColor: PINK, tension: 0.3, fill: false },
+      { label: 'Money Pool AUM (T)', data: tttMPAUM, borderColor: BLUE, tension: 0.3, fill: true, backgroundColor: 'rgba(72,196,231,0.15)' }
+    ]
+  },
+  options: { responsive: true }
+});
+
+// ===== MONI CHARTS =====
+const moniMonths = ["Sep'24","Oct'24","Nov'24","Dec'24","Jan'25","Feb'25","Mar'25","Apr'25","May'25","Jun'25","Jul'25","Aug'25","Sep'25","Oct'25","Nov'25","Dec'25"];
+const moniChat = [14309,29902,88220,81325,69729,57373,47527,43644,37664,107911,180284,182407,247565,320882,295147,308931];
+const qlctMAU = [1429113,2114742,2428200,2827613,2152764,2122135,2136532,2272370,2228950,2519165,2630300,2925706,3092902,2937348,2626507,3149431];
+
+new Chart(document.getElementById('moniMAU'), {
+  type: 'line',
+  data: {
+    labels: moniMonths,
+    datasets: [{
+      label: 'Moni Chat MAU',
+      data: moniChat,
+      borderColor: PINK, backgroundColor: 'rgba(174,32,112,0.1)',
+      fill: true, tension: 0.3, pointRadius: 4
+    }]
+  },
+  options: { responsive: true, scales: { y: { ticks: { callback: v => (v/1e3).toFixed(0)+'K' } } } }
+});
+
+new Chart(document.getElementById('qlctMAU'), {
+  type: 'bar',
+  data: {
+    labels: moniMonths,
+    datasets: [{
+      label: 'QLCT MAU',
+      data: qlctMAU,
+      backgroundColor: moniMonths.map(m => m.includes('24') ? BLUE : PINK)
+    }]
+  },
+  options: { responsive: true, scales: { y: { ticks: { callback: v => (v/1e6).toFixed(1)+'M' } } } }
+});
+</script>
+
+</body>
+</html>
