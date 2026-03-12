@@ -141,6 +141,8 @@ bq query --project_id=momovn-bu-fi-shared --use_legacy_sql=false --format=csv < 
 
 **Knowledge base:** `data/eval_sets/evaluator_skill/` — all learnings from manual rounds accumulate here. Do NOT create the skill until explicitly told. On context compaction, recover by reading that directory.
 
+**Auto-run recovery:** After compact, read `data/eval_sets/evaluator_skill/eval_progress.md` FIRST — it has all reversed questions, batch plan, golden data, and step-by-step instructions to resume. Then check `eval_results.csv` to see which IDs are done. Continue from next undone batch.
+
 **Mimir-compatible means:** single-domain, references metrics Mimir's metadata understands, specifies time range, no cross-domain joins.
 
 ## Commands

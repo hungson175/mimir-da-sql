@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DA Evaluation Report — IFAB Method</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #0B0B10;
+  --bg-card: #13131B;
+  --bg-card-hover: #1A1A25;
+  --bg-elevated: #1E1E2A;
+  --border: #2A2A3A;
+  --border-subtle: #1E1E2E;
+  --text: #E2E2EC;
+  --text-muted: #7A7A92;
+  --text-dim: #50506A;
+  --momo: #AE2264;
+  --momo-light: #D4337A;
+  --momo-glow: rgba(174, 34, 100, 0.15);
+  --momo-bg: rgba(174, 34, 100, 0.08);
+  --teal: #1DB4A0;
+  --teal-light: #2ED8BE;
+  --teal-glow: rgba(29, 180, 160, 0.15);
+  --amber: #E5A740;
+  --amber-glow: rgba(229, 167, 64, 0.12);
+  --red: #E04858;
+  --red-glow: rgba(224, 72, 88, 0.12);
+  --green: #3ECF6F;
+  --green-glow: rgba(62, 207, 111, 0.12);
+  --blue: #4A8FE7;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--bg-deep);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ========== NAV ========== */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  backdrop-filter: blur(20px);
+  background: rgba(11, 11, 16, 0.85);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+  transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.nav-brand {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'Libre Baskerville', serif;
+  font-weight: 700; font-size: 15px; letter-spacing: 0.02em;
+}
+.nav-brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--momo); }
+.nav-links { display: flex; gap: 8px; }
+.nav-links a {
+  color: var(--text-muted); text-decoration: none; font-size: 13px;
+  padding: 6px 14px; border-radius: 20px; font-weight: 500;
+  transition: all 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--text); background: var(--bg-elevated);
+}
+
+/* ========== SECTIONS ========== */
+section {
+  min-height: 100vh;
+  padding: 80px 40px 60px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em;
+  color: var(--momo-light); font-weight: 600; margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 28px; font-weight: 700; margin-bottom: 6px;
+  line-height: 1.3;
+}
+.section-subtitle {
+  color: var(--text-muted); font-size: 15px; margin-bottom: 32px;
+  max-width: 600px;
+}
+
+/* ========== HERO ========== */
+#hero {
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; text-align: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+#hero::before {
+  content: '';
+  position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, var(--momo-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-meta {
+  font-size: 12px; color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 0.2em; margin-bottom: 20px;
+}
+.hero-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 44px; font-weight: 700; line-height: 1.25;
+  margin-bottom: 16px;
+  max-width: 700px;
+}
+.hero-title .accent { color: var(--momo-light); }
+.hero-sub {
+  color: var(--text-muted); font-size: 17px; max-width: 540px;
+  margin-bottom: 40px; line-height: 1.7;
+}
+.hero-stats {
+  display: flex; gap: 48px; margin-bottom: 48px;
+}
+.hero-stat .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 48px; font-weight: 600; line-height: 1;
+}
+.hero-stat .label {
+  font-size: 13px; color: var(--text-muted); margin-top: 6px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.hero-stat.claude .num { color: var(--momo-light); }
+.hero-stat.mimir .num { color: var(--teal); }
+.hero-stat.gap .num { color: var(--amber); }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--momo-bg); border: 1px solid rgba(174, 34, 100, 0.25);
+  padding: 8px 20px; border-radius: 24px;
+  font-size: 13px; color: var(--momo-light); font-weight: 500;
+}
+.scroll-hint {
+  position: absolute; bottom: 32px;
+  color: var(--text-dim); font-size: 12px;
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ========== CARDS & GRIDS ========== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: all 0.25s;
+}
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border);
+}
+.card-label {
+  font-size: 11px; color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 0.12em; font-weight: 600; margin-bottom: 12px;
+}
+.card .big-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 36px; font-weight: 600; line-height: 1;
+}
+.card .big-label {
+  font-size: 13px; color: var(--text-muted); margin-top: 4px;
+}
+
+/* ========== BAR CHARTS ========== */
+.bar-group { margin-bottom: 16px; }
+.bar-group:last-child { margin-bottom: 0; }
+.bar-label {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 6px;
+}
+.bar-label .name { font-size: 13px; font-weight: 500; }
+.bar-label .value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--text-muted);
+}
+.bar-track {
+  height: 8px; background: var(--bg-elevated); border-radius: 4px;
+  overflow: hidden; display: flex; gap: 2px;
+}
+.bar-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bar-fill.claude { background: var(--momo-light); }
+.bar-fill.mimir { background: var(--teal); }
+
+/* ========== VERDICT PILLS ========== */
+.verdict-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.verdict-row:last-child { border-bottom: none; }
+.verdict-pill {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.verdict-pill.pass { background: var(--green-glow); color: var(--green); }
+.verdict-pill.borderline { background: var(--amber-glow); color: var(--amber); }
+.verdict-pill.fail { background: var(--red-glow); color: var(--red); }
+
+/* ========== COMPARISON TABLE ========== */
+.comp-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.comp-table th {
+  text-align: left; font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text-dim); padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.comp-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border-subtle);
+}
+.comp-table tr:hover td { background: var(--bg-card-hover); }
+.comp-table .mono {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+}
+.comp-table .winner { color: var(--green); font-weight: 600; }
+.comp-table .loser { color: var(--text-dim); }
+
+/* ========== CAVEAT SECTION ========== */
+.caveat-box {
+  background: linear-gradient(135deg, rgba(229, 167, 64, 0.06), rgba(229, 167, 64, 0.02));
+  border: 1px solid rgba(229, 167, 64, 0.2);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin: 24px 0;
+}
+.caveat-box .caveat-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 18px; color: var(--amber); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.caveat-box p { color: var(--text-muted); font-size: 14px; line-height: 1.8; }
+
+.llm-compare {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px;
+  align-items: center; margin: 28px 0;
+}
+.llm-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; text-align: center;
+}
+.llm-card .llm-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; font-weight: 600; margin-bottom: 4px;
+}
+.llm-card .llm-system { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+.llm-card .llm-tier {
+  display: inline-block; padding: 4px 14px; border-radius: 16px;
+  font-size: 12px; font-weight: 600;
+}
+.llm-card.older .llm-tier { background: var(--teal-glow); color: var(--teal); }
+.llm-card.newer .llm-tier { background: var(--momo-glow); color: var(--momo-light); }
+.vs-divider {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 20px; color: var(--text-dim); font-style: italic;
+}
+
+/* ========== ERROR BREAKDOWN ========== */
+.error-bar-container { margin: 8px 0; }
+.error-bar-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0;
+}
+.error-bar-label {
+  font-size: 12px; font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted); width: 160px; flex-shrink: 0;
+}
+.error-bar-outer {
+  flex: 1; height: 6px; background: var(--bg-elevated);
+  border-radius: 3px; overflow: hidden;
+}
+.error-bar-inner {
+  height: 100%; border-radius: 3px; background: var(--red);
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.error-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--text-dim); width: 30px; text-align: right;
+}
+
+/* ========== IFAB RADAR ========== */
+.ifab-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  margin: 24px 0;
+}
+.ifab-breakdown { }
+.ifab-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ifab-row:last-child { border-bottom: none; }
+.ifab-letter {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 24px; font-weight: 700; width: 32px;
+  text-align: center;
+}
+.ifab-letter.i { color: var(--momo-light); }
+.ifab-letter.f { color: var(--blue); }
+.ifab-letter.a { color: var(--amber); }
+.ifab-letter.b { color: var(--teal); }
+.ifab-detail { flex: 1; }
+.ifab-detail .ifab-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.ifab-detail .ifab-max { font-size: 12px; color: var(--text-dim); }
+.ifab-scores {
+  display: flex; gap: 16px; align-items: baseline;
+}
+.ifab-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; font-weight: 600;
+}
+.ifab-score.claude { color: var(--momo-light); }
+.ifab-score.mimir { color: var(--teal); }
+
+/* ========== RECOMMENDATIONS ========== */
+.rec-card {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 12px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.rec-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--momo-light); font-weight: 600;
+  background: var(--momo-bg); border-radius: 8px;
+  width: 32px; height: 32px; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0;
+}
+.rec-body .rec-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.rec-body .rec-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.rec-impact {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--green); font-weight: 500;
+  margin-left: auto; flex-shrink: 0; white-space: nowrap;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  text-align: center; padding: 40px;
+  color: var(--text-dim); font-size: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ========== ANIMATIONS ========== */
+.fade-in {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+.stagger-1 { transition-delay: 0.05s; }
+.stagger-2 { transition-delay: 0.1s; }
+.stagger-3 { transition-delay: 0.15s; }
+.stagger-4 { transition-delay: 0.2s; }
+.stagger-5 { transition-delay: 0.25s; }
+.stagger-6 { transition-delay: 0.3s; }
+
+/* ========== LEGEND ========== */
+.legend {
+  display: flex; gap: 20px; font-size: 12px; color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.legend-dot.claude { background: var(--momo-light); }
+.legend-dot.mimir { background: var(--teal); }
+
+/* ========== DETAIL TABLE ========== */
+.detail-table-wrap {
+  max-height: 600px; overflow-y: auto; border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
+}
+.detail-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+}
+.detail-table thead { position: sticky; top: 0; z-index: 2; }
+.detail-table th {
+  background: var(--bg-elevated); text-align: left;
+  font-weight: 600; font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-dim);
+  padding: 10px 10px; border-bottom: 1px solid var(--border);
+}
+.detail-table td {
+  padding: 8px 10px; border-bottom: 1px solid var(--border-subtle);
+  font-family: 'DM Sans', sans-serif;
+}
+.detail-table tr:hover td { background: rgba(30, 30, 42, 0.5); }
+.detail-table .mono {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+}
+.detail-table .pass-cell { color: var(--green); }
+.detail-table .fail-cell { color: var(--red); }
+.detail-table .border-cell { color: var(--amber); }
+.detail-table .zero-cell { color: var(--text-dim); }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  section { padding: 80px 20px 40px; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .hero-title { font-size: 28px; }
+  .hero-stats { flex-direction: column; gap: 24px; }
+  .llm-compare { grid-template-columns: 1fr; }
+  .ifab-grid { grid-template-columns: 1fr; }
+  .hero-stat .num { font-size: 36px; }
+  nav { padding: 0 16px; }
+  .nav-links { display: none; }
+}
+
+/* ========== PRINT ========== */
+@media print {
+  nav { display: none; }
+  section { min-height: auto; page-break-after: always; }
+  .fade-in { opacity: 1 !important; transform: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-brand">
+    <div class="dot"></div>
+    <span>MoMo FS &middot; DA Evaluation</span>
+  </div>
+  <div class="nav-links">
+    <a href="#hero" class="active">Overview</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#caveat">Caveat</a>
+    <a href="#methodology">IFAB</a>
+    <a href="#errors">Errors</a>
+    <a href="#detail">Detail</a>
+    <a href="#recs">Actions</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-meta">MoMo Financial Services &middot; March 2026</div>
+  <h1 class="hero-title">
+    SQL Accuracy Evaluation:<br>
+    <span class="accent">Claude DA</span> vs Mimir
+  </h1>
+  <p class="hero-sub">
+    62 golden SQL queries evaluated using the IFAB semantic framework.
+    Single-turn accuracy across 3 FS domains, scored by intent, filters, aggregation, and business-rule alignment.
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat claude">
+      <div class="num" data-count="0.633">0.00</div>
+      <div class="label">Claude DA</div>
+    </div>
+    <div class="hero-stat mimir">
+      <div class="num" data-count="0.323">0.00</div>
+      <div class="label">Mimir</div>
+    </div>
+    <div class="hero-stat gap">
+      <div class="num">1.96&times;</div>
+      <div class="label">Performance Gap</div>
+    </div>
+  </div>
+  <div class="hero-badge">
+    IFAB Method &middot; 70% Semantic + 30% Execution &middot; 62 Questions
+  </div>
+  <div class="scroll-hint">Scroll to explore &darr;</div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="section-label">Executive Summary</div>
+  <h2 class="section-title">One-Glance Dashboard</h2>
+  <p class="section-subtitle">Everything you need in 30 seconds. Claude DA leads across all dimensions.</p>
+
+  <!-- TOP KPIs -->
+  <div class="grid-4 fade-in stagger-1">
+    <div class="card">
+      <div class="card-label">Head-to-Head</div>
+      <div class="big-num" style="color: var(--momo-light);">46 &ndash; 5</div>
+      <div class="big-label">Claude wins 46 of 62 matchups</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Pass Rate (&#8805;0.85)</div>
+      <div class="big-num" style="color: var(--green);">24% <span style="font-size:18px;color:var(--text-dim);">vs 6%</span></div>
+      <div class="big-label">Claude 15 pass &middot; Mimir 4 pass</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Fail Rate (&lt;0.65)</div>
+      <div class="big-num" style="color: var(--red);">71% <span style="font-size:18px;color:var(--text-dim);">vs 94%</span></div>
+      <div class="big-label">Claude 44 fail &middot; Mimir 58 fail</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Exec Match Rate</div>
+      <div class="big-num" style="color: var(--amber);">25% <span style="font-size:18px;color:var(--text-dim);">vs 10%</span></div>
+      <div class="big-label">Results matching golden exactly</div>
+    </div>
+  </div>
+
+  <!-- DOMAIN + DIFFICULTY -->
+  <div class="grid-2 fade-in stagger-2" style="margin-top: 20px;">
+    <!-- BY DOMAIN -->
+    <div class="card">
+      <div class="card-label">Score by Domain</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot claude"></div>Claude DA</div>
+        <div class="legend-item"><div class="legend-dot mimir"></div>Mimir</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label">
+          <span class="name">Paylater (VTS) <span style="color:var(--text-dim);font-size:11px;">4 qs</span></span>
+          <span class="value">0.91 / 0.00</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill claude" style="width: 0%;" data-width="91%"></div>
+        </div>
+        <div class="bar-track" style="margin-top: 3px;">
+          <div class="bar-fill mimir" style="width: 0%;" data-width="0%"></div>
+        </div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label">
+          <span class="name">Vay Nhanh <span style="color:var(--text-dim);font-size:11px;">18 qs</span></span>
+          <span class="value">0.66 / 0.41</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill claude" style="width: 0%;" data-width="66%"></div>
+        </div>
+        <div class="bar-track" style="margin-top: 3px;">
+          <div class="bar-fill mimir" style="width: 0%;" data-width="41%"></div>
+        </div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label">
+          <span class="name">TTT <span style="color:var(--text-dim);font-size:11px;">40 qs</span></span>
+          <span class="value">0.59 / 0.32</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill claude" style="width: 0%;" data-width="59%"></div>
+        </div>
+        <div class="bar-track" style="margin-top: 3px;">
+          <div class="bar-fill mimir" style="width: 0%;" data-width="32%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BY DIFFICULTY -->
+    <div class="card">
+      <div class="card-label">Score by Difficulty</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot claude"></div>Claude DA</div>
+        <div class="legend-item"><div class="legend-dot mimir"></div>Mimir</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label">
+          <span class="name">Simple <span style="color:var(--text-dim);font-size:11px;">18 qs</span></span>
+          <span class="value">0.78 / 0.52</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill claude" style="width: 0%;" data-width="78%"></div>
+        </div>
+        <div class="bar-track" style="margin-top: 3px;">
+          <div class="bar-fill mimir" style="width: 0%;" data-width="52%"></div>
+        </div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label">
+          <span class="name">Moderate <span style="color:var(--text-dim);font-size:11px;">24 qs</span></span>
+          <span class="value">0.60 / 0.23</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill claude" style="width: 0%;" data-width="60%"></div>
+        </div>
+        <div class="bar-track" style="margin-top: 3px;">
+          <div class="bar-fill mimir" style="width: 0%;" data-width="23%"></div>
+        </div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label">
+          <span class="name">Complex <span style="color:var(--text-dim);font-size:11px;">20 qs</span></span>
+          <span class="value">0.54 / 0.26</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill claude" style="width: 0%;" data-width="54%"></div>
+        </div>
+        <div class="bar-track" style="margin-top: 3px;">
+          <div class="bar-fill mimir" style="width: 0%;" data-width="26%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERDICT DISTRIBUTION -->
+  <div class="grid-2 fade-in stagger-3" style="margin-top: 20px;">
+    <div class="card">
+      <div class="card-label">Claude DA Verdict Distribution</div>
+      <div style="display:flex;gap:4px;height:28px;margin-bottom:12px;border-radius:6px;overflow:hidden;">
+        <div style="width:24.2%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0B0B10;">15</div>
+        <div style="width:4.8%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0B0B10;">3</div>
+        <div style="width:71%;background:var(--red);opacity:0.6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text);">44</div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:12px;color:var(--text-muted);">
+        <span><span style="color:var(--green);">&bull;</span> 15 Pass</span>
+        <span><span style="color:var(--amber);">&bull;</span> 3 Borderline</span>
+        <span><span style="color:var(--red);">&bull;</span> 44 Fail</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Mimir Verdict Distribution</div>
+      <div style="display:flex;gap:4px;height:28px;margin-bottom:12px;border-radius:6px;overflow:hidden;">
+        <div style="width:6.5%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0B0B10;">4</div>
+        <div style="width:93.5%;background:var(--red);opacity:0.6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text);">58</div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:12px;color:var(--text-muted);">
+        <span><span style="color:var(--green);">&bull;</span> 4 Pass</span>
+        <span><span style="color:var(--amber);">&bull;</span> 0 Borderline</span>
+        <span><span style="color:var(--red);">&bull;</span> 58 Fail</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAVEAT -->
+<section id="caveat">
+  <div class="section-label">Important Caveat</div>
+  <h2 class="section-title">The Unfair Advantage Factor</h2>
+  <p class="section-subtitle">Before drawing conclusions, consider the confounding variable: the underlying LLM.</p>
+
+  <div class="caveat-box fade-in stagger-1">
+    <div class="caveat-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      This comparison is not fully controlled
+    </div>
+    <p>
+      The two systems use <strong>different underlying LLMs</strong>. This means the performance gap reflects
+      both the <em>architecture differences</em> (domain knowledge, prompting, metadata quality) AND the
+      <em>raw LLM capability gap</em>. We cannot isolate which factor contributes more without a controlled rerun.
+    </p>
+  </div>
+
+  <div class="llm-compare fade-in stagger-2">
+    <div class="llm-card older">
+      <div class="llm-system">Mimir</div>
+      <div class="llm-name">Google Gemini Flash 2.5</div>
+      <div style="font-size:12px;color:var(--text-dim);margin:8px 0;">Older, lightweight model optimized for speed</div>
+      <div class="llm-tier">Tier 2 &middot; Speed-Optimized</div>
+    </div>
+    <div class="vs-divider">vs</div>
+    <div class="llm-card newer">
+      <div class="llm-system">Claude DA</div>
+      <div class="llm-name">OpenAI GPT-4o</div>
+      <div style="font-size:12px;color:var(--text-dim);margin:8px 0;">Frontier model with strong reasoning</div>
+      <div class="llm-tier">Tier 1 &middot; Frontier</div>
+    </div>
+  </div>
+
+  <div class="grid-2 fade-in stagger-3">
+    <div class="card">
+      <div class="card-label">What This Means</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.8;">
+        Some of Claude DA's advantage&mdash;particularly in <strong>complex multi-step queries</strong> and
+        <strong>business rule inference</strong>&mdash;may stem from GPT-4o's superior reasoning ability rather
+        than the domain knowledge architecture. The gap on Simple queries (0.78 vs 0.52) may be more indicative
+        of the <em>architecture</em> difference, while the Complex gap could be inflated by the LLM difference.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-label">Recommendation</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.8;">
+        <strong>Run a controlled evaluation</strong> where both systems use the same LLM backend
+        (e.g., both on GPT-4o or both on Gemini Flash). This isolates the contribution of
+        domain knowledge, prompting strategy, and metadata quality&mdash;which are the factors we can actually improve.
+      </p>
+      <div style="margin-top:16px;padding:12px 16px;background:var(--amber-glow);border-radius:8px;font-size:13px;color:var(--amber);font-weight:500;">
+        Until rerun: treat the 1.96&times; gap as an upper bound, not a precise measurement.
+      </div>
+    </div>
+  </div>
+
+  <div class="card fade-in stagger-4" style="margin-top:20px;">
+    <div class="card-label">However&mdash;Infrastructure Failures Are Real</div>
+    <p style="font-size:14px;color:var(--text-muted);line-height:1.8;">
+      25 of Mimir's 62 questions (40%) failed due to <strong>infrastructure issues</strong> unrelated to the LLM:
+      11 backend timeouts, 8 schema mismatches, 5 date bugs (Feb 29 in non-leap year), 1 column not found.
+      Even controlling for LLM, these failures represent systemic gaps in Mimir's metadata and backend reliability
+      that need to be fixed independently.
+    </p>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section id="methodology">
+  <div class="section-label">Scoring Framework</div>
+  <h2 class="section-title">IFAB Semantic Evaluation</h2>
+  <p class="section-subtitle">
+    Replaces the old 0.5&times;SQL + 0.5&times;Result method with a rubric that evaluates
+    semantic correctness of SQL generation.
+  </p>
+
+  <div class="grid-2 fade-in stagger-1">
+    <div class="card">
+      <div class="card-label">IFAB Rubric (10 points total)</div>
+      <div class="ifab-row">
+        <div class="ifab-letter i">I</div>
+        <div class="ifab-detail">
+          <div class="ifab-name">Intent Match</div>
+          <div class="ifab-max">Does the SQL capture the right business question?</div>
+        </div>
+        <div style="font-family:'JetBrains Mono';font-size:14px;color:var(--text-dim);">0&ndash;4</div>
+      </div>
+      <div class="ifab-row">
+        <div class="ifab-letter f">F</div>
+        <div class="ifab-detail">
+          <div class="ifab-name">Filters &amp; Time Window</div>
+          <div class="ifab-max">Correct date range, WHERE clauses, partitions?</div>
+        </div>
+        <div style="font-family:'JetBrains Mono';font-size:14px;color:var(--text-dim);">0&ndash;3</div>
+      </div>
+      <div class="ifab-row">
+        <div class="ifab-letter a">A</div>
+        <div class="ifab-detail">
+          <div class="ifab-name">Aggregation &amp; Granularity</div>
+          <div class="ifab-max">Right GROUP BY, agg functions, output shape?</div>
+        </div>
+        <div style="font-family:'JetBrains Mono';font-size:14px;color:var(--text-dim);">0&ndash;2</div>
+      </div>
+      <div class="ifab-row">
+        <div class="ifab-letter b">B</div>
+        <div class="ifab-detail">
+          <div class="ifab-name">Business-Rule Alignment</div>
+          <div class="ifab-max">Domain-specific rules: PLUS_TYPE, result_code, MFU_TYPE?</div>
+        </div>
+        <div style="font-family:'JetBrains Mono';font-size:14px;color:var(--text-dim);">0&ndash;1</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Formula</div>
+      <div style="background:var(--bg-elevated);padding:20px;border-radius:8px;margin-bottom:16px;">
+        <div style="font-family:'JetBrains Mono';font-size:15px;line-height:2;">
+          <span style="color:var(--text-dim);">semantic_raw</span> = I + F + A + B<br>
+          <span style="color:var(--text-dim);">semantic_norm</span> = raw / 10<br>
+          <span style="color:var(--text-dim);">exec_binary</span> = result matches golden? 1 : 0<br>
+          <br>
+          <span style="color:var(--amber);">final</span> = 0.7 &times; semantic + 0.3 &times; execution
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.7;">
+        <strong>Hard gate:</strong> if SQL errors out, times out, or is never generated &rarr; all scores = 0.<br>
+        <strong>Verdict:</strong> Pass &ge; 0.85 &middot; Borderline 0.65&ndash;0.85 &middot; Fail &lt; 0.65
+      </div>
+    </div>
+  </div>
+
+  <!-- IFAB SUBSCORE COMPARISON -->
+  <div class="card fade-in stagger-2" style="margin-top:20px;">
+    <div class="card-label">Average IFAB Subscores (non-error queries only)</div>
+    <div class="legend" style="margin-top:8px;">
+      <div class="legend-item"><div class="legend-dot claude"></div>Claude DA (n=60)</div>
+      <div class="legend-item"><div class="legend-dot mimir"></div>Mimir (n=39)</div>
+    </div>
+    <div class="ifab-grid">
+      <div>
+        <div class="ifab-row">
+          <div class="ifab-letter i">I</div>
+          <div class="ifab-detail">
+            <div class="ifab-name">Intent Match</div>
+            <div class="ifab-max">out of 4</div>
+          </div>
+          <div class="ifab-scores">
+            <div class="ifab-score claude">3.83</div>
+            <div class="ifab-score mimir">3.79</div>
+          </div>
+        </div>
+        <div class="ifab-row">
+          <div class="ifab-letter f">F</div>
+          <div class="ifab-detail">
+            <div class="ifab-name">Filters &amp; Time</div>
+            <div class="ifab-max">out of 3</div>
+          </div>
+          <div class="ifab-scores">
+            <div class="ifab-score claude">2.37</div>
+            <div class="ifab-score mimir">1.56</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ifab-row">
+          <div class="ifab-letter a">A</div>
+          <div class="ifab-detail">
+            <div class="ifab-name">Aggregation</div>
+            <div class="ifab-max">out of 2</div>
+          </div>
+          <div class="ifab-scores">
+            <div class="ifab-score claude">1.57</div>
+            <div class="ifab-score mimir">1.26</div>
+          </div>
+        </div>
+        <div class="ifab-row">
+          <div class="ifab-letter b">B</div>
+          <div class="ifab-detail">
+            <div class="ifab-name">Business Rules</div>
+            <div class="ifab-max">out of 1</div>
+          </div>
+          <div class="ifab-scores">
+            <div class="ifab-score claude">0.50</div>
+            <div class="ifab-score mimir">0.28</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:14px 18px;background:var(--momo-bg);border-radius:8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+      <strong style="color:var(--momo-light);">Key insight:</strong> Both systems understand intent equally well (I &asymp; 3.8/4).
+      The gap comes from <strong>Filters</strong> (Claude 2.37 vs Mimir 1.56) and <strong>Business Rules</strong> (0.50 vs 0.28).
+      Mimir picks wrong dates, wrong months, and misses domain-specific filters like PLUS_TYPE, MFU_TYPE.
+    </div>
+  </div>
+</section>
+
+<!-- ERRORS -->
+<section id="errors">
+  <div class="section-label">Failure Analysis</div>
+  <h2 class="section-title">What Goes Wrong &amp; Why</h2>
+  <p class="section-subtitle">Mimir has 41 error instances across 62 questions. 25 are infrastructure failures, 16 are logic errors.</p>
+
+  <div class="grid-2 fade-in stagger-1">
+    <div class="card">
+      <div class="card-label">Mimir Error Breakdown (41 total)</div>
+      <div class="error-bar-container">
+        <div class="error-bar-row">
+          <div class="error-bar-label">LOGIC_ERROR</div>
+          <div class="error-bar-outer"><div class="error-bar-inner" style="width:0%;" data-width="34%"></div></div>
+          <div class="error-count">14</div>
+        </div>
+        <div class="error-bar-row">
+          <div class="error-bar-label">TIMEOUT</div>
+          <div class="error-bar-outer"><div class="error-bar-inner" style="width:0%;" data-width="27%"></div></div>
+          <div class="error-count">11</div>
+        </div>
+        <div class="error-bar-row">
+          <div class="error-bar-label">SCHEMA_MISMATCH</div>
+          <div class="error-bar-outer"><div class="error-bar-inner" style="width:0%;" data-width="20%"></div></div>
+          <div class="error-count">8</div>
+        </div>
+        <div class="error-bar-row">
+          <div class="error-bar-label">DATE_BUG</div>
+          <div class="error-bar-outer"><div class="error-bar-inner" style="width:0%;" data-width="12%"></div></div>
+          <div class="error-count">5</div>
+        </div>
+        <div class="error-bar-row">
+          <div class="error-bar-label">FILTER_MISSING</div>
+          <div class="error-bar-outer"><div class="error-bar-inner" style="width:0%;" data-width="5%"></div></div>
+          <div class="error-count">2</div>
+        </div>
+        <div class="error-bar-row">
+          <div class="error-bar-label">COLUMN_NOT_FOUND</div>
+          <div class="error-bar-outer"><div class="error-bar-inner" style="width:0%;" data-width="2.5%"></div></div>
+          <div class="error-count">1</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Critical Findings</div>
+      <div style="font-size:14px;line-height:1.8;">
+        <div style="padding:12px 0;border-bottom:1px solid var(--border-subtle);">
+          <div style="color:var(--red);font-weight:600;font-size:13px;">Paylater (VTS): 0% Mimir success</div>
+          <div style="color:var(--text-muted);font-size:13px;">Metadata doesn't expose <code style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:12px;">service_category</code>, <code style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:12px;">credit_limit</code>, <code style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:12px;">mau_type</code></div>
+        </div>
+        <div style="padding:12px 0;border-bottom:1px solid var(--border-subtle);">
+          <div style="color:var(--red);font-weight:600;font-size:13px;">Feb 29 Date Bug: 5 queries killed</div>
+          <div style="color:var(--text-muted);font-size:13px;">Mimir generates <code style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:12px;">2026-02-29</code> (invalid). Systematic, not random.</div>
+        </div>
+        <div style="padding:12px 0;border-bottom:1px solid var(--border-subtle);">
+          <div style="color:var(--red);font-weight:600;font-size:13px;">TTT Backend: 11 timeouts</div>
+          <div style="color:var(--text-muted);font-size:13px;">Gateway timeouts, MongoDB broken pipes, 500 errors. Backend instability, not LLM issue.</div>
+        </div>
+        <div style="padding:12px 0;">
+          <div style="color:var(--amber);font-weight:600;font-size:13px;">TTT Tier Names: 8 schema mismatches</div>
+          <div style="color:var(--text-muted);font-size:13px;">Mimir doesn't recognize Silver/Gold/Platinum tier names in PLUS_TYPE or TIER columns.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAIR COMPARISON -->
+  <div class="card fade-in stagger-2" style="margin-top:20px;">
+    <div class="card-label">Fair Comparison: What If We Remove Infrastructure Failures?</div>
+    <table class="comp-table" style="margin-top:12px;">
+      <thead>
+        <tr>
+          <th>Scenario</th>
+          <th>Questions</th>
+          <th>Claude DA</th>
+          <th>Mimir</th>
+          <th>Gap</th>
+          <th>Claude Wins</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>All questions (raw)</td>
+          <td class="mono">62</td>
+          <td class="mono winner">0.633</td>
+          <td class="mono loser">0.323</td>
+          <td class="mono">+0.310</td>
+          <td class="mono">46</td>
+        </tr>
+        <tr>
+          <td>Exclude timeouts only</td>
+          <td class="mono">51</td>
+          <td class="mono winner">0.682</td>
+          <td class="mono loser">0.366</td>
+          <td class="mono">+0.316</td>
+          <td class="mono">37</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">Exclude ALL infra failures</td>
+          <td class="mono" style="font-weight:600;">37</td>
+          <td class="mono winner" style="font-weight:600;">0.654</td>
+          <td class="mono" style="font-weight:600;color:var(--teal);">0.467</td>
+          <td class="mono" style="font-weight:600;">+0.187</td>
+          <td class="mono" style="font-weight:600;">23</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+      Even in the fairest scenario (removing all 25 infra failures), Claude DA still leads by <strong>+0.187</strong>
+      and wins 23 vs 6 head-to-head. Gap narrows from <strong>1.96&times;</strong> to <strong>1.4&times;</strong>.
+      Note: entire Paylater domain drops out since Mimir can't query those tables at all.
+    </div>
+  </div>
+</section>
+
+<!-- DETAIL TABLE -->
+<section id="detail">
+  <div class="section-label">Per-Question Results</div>
+  <h2 class="section-title">Full IFAB Scorecard</h2>
+  <p class="section-subtitle">All 62 questions with IFAB subscores and verdicts. Scroll to explore.</p>
+
+  <div class="detail-table-wrap fade-in stagger-1" id="detail-table-container">
+    <!-- Populated by JS -->
+  </div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section id="recs">
+  <div class="section-label">Next Steps</div>
+  <h2 class="section-title">Recommendations</h2>
+  <p class="section-subtitle">Ordered by impact. Quick wins first, then strategic moves.</p>
+
+  <div class="grid-2 fade-in stagger-1">
+    <div>
+      <div style="font-size:13px;color:var(--momo-light);font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.1em;">Quick Wins</div>
+
+      <div class="rec-card">
+        <div class="rec-num">1</div>
+        <div class="rec-body">
+          <div class="rec-title">Fix Mimir's Feb 29 date bug</div>
+          <div class="rec-desc">Systematic: generates 2026-02-29 for any Feb query. Simple fix, 5+ queries recovered.</div>
+        </div>
+        <div class="rec-impact">+5 qs</div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num">2</div>
+        <div class="rec-body">
+          <div class="rec-title">Refresh Mimir's VTS schema</div>
+          <div class="rec-desc">Paylater ALL_TRANS metadata missing critical columns. Currently 0% usable.</div>
+        </div>
+        <div class="rec-impact">+4 qs</div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num">3</div>
+        <div class="rec-body">
+          <div class="rec-title">Add TTT tier names to Mimir metadata</div>
+          <div class="rec-desc">Silver/Gold/Platinum/PLUS_TYPE not recognized. 8 queries affected.</div>
+        </div>
+        <div class="rec-impact">+8 qs</div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num">4</div>
+        <div class="rec-body">
+          <div class="rec-title">Stabilize TTT backend</div>
+          <div class="rec-desc">11 timeouts from gateway errors, MongoDB crashes, 500s. Infrastructure, not LLM.</div>
+        </div>
+        <div class="rec-impact">+11 qs</div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:13px;color:var(--amber);font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.1em;">Strategic</div>
+
+      <div class="rec-card">
+        <div class="rec-num">5</div>
+        <div class="rec-body">
+          <div class="rec-title">Controlled LLM rerun</div>
+          <div class="rec-desc">Run both systems on the same LLM to isolate architecture vs model contribution. Critical for valid comparison.</div>
+        </div>
+        <div class="rec-impact">PRIORITY</div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num">6</div>
+        <div class="rec-body">
+          <div class="rec-title">Upgrade Mimir's LLM backend</div>
+          <div class="rec-desc">Gemini Flash 2.5 is a speed-tier model. Consider GPT-4o or Gemini Pro for complex queries.</div>
+        </div>
+        <div class="rec-impact">HIGH</div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num">7</div>
+        <div class="rec-body">
+          <div class="rec-title">Hybrid deployment</div>
+          <div class="rec-desc">Claude DA for Moderate/Complex queries. Mimir for Simple (competitive at 0.52). Route by estimated difficulty.</div>
+        </div>
+        <div class="rec-impact">MEDIUM</div>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-num">8</div>
+        <div class="rec-body">
+          <div class="rec-title">Expand evaluation to remaining 13 VTS questions</div>
+          <div class="rec-desc">62/75 evaluated (83%). Remaining 13 are all Paylater&mdash;validates Claude's VTS advantage at scale.</div>
+        </div>
+        <div class="rec-impact">LOW</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card fade-in stagger-2" style="margin-top:24px;text-align:center;">
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">Bottom Line</div>
+    <div style="font-family:'Libre Baskerville',serif;font-size:18px;line-height:1.6;max-width:700px;margin:0 auto;">
+      Claude DA leads <span style="color:var(--momo-light);">1.96&times;</span> overall, but the gap may narrow under a controlled LLM comparison.
+      Regardless of LLM, Mimir has <span style="color:var(--red);">real infrastructure gaps</span> (25 failures) that need fixing.
+      <span style="color:var(--amber);">Fix infrastructure first, then rerun with same LLM to get the true picture.</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div style="margin-bottom:4px;">DA Evaluation Report &middot; IFAB Method &middot; 62 of 75 questions &middot; March 12, 2026</div>
+  <div>Prepared by FS Data Team &middot; MoMo Financial Services</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const questions = [
+  {id:"TTT001",domain:"TTT",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:3,mA:2,mB:1,mExec:1,mFinal:1.0,mV:"pass"},
+  {id:"VTS001",domain:"VTS",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"Q7",domain:"VN",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:3,mA:2,mB:1,mExec:1,mFinal:1.0,mV:"pass"},
+  {id:"TTT003",domain:"TTT",diff:"Moderate",cI:4,cF:3,cA:2,cB:0,cExec:0,cFinal:0.63,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"VTS008",domain:"VTS",diff:"Moderate",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"Q2",domain:"VN",diff:"Complex",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT007",domain:"TTT",diff:"Complex",cI:4,cF:3,cA:2,cB:0,cExec:0,cFinal:0.63,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"VTS014",domain:"VTS",diff:"Complex",cI:4,cF:3,cA:2,cB:0,cExec:0,cFinal:0.63,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"Q8",domain:"VN",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:2,mA:2,mB:1,mExec:0,mFinal:0.63,mV:"fail"},
+  {id:"Q9",domain:"VN",diff:"Simple",cI:1,cF:3,cA:1,cB:0,cExec:0,cFinal:0.35,cV:"fail",mI:4,mF:3,mA:1,mB:1,mExec:0,mFinal:0.63,mV:"fail"},
+  {id:"Q10",domain:"VN",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:3,mA:2,mB:0,mExec:0,mFinal:0.63,mV:"fail"},
+  {id:"Q11",domain:"VN",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:3,mA:2,mB:0,mExec:0,mFinal:0.63,mV:"fail"},
+  {id:"Q12",domain:"VN",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:1,mA:2,mB:0,mExec:0,mFinal:0.49,mV:"fail"},
+  {id:"Q13",domain:"VN",diff:"Simple",cI:4,cF:3,cA:0,cB:1,cExec:0,cFinal:0.56,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"Q14",domain:"VN",diff:"Moderate",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:2,mA:1,mB:0,mExec:0,mFinal:0.49,mV:"fail"},
+  {id:"Q1",domain:"VN",diff:"Moderate",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:4,mF:2,mA:0,mB:0,mExec:0,mFinal:0.42,mV:"fail"},
+  {id:"Q4",domain:"VN",diff:"Moderate",cI:4,cF:2,cA:1,cB:1,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:0,mA:1,mB:1,mExec:0,mFinal:0.42,mV:"fail"},
+  {id:"Q5",domain:"VN",diff:"Moderate",cI:4,cF:2,cA:1,cB:1,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:0,mA:1,mB:0,mExec:0,mFinal:0.35,mV:"fail"},
+  {id:"Q6",domain:"VN",diff:"Moderate",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"Q15",domain:"VN",diff:"Moderate",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"Q3",domain:"VN",diff:"Complex",cI:4,cF:2,cA:1,cB:1,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:2,mA:1,mB:1,mExec:0,mFinal:0.56,mV:"fail"},
+  {id:"Q16",domain:"VN",diff:"Complex",cI:4,cF:0,cA:1,cB:1,cExec:0,cFinal:0.42,cV:"fail",mI:4,mF:0,mA:1,mB:0,mExec:0,mFinal:0.35,mV:"fail"},
+  {id:"Q17",domain:"VN",diff:"Complex",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:4,mF:0,mA:1,mB:0,mExec:0,mFinal:0.35,mV:"fail"},
+  {id:"Q18",domain:"VN",diff:"Complex",cI:3,cF:3,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:3,mF:3,mA:1,mB:0,mExec:0,mFinal:0.49,mV:"fail"},
+  {id:"TTT004",domain:"TTT",diff:"Simple",cI:4,cF:2,cA:2,cB:1,cExec:0,cFinal:0.63,cV:"fail",mI:4,mF:0,mA:2,mB:0,mExec:0,mFinal:0.42,mV:"fail"},
+  {id:"TTT006",domain:"TTT",diff:"Moderate",cI:4,cF:2,cA:2,cB:0,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:0,mA:2,mB:0,mExec:0,mFinal:0.42,mV:"fail"},
+  {id:"TTT008",domain:"TTT",diff:"Moderate",cI:2,cF:2,cA:1,cB:0,cExec:0,cFinal:0.35,cV:"fail",mI:2,mF:0,mA:1,mB:0,mExec:0,mFinal:0.21,mV:"fail"},
+  {id:"TTT009",domain:"TTT",diff:"Moderate",cI:4,cF:2,cA:2,cB:1,cExec:0,cFinal:0.63,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT010",domain:"TTT",diff:"Moderate",cI:4,cF:2,cA:2,cB:1,cExec:0,cFinal:0.63,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT011",domain:"TTT",diff:"Moderate",cI:4,cF:1,cA:1,cB:0,cExec:0,cFinal:0.42,cV:"fail",mI:4,mF:1,mA:2,mB:0,mExec:0,mFinal:0.49,mV:"fail"},
+  {id:"TTT012",domain:"TTT",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:3,mA:2,mB:1,mExec:1,mFinal:1.0,mV:"pass"},
+  {id:"TTT013",domain:"TTT",diff:"Complex",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:4,mF:1,mA:0,mB:0,mExec:0,mFinal:0.35,mV:"fail"},
+  {id:"TTT014",domain:"TTT",diff:"Complex",cI:3,cF:2,cA:1,cB:0,cExec:0,cFinal:0.42,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT015",domain:"TTT",diff:"Complex",cI:4,cF:2,cA:2,cB:1,cExec:0,cFinal:0.63,cV:"fail",mI:4,mF:0,mA:1,mB:0,mExec:0,mFinal:0.35,mV:"fail"},
+  {id:"TTT016",domain:"TTT",diff:"Complex",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:4,mF:2,mA:1,mB:0,mExec:0,mFinal:0.49,mV:"fail"},
+  {id:"TTT017",domain:"TTT",diff:"Simple",cI:4,cF:3,cA:1,cB:1,cExec:0,cFinal:0.63,cV:"fail",mI:4,mF:0,mA:1,mB:0,mExec:0,mFinal:0.35,mV:"fail"},
+  {id:"TTT018",domain:"TTT",diff:"Complex",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:2,mA:1,mB:0,mExec:0,mFinal:0.49,mV:"fail"},
+  {id:"TTT019",domain:"TTT",diff:"Moderate",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:4,mF:2,mA:1,mB:0,mExec:0,mFinal:0.49,mV:"fail"},
+  {id:"TTT023",domain:"TTT",diff:"Complex",cI:4,cF:2,cA:2,cB:0,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:0,mA:2,mB:0,mExec:0,mFinal:0.42,mV:"fail"},
+  {id:"TTT024",domain:"TTT",diff:"Complex",cI:4,cF:3,cA:2,cB:1,cExec:0,cFinal:0.7,cV:"borderline",mI:4,mF:3,mA:2,mB:0,mExec:0,mFinal:0.63,mV:"fail"},
+  {id:"TTT026",domain:"TTT",diff:"Simple",cI:4,cF:3,cA:2,cB:0,cExec:0,cFinal:0.63,cV:"fail",mI:4,mF:3,mA:1,mB:0,mExec:0,mFinal:0.56,mV:"fail"},
+  {id:"TTT028",domain:"TTT",diff:"Simple",cI:4,cF:2,cA:2,cB:0,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:3,mA:2,mB:1,mExec:1,mFinal:1.0,mV:"pass"},
+  {id:"TTT030",domain:"TTT",diff:"Moderate",cI:4,cF:3,cA:2,cB:0,cExec:0,cFinal:0.63,cV:"fail",mI:4,mF:3,mA:1,mB:1,mExec:0,mFinal:0.63,mV:"fail"},
+  {id:"TTT032",domain:"TTT",diff:"Moderate",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT033",domain:"TTT",diff:"Moderate",cI:4,cF:1,cA:1,cB:0,cExec:0,cFinal:0.42,cV:"fail",mI:4,mF:2,mA:1,mB:1,mExec:0,mFinal:0.56,mV:"fail"},
+  {id:"TTT034",domain:"TTT",diff:"Simple",cI:4,cF:2,cA:2,cB:0,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:0,mA:1,mB:0,mExec:0,mFinal:0.35,mV:"fail"},
+  {id:"TTT035",domain:"TTT",diff:"Moderate",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT036",domain:"TTT",diff:"Moderate",cI:4,cF:1,cA:1,cB:0,cExec:0,cFinal:0.42,cV:"fail",mI:4,mF:1,mA:1,mB:0,mExec:0,mFinal:0.42,mV:"fail"},
+  {id:"TTT037",domain:"TTT",diff:"Moderate",cI:4,cF:2,cA:2,cB:0,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:1,mA:2,mB:0,mExec:0,mFinal:0.49,mV:"fail"},
+  {id:"TTT038",domain:"TTT",diff:"Complex",cI:4,cF:3,cA:2,cB:1,cExec:0,cFinal:0.7,cV:"borderline",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT039",domain:"TTT",diff:"Simple",cI:4,cF:2,cA:1,cB:1,cExec:0,cFinal:0.56,cV:"fail",mI:4,mF:3,mA:1,mB:1,mExec:0,mFinal:0.63,mV:"fail"},
+  {id:"TTT040",domain:"TTT",diff:"Complex",cI:4,cF:3,cA:2,cB:1,cExec:0,cFinal:0.7,cV:"borderline",mI:2,mF:2,mA:0,mB:0,mExec:0,mFinal:0.28,mV:"fail"},
+  {id:"TTT041",domain:"TTT",diff:"Simple",cI:4,cF:2,cA:2,cB:1,cExec:0,cFinal:0.63,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT043",domain:"TTT",diff:"Moderate",cI:0,cF:0,cA:0,cB:0,cExec:0,cFinal:0,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT044",domain:"TTT",diff:"Moderate",cI:4,cF:2,cA:2,cB:0,cExec:0,cFinal:0.56,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT046",domain:"TTT",diff:"Complex",cI:0,cF:0,cA:0,cB:0,cExec:0,cFinal:0,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT047",domain:"TTT",diff:"Moderate",cI:4,cF:2,cA:2,cB:0,cExec:0,cFinal:0.56,cV:"fail",mI:3,mF:0,mA:0,mB:0,mExec:0,mFinal:0.21,mV:"fail"},
+  {id:"TTT048",domain:"TTT",diff:"Complex",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT049",domain:"TTT",diff:"Moderate",cI:3,cF:2,cA:1,cB:0,cExec:0,cFinal:0.42,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT050",domain:"TTT",diff:"Complex",cI:4,cF:2,cA:1,cB:0,cExec:0,cFinal:0.49,cV:"fail",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+  {id:"TTT051",domain:"TTT",diff:"Complex",cI:2,cF:2,cA:1,cB:0,cExec:0,cFinal:0.35,cV:"fail",mI:2,mF:2,mA:1,mB:0,mExec:0,mFinal:0.35,mV:"fail"},
+  {id:"VTS002",domain:"VTS",diff:"Simple",cI:4,cF:3,cA:2,cB:1,cExec:1,cFinal:1.0,cV:"pass",mI:0,mF:0,mA:0,mB:0,mExec:0,mFinal:0,mV:"fail"},
+];
+
+// ========== RENDER DETAIL TABLE ==========
+function renderTable() {
+  const c = document.getElementById('detail-table-container');
+  let html = `<table class="detail-table"><thead><tr>
+    <th>ID</th><th>Domain</th><th>Diff</th>
+    <th colspan="4" style="text-align:center;color:var(--momo-light);">Claude DA (I/F/A/B)</th>
+    <th style="color:var(--momo-light);">Exec</th><th style="color:var(--momo-light);">Final</th><th style="color:var(--momo-light);">V</th>
+    <th colspan="4" style="text-align:center;color:var(--teal);">Mimir (I/F/A/B)</th>
+    <th style="color:var(--teal);">Exec</th><th style="color:var(--teal);">Final</th><th style="color:var(--teal);">V</th>
+  </tr></thead><tbody>`;
+
+  for (const q of questions) {
+    const cClass = q.cV === 'pass' ? 'pass-cell' : q.cV === 'borderline' ? 'border-cell' : q.cFinal === 0 ? 'zero-cell' : 'fail-cell';
+    const mClass = q.mV === 'pass' ? 'pass-cell' : q.mV === 'borderline' ? 'border-cell' : q.mFinal === 0 ? 'zero-cell' : 'fail-cell';
+    html += `<tr>
+      <td class="mono" style="font-weight:600;">${q.id}</td>
+      <td>${q.domain}</td>
+      <td style="font-size:11px;">${q.diff}</td>
+      <td class="mono" style="color:var(--momo-light);text-align:center;">${q.cI}</td>
+      <td class="mono" style="color:var(--blue);text-align:center;">${q.cF}</td>
+      <td class="mono" style="color:var(--amber);text-align:center;">${q.cA}</td>
+      <td class="mono" style="color:var(--teal);text-align:center;">${q.cB}</td>
+      <td class="mono" style="text-align:center;">${q.cExec ? '1' : '0'}</td>
+      <td class="mono ${cClass}" style="font-weight:600;">${q.cFinal.toFixed(2)}</td>
+      <td><span class="verdict-pill ${q.cV}" style="font-size:9px;">${q.cV}</span></td>
+      <td class="mono" style="color:var(--momo-light);text-align:center;">${q.mI}</td>
+      <td class="mono" style="color:var(--blue);text-align:center;">${q.mF}</td>
+      <td class="mono" style="color:var(--amber);text-align:center;">${q.mA}</td>
+      <td class="mono" style="color:var(--teal);text-align:center;">${q.mB}</td>
+      <td class="mono" style="text-align:center;">${q.mExec ? '1' : '0'}</td>
+      <td class="mono ${mClass}" style="font-weight:600;">${q.mFinal.toFixed(2)}</td>
+      <td><span class="verdict-pill ${q.mV}" style="font-size:9px;">${q.mV}</span></td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  c.innerHTML = html;
+}
+
+// ========== ANIMATIONS ==========
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // Animate bars
+      e.target.querySelectorAll('[data-width]').forEach(bar => {
+        setTimeout(() => { bar.style.width = bar.dataset.width; }, 200);
+      });
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ========== COUNTER ANIMATION ==========
+function animateCounters() {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseFloat(el.dataset.count);
+    const duration = 1500;
+    const start = performance.now();
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = (target * eased).toFixed(3);
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = target.toFixed(3);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+setTimeout(animateCounters, 400);
+
+// ========== NAV SCROLL ==========
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+  // Update active nav link
+  const sections = ['hero','dashboard','caveat','methodology','errors','detail','recs'];
+  let current = 'hero';
+  for (const id of sections) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 120) current = id;
+  }
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+
+// ========== INIT ==========
+renderTable();
+</script>
+</body>
+</html>
